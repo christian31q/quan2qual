@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Image, Box } from '@chakra-ui/react';
 import loginImage from '../assets/Trama.png';
-import LoginForm from './LoginForm';
+import LoginForm from '../components/LoginForm';
 
 function LoginPage() {
   return (

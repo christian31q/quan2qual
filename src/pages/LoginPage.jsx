@@ -1,11 +1,11 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import LoginPage from '../components/LoginPage';
+import LoginContainer from '../container/LoginContainer';
 
 function Login() {
   return (
     <ChakraProvider>
-      <LoginPage/>
+      <LoginContainer/>
     </ChakraProvider>
   );
 }

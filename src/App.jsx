@@ -1,8 +1,10 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Importa las partes necesarias de react-router-dom
-import Login from './pages/Login';
-import Page2 from './pages/PasswordRecovery'; // Importa las páginas que deseas navegar
+// Importa las páginas que deseas navegar
+import Login from './pages/LoginPage';
+import PasswordRecovery from './pages/PasswordRecoveryPage';
+import ResetPassword from './pages/ResetPasswordPage'
 
 export function App() {
   return (
@@ -10,15 +12,14 @@ export function App() {
       <Router> {/* Envuelve tu aplicación en el componente Router */}
         <Routes>
           <Route path="/" element={<Login/>} /> {/* Ruta para la página de inicio */}
-          <Route path="/passwordRecovery" element={<Page2/>} /> {/* Ruta para otra página (ajusta la URL y el componente) */}
+          <Route path="/passwordRecovery" element={<PasswordRecovery/>} /> {/* Ruta para otra página*/}
+          <Route path="/resetPassword" element={<ResetPassword/>}/>
+          <Route path="/login" element={<Login/>}/>
         </Routes>
       </Router>
     </ChakraProvider>
   );
 }
-
-
-
 
 
 
