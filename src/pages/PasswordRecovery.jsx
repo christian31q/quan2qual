@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, Box, Text, Input, Button, Center, FormLabel } from '@chakra-ui/react';
-import bgImage from './assets/Trama.png';
+import bgImage from '../assets/Trama.png';
 
 function PasswordRecovery() {
   const backgroundImageStyle = {
