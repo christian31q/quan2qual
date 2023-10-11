@@ -6,7 +6,7 @@ function PasswordRecovery() {
   const backgroundImageStyle = {
     backgroundSize: 'cover',
     backgroundPosition: 'center center', // Centrar la imagen tanto horizontal como verticalmente
-    backgroundImage: `url(${bgImage})`, // Reemplaza con la ruta de tu imagen de fondo
+    backgroundImage: `url(${bgImage})`, 
   };
 
   return (
