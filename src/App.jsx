@@ -2,7 +2,7 @@ import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Importa las partes necesarias de react-router-dom
 import Login from './Login';
-import Page2 from './PasswordRecovery'; // Importa las páginas que deseas navegar
+import Page2 from './PasswordRecovery'; // Importa las páginas que desea navegar
 
 export function App() {
   return (
