@@ -1,10 +1,11 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Importa las partes necesarias de react-router-dom
-// Importa las páginas que deseas navegar
+// Importa las páginas que desea navegar
 import Login from './pages/LoginPage';
 import PasswordRecovery from './pages/PasswordRecoveryPage';
 import ResetPassword from './pages/ResetPasswordPage'
+import Dashboard from './pages/DashboardPage';
 
 export function App() {
   return (
@@ -15,70 +16,9 @@ export function App() {
           <Route path="/passwordRecovery" element={<PasswordRecovery/>} /> {/* Ruta para otra página*/}
           <Route path="/resetPassword" element={<ResetPassword/>}/>
           <Route path="/login" element={<Login/>}/>
+          <Route path="/dashboardNewLoadProject" element={<Dashboard/>}/>
         </Routes>
       </Router>
     </ChakraProvider>
   );
 }
-
-
-
-{/*
-import { TwitterFollowCard } from "./TwitterFollowCard";
-
-const users = [
-    {
-        userName: 'midudev',
-        name: 'Miguel Angel',
-        isFollowing: true 
-    },
-    {
-        userName: 'Sebas_Lam',
-        name: 'Sebastián Lamprea',
-        isFollowing: false 
-    },
-    {
-        userName: 'PacoHdezs',
-        name: 'Paco Hdezs',
-        isFollowing: true 
-    },
-    {
-        userName: 'TMChein',
-        name: 'Tomas Angel',
-        isFollowing: false 
-    }
-]
-export function App (){
-    return(
-        <section className="App">
-        {/*Mapear una lista de usuarios con sus respectivos estados*/}
-
-        /*{
-            users.map(user =>{
-                const {userName, name, isFollowing} = user
-                return(
-                    <TwitterFollowCard
-                       //Un identificador unico de cada elemento
-                       //Puede ser el ID o algo que no se repita en cada elemento
-                       //Lo mejor un ID de bases de datos
-                        key={userName}
-                        userName = {userName}
-                        initialIsFollowing={isFollowing}
-                    >
-                        {name}
-                    </TwitterFollowCard>
-                )
-            })
-        }
-
-        {/*Crear un componente unico, pasando sus respectivos parametros
-
-        {/*<TwitterFollowCard  userName="Sebas_Lam">
-            Sebastián Lamprea
-         </TwitterFollowCard>
-         <TwitterFollowCard  userName="elonmusk">
-            Pablo Hernandez
-         </TwitterFollowCard>
-        /*</section>
-    )
-}  */
