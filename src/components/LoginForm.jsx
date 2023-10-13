@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Flex,
   Text,
@@ -11,11 +11,14 @@ import {
   InputGroup,
   InputRightElement,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BiUser, BiShow, BiHide } from 'react-icons/bi';
 import { MdLockOutline } from 'react-icons/md';
+import LoadingPage from '../pages/LoadingPage';
 
 function LoginForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,13 +28,22 @@ function LoginForm() {
 
   const handleLogin = () => {
     if (email && password) {
-      // Realizar aquí la lógica de autenticación
-      // Por ahora, simplemente marca como autenticado
-      setIsAuthenticated(true);
+      setIsLoading(true);
+
+      //Simulación carga de datos 
+      setTimeout(() =>{
+        setIsLoading(false);
+        navigateTo('/dashboardNewLoadProject')
+        // Realizar aquí la lógica de autenticación
+        // Por ahora, simplemente marca como autenticado
+        setIsAuthenticated(true);
+      }, 4000);
     }
   };
 
   return (
+    <div>
+      {isLoading ? (<LoadingPage/>) : (
     <Flex alignItems="center" flexDirection="column" h="100%">
       <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#041D39">
         Bienvenido
@@ -104,7 +116,7 @@ function LoginForm() {
         </Flex>
 
         <Button
-          type="submit"
+          type='submit'
           color="white"
           w="20rem"
           h="2.375rem"
@@ -114,7 +126,6 @@ function LoginForm() {
         >
           Iniciar Sesión
         </Button>
-
         {isAuthenticated ? (
           <Text color="green.500" fontWeight="bold" mb={6}>
             ¡Credenciales correctas! Acceso concedido.
@@ -123,6 +134,8 @@ function LoginForm() {
       </Stack>
       </form>
     </Flex>
+    )}
+    </div>
   );
 }
 
