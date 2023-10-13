@@ -48,7 +48,7 @@ function LoginForm() {
       <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#041D39">
         Bienvenido
       </Text>
-      <form>
+      <form onSubmit={handleLogin}>
       <Stack spacing={6}>
         <FormControl id="email" maxW="20rem" textAlign="center" >
         <FormLabel></FormLabel>
@@ -122,7 +122,7 @@ function LoginForm() {
           h="2.375rem"
           bg="#041D39"
           _hover={{ backgroundColor: 'gray.600' }}
-          onClick={handleLogin}
+          //onClick={handleLogin}
         >
           Iniciar Sesión
         </Button>

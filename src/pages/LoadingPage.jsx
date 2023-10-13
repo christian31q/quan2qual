@@ -39,7 +39,7 @@ function LoadingPage() {
           repeatType: "loop",
         }}
         padding="2"
-        bgGradient="linear(to-l, #7928CA, #FF0080)"
+        bgGradient="linear(to-l, #E98643, #D05543)"
         display="flex"
         justifyContent="center"
         alignItems="center"

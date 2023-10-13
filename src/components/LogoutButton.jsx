@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 function LogoutButton() {
   return (
@@ -12,7 +13,7 @@ function LogoutButton() {
         lineHeight="normal"
         fontFamily="Optima LT Pro"
     >
-        Cerrar Sesión
+      <Link to="/login">Cerrar Sesión</Link>
     </Button>
   );
 }
