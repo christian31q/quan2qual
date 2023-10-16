@@ -6,6 +6,7 @@ import Login from './pages/LoginPage';
 import PasswordRecovery from './pages/PasswordRecoveryPage';
 import ResetPassword from './pages/ResetPasswordPage'
 import Dashboard from './pages/DashboardPage';
+import CreateProject from './pages/CreateProjectPage'
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
           <Route path="/resetPassword" element={<ResetPassword/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/dashboardNewLoadProject" element={<Dashboard/>}/>
+          <Route path="/createProject" element={<CreateProject/>}/>
         </Routes>
       </Router>
     </ChakraProvider>

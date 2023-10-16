@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Text, Flex, Icon, Center } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 function ActionButton({ text, icon, color }) {
   return (
@@ -21,7 +22,12 @@ function ActionButton({ text, icon, color }) {
       pl="1rem"
       pr="1rem"
     >
-      <Text flex="1" textAlign="center">{text}</Text>
+      <Text 
+        flex="1" 
+        textAlign="center"
+      >
+        {text}
+      </Text>
       {icon}
     </Button>
     </Center>
