@@ -16,7 +16,7 @@ function LogoutButton() {
         lineHeight="normal"
         fontFamily="Optima LT Pro"
     >
-      <Link to="/login">{t('logOut')}</Link>
+      <Link to="/login">{t('cancel')}</Link>
     </Button>
   );
 }

@@ -19,7 +19,6 @@ function AddSessionTypePage() {
     >
         <AddSessionTypeContainer/>
     </Flex>
-    
   );
 }
 

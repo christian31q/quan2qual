@@ -48,7 +48,13 @@ i18n
           addSessionTitleInput: 'Enter the session title',
           addSessionTypeErrorMessage: 'Please, complete the session title field or select a file type',
           typeFileText: 'Type of file:',
-          create: 'Create'
+          create: 'Create',
+          videoText: 'Video',
+          imageText: 'Image',
+          audioText: 'Audio',
+          openButton: 'Open',
+          openProjectTitle: 'Open Project',
+          returnButton: 'Return'
             
         }
       },
@@ -82,7 +88,13 @@ i18n
             addSessionTitleInput: 'Escriba el título de la sesión',
             addSessionTypeErrorMessage: 'Por favor, complete el campo del título de la sesión o seleccione un tipo de archivo',
             typeFileText: 'Tipo de archivo:',
-            create: 'Crear'
+            create: 'Crear',
+            videoText: 'Vídeo',
+            imageText: 'Imagen',
+            audioText: 'Audio',
+            openButton: 'Abrir',
+            openProjectTitle: 'Abrir Proyecto',
+            returnButton: 'Volver'
             
         }
 
