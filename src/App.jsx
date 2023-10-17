@@ -13,6 +13,10 @@ import ImagePage from './pages/ImagePage';
 import AudioPage from './pages/AudioPage';
 
 
+//i18next framework 
+import './i18n';
+
+
 export function App() {
   return (
     <ChakraProvider>

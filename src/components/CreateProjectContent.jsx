@@ -11,8 +11,12 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
+
 
 function CreateProjectContent() {
+  const {t} = useTranslation();
+
   const [projectName, setProjectName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isProjectNameValid, setIsProjectNameValid] = useState(true); // Nuevo estado para validar el nombre del proyecto
@@ -21,7 +25,7 @@ function CreateProjectContent() {
   const handleNextClick = () => {
     if (projectName.trim() === '') {
       // Mostrar un mensaje de error si el campo de nombre del proyecto está vacío
-      setErrorMessage('Por favor, complete el nombre del proyecto.');
+      setErrorMessage('Please, complete the project name field.');
       setIsProjectNameValid(false); // Establecer el estado de validación como falso
     } else {
       setErrorMessage(''); // Borrar cualquier mensaje de error anterior
@@ -38,10 +42,10 @@ function CreateProjectContent() {
         fontFamily="Optima LT Pro"
         color="#041D39"
       >
-        Crear Nuevo Proyecto
+        {t('createProjectTitle')}
       </Text>
       <Text fontSize="lg" fontWeight="400" color="#041D39">
-        Nombre de proyecto:
+        {t('projectTitle')}
       </Text>
       <FormControl
         maxW="20rem"
@@ -51,7 +55,7 @@ function CreateProjectContent() {
         <FormLabel></FormLabel>
         <Input
           type="text"
-          placeholder="Escriba el nombre del proyecto"
+          placeholder={t('projectTitleInput')}
           _placeholder={{ color: '#041D39' }}
           textAlign="center"
           fontSize="1rem"
@@ -78,7 +82,7 @@ function CreateProjectContent() {
               fontWeight="400"
               _hover={{ backgroundColor: 'gray.600' }}
             >
-              Cancelar
+              {t('cancel')}
             </Button>
           </Link>
           <Button
@@ -91,7 +95,7 @@ function CreateProjectContent() {
             _hover={{ backgroundColor: 'gray.600' }}
             onClick={handleNextClick}
           >
-            Siguiente
+            {t('next')}
           </Button>
         </HStack>
       </Stack>

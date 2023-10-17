@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Text, Center, Input, Button } from '@chakra-ui/react';
 import { FormControl, FormLabel, InputLeftElement, InputGroup } from '@chakra-ui/react';
+import { useTranslation, Trans } from 'react-i18next';
+
 
 function PasswordRecoveryContainer() {
+  const {t} = useTranslation();
+
   const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
 
@@ -32,12 +36,12 @@ function PasswordRecoveryContainer() {
           fontFamily="Optima LT Pro"
           color="#041D39"
         >
-          ¿Olvidó su contraseña?
+          {t('forgotPassword')}
         </Text>
         <Center>
         <form onSubmit={handlePasswordRecovery}>
           <FormControl id="passwordRecovery" color="#041D39" isRequired>
-            <FormLabel ml="0.5rem">Usuario*</FormLabel>
+            <FormLabel ml="0.5rem">{t('usertText')}</FormLabel>
             <InputGroup>
               <Input
                 type="email"
@@ -45,7 +49,7 @@ function PasswordRecoveryContainer() {
                 h="3rem"
                 bg="white"
                 textAlign="center"
-                placeholder="Escriba su usuario"
+                placeholder={t('inputLoginEmail')}
                 _placeholder={{ color: '#041D39' }}
                 mb="1.88rem"
                 fontSize="1.25rem"
@@ -65,7 +69,7 @@ function PasswordRecoveryContainer() {
               fontWeight="400"
               _hover={{ backgroundColor: 'gray.600' }}
             >
-              Olvide mi contraseña
+              {t('buttonPasswordRecovery')}
             </Button>
           </FormControl>
         </form>

@@ -1,7 +1,10 @@
 import React from 'react';
 import { Text } from '@chakra-ui/react';
+import { useTranslation, Trans } from 'react-i18next';
 
 function WelcomeMessage({ username }) {
+  const {t} = useTranslation();
+
   return (
     <Text 
         fontSize="2.5rem" 
@@ -11,7 +14,7 @@ function WelcomeMessage({ username }) {
         fontFamily="Optima LT Pro" 
         color="#041D39"
     >
-        Bienvenido, {username}
+        {t('welcomeText')}, {username}
     </Text>
   );
 }

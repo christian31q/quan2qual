@@ -14,7 +14,7 @@ function IconButtons({ selectedIcon, onIconSelect }) {
         onIconSelect(null); // Deseleccionar el icono
     } else {
         onIconSelect(icon); // Seleccionar el icono
-    }
+    } 
   };
 
   const isIconSelected = (icon) => {

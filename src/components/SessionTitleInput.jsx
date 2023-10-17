@@ -1,7 +1,10 @@
 import React from 'react';
 import { FormControl, FormLabel, Input, FormErrorMessage } from '@chakra-ui/react';
+import { useTranslation, Trans } from 'react-i18next';
 
 function SessionTitleInput({ value, onChange, isInvalid, errorMessage }) {
+  const {t} = useTranslation();
+
   return (
     <FormControl isInvalid={isInvalid}>
       <FormLabel></FormLabel>
@@ -11,7 +14,7 @@ function SessionTitleInput({ value, onChange, isInvalid, errorMessage }) {
         h="3rem"
         bg="white"
         textAlign="center"
-        placeholder="Escriba el título de la sesión"
+        placeholder={t('addSessionTitleInput')}
         _placeholder={{ color: 'rgba(4, 29, 57, 0.60)' }}
         mb="1.19rem"
         fontSize="1.25rem"

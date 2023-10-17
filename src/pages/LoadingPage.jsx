@@ -2,6 +2,9 @@ import React from 'react';
 import { Box, Center, Text, Spinner, keyframes, Container, shouldForwardProp, chakra } from '@chakra-ui/react';
 import loginImage from '../assets/Trama.png';
 import { motion, isValidMotionProp } from 'framer-motion';
+import { useTranslation, Trans } from 'react-i18next';
+
+
 const ChakraBox = chakra(motion.div, {
     /**
      * Allow motion props and non-Chakra props to be forwarded.
@@ -9,6 +12,8 @@ const ChakraBox = chakra(motion.div, {
     shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
   });
 function LoadingPage() {
+  const {t} = useTranslation();
+
   return (
     <Box
       position="fixed"
@@ -46,7 +51,7 @@ function LoadingPage() {
         width="100px"
         height="100px"
       >
-        Cargando...
+        {t('loading')}
       </ChakraBox>
     </Container>
     </Box>

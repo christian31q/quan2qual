@@ -5,15 +5,18 @@ import ActionButtonIcon from '../components/ActionButtonIcon';
 import LogoutButton from '../components/LogoutButton';
 import { LiaPlusCircleSolid, LiaArrowCircleUpSolid } from "react-icons/lia";
 import { Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 
 function DashboardContainer() {
+  const {t} = useTranslation();
+ 
   return (
     <Center>
       <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="46.875rem" h="34.8125em" textAlign="center">
-        <WelcomeMessage username="Nombre de Usuario" />
+        <WelcomeMessage username={t('username')} />
         <Link to="/createProject">
           <ActionButtonIcon
-            text="Nuevo Proyecto" 
+            text={t('newProject')}
             icon={<LiaPlusCircleSolid 
             size="2.1875rem" />} 
             color="white"
@@ -21,7 +24,7 @@ function DashboardContainer() {
         </Link>
         <Link>
           <ActionButtonIcon 
-            text="Cargar Proyecto" 
+            text={t('openProject')}
             icon={<LiaArrowCircleUpSolid 
             size="2.18755rem" />} 
             color="white" 

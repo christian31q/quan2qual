@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   Text,
@@ -15,8 +15,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiUser, BiShow, BiHide } from 'react-icons/bi';
 import { MdLockOutline } from 'react-icons/md';
 import LoadingPage from '../pages/LoadingPage';
+import { useTranslation, Trans } from 'react-i18next';
 
 function LoginForm() {
+  const {t} = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
@@ -46,7 +48,7 @@ function LoginForm() {
       {isLoading ? (<LoadingPage/>) : (
     <Flex alignItems="center" flexDirection="column" h="100%">
       <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#041D39">
-        Bienvenido
+        {t('welcomeText')}
       </Text>
       <form onSubmit={handleLogin}>
       <Stack spacing={6}>
@@ -59,7 +61,7 @@ function LoginForm() {
             />
             <Input
               type="email"
-              placeholder="Escriba su usuario"
+              placeholder={t('inputLoginEmail')}
               _placeholder={{ color: '#041D39' }}
               textAlign="center"
               fontSize="1rem"
@@ -81,7 +83,7 @@ function LoginForm() {
             />
             <Input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Escriba su contraseña"
+              placeholder={t('inputLoginPassword')}
               _placeholder={{ color: '#041D39' }}
               textAlign="center"
               fontSize="1rem"
@@ -111,7 +113,7 @@ function LoginForm() {
 
         <Flex justify="flex-end">
           <Text _hover={{ textDecoration: 'underline' }} cursor="pointer">
-            <Link to="/passwordRecovery">¿Olvidó su contraseña?</Link>
+            <Link to="/passwordRecovery">{t('forgotPassword')}</Link>
           </Text>
         </Flex>
 
@@ -124,7 +126,7 @@ function LoginForm() {
           _hover={{ backgroundColor: 'gray.600' }}
           //onClick={handleLogin}
         >
-          Iniciar Sesión
+          {t('buttonLogIn')}
         </Button>
         {isAuthenticated ? (
           <Text color="green.500" fontWeight="bold" mb={6}>

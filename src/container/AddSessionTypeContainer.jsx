@@ -3,8 +3,11 @@ import { Text, Stack, Box, Button, Center, HStack } from '@chakra-ui/react';
 import SessionTitleInput from '../components/SessionTitleInput';
 import IconButtons from '../components/IconButtons';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 
 function AddSessionTypeContainer() {
+  const {t} = useTranslation();
+
   const [showAlert, setShowAlert] = useState(false);
   const [sessionTitle, setSessionTitle] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -56,26 +59,26 @@ function AddSessionTypeContainer() {
     <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="46.875rem" h="40rem" textAlign="center">
       <Stack spacing={4} align="center">
         <Text fontSize="2.8125rem" fontWeight="700" fontFamily="Optima LT Pro" color="#041D39" mt="1.5rem">
-          Añadir Tipo de Sesión
+          {t('addSessionTypeTitle')}
         </Text>
         <Text fontSize="1.875rem" fontWeight="400" color="#041D39">
-          Nueva Sesión
+          {t('newSessionText')}
         </Text>
         <Center>
           <SessionTitleInput
             value={sessionTitle}
             onChange={handleSessionTitleChange}
             isInvalid={!isSessionTitleValid}
-            errorMessage="Por favor, complete el campo del título de la sesión."
+            //errorMessage="Por favor, complete el campo del título de la sesión."
           />
         </Center>
         {showAlert && (
           <Text fontSize="1rem" mt="0" color="white">
-            Por favor, complete el campo del título de la sesión o seleccione un tipo de archivo/estudio.
+            {t('addSessionTypeErrorMessage')}
           </Text>
         )}
         <Text fontSize="1.875rem" fontWeight="400" color="#041D39">
-          Tipo archivo/estudio:
+          {t('typeFileText')}
         </Text>
         <IconButtons
           selectedIcon={selectedIcon}
@@ -95,7 +98,7 @@ function AddSessionTypeContainer() {
             shadow="lg"
             _hover={{ backgroundColor: 'gray.600' }}
           >
-            Cancelar
+            {t('cancel')}
           </Button>
         </Link>
         <Button
@@ -109,7 +112,7 @@ function AddSessionTypeContainer() {
           _hover={{ backgroundColor: 'gray.600' }}
           onClick={handleCreateSession}
         >
-          Crear
+          {t('create')}
         </Button>
       </HStack>
     </Box>
