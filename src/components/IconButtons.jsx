@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { HStack, Button } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+
 
 function IconButtons({ selectedIcon, onIconSelect }) {
   //const [selectedIcon, onIconSelect] = useState(null);
-  const navigate = useNavigate();
+
 
   const [inputValue, setInputValue] = useState('');
 
@@ -21,21 +21,7 @@ function IconButtons({ selectedIcon, onIconSelect }) {
     return selectedIcon === icon;
   };
 
-  const handleCreate = () => {
-    // Verifica si todos los campos están llenos
-    if (selectedIcon && inputValue) {
-      // Redirige a la página correspondiente según el icono seleccionado
-      if (selectedIcon === 1) {
-        navigate('/video'); // Redirige a la página de video
-      } else if (selectedIcon === 2) {
-        navigate('/imagen'); // Redirige a la página de imagen
-      } else if (selectedIcon === 3) {
-        navigate('/audio'); // Redirige a la página de audio
-      }
-    } else {
-      // Muestra un mensaje de error o realiza alguna acción si no se cumplen las condiciones
-    }
-  };
+  
 
   return (
     <HStack spacing='3rem' justifyContent='center' mt="1.75rem" mb="3rem">

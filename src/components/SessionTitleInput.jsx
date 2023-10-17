@@ -18,10 +18,11 @@ function SessionTitleInput({ value, onChange, isInvalid, errorMessage }) {
         shadow="lg"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        errorMessage={errorMessage}
       />
+      <FormErrorMessage>{errorMessage}</FormErrorMessage>
     </FormControl>
   );
 }
 
 export default SessionTitleInput;
+

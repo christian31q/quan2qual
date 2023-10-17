@@ -8,6 +8,10 @@ import ResetPassword from './pages/ResetPasswordPage'
 import Dashboard from './pages/DashboardPage';
 import CreateProject from './pages/CreateProjectPage'
 import AddSessionType from './pages/AddSessionTypePage'
+import VideoPage from './pages/VideoPage';
+import ImagePage from './pages/ImagePage';
+import AudioPage from './pages/AudioPage';
+
 
 export function App() {
   return (
@@ -21,6 +25,9 @@ export function App() {
           <Route path="/dashboardNewLoadProject" element={<Dashboard/>}/>
           <Route path="/createProject" element={<CreateProject/>}/>
           <Route path="/addSessionType" element={<AddSessionType/>}/>
+          <Route path="/videoWindow" element={<VideoPage/>} />
+          <Route path="/imagenWindow" element={<ImagePage/>} />
+          <Route path="/audioWindow" element={<AudioPage/>} />
         </Routes>
       </Router>
     </ChakraProvider>
