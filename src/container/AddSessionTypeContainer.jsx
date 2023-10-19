@@ -120,6 +120,3 @@ function AddSessionTypeContainer() {
 }
 
 export default AddSessionTypeContainer;
-
-
-
