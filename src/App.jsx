@@ -12,6 +12,7 @@ import VideoPage from './pages/VideoPage';
 import ImagePage from './pages/ImagePage';
 import AudioPage from './pages/AudioPage';
 import OpenProjecPage from './pages/OpenProjectPage'
+import OpenSessionPage from './pages/OpenSessionPage'
 
 
 //i18next framework 
@@ -34,6 +35,7 @@ export function App() {
           <Route path="/imagenWindow" element={<ImagePage/>} />
           <Route path="/audioWindow" element={<AudioPage/>} />
           <Route path="/openProjects" element={<OpenProjecPage/>}/>
+          <Route path="/openSessions" element={<OpenSessionPage/>}/>
         </Routes>
       </Router>
     </ChakraProvider>

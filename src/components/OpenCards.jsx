@@ -31,7 +31,86 @@ function ProjectCard({ project, onOpen }) {
 
 export default ProjectCard;
 */
-import React from 'react';
+
+//Parte de cambiar icono según el tipo de archivo
+
+/*import React from 'react';
+import { Box, Text, Button, Center } from '@chakra-ui/react';
+
+function ProjectCard({ project, onOpen }) {
+  const isVideo = project.type === 'video';
+  const isImage = project.type === 'image';
+  const isAudio = project.type === 'audio';
+
+  let iconSrc = '';
+
+  if (isVideo) {
+    iconSrc = 'URL_DEL_ICONO_DE_VIDEO';
+  } else if (isImage) {
+    iconSrc = 'URL_DEL_ICONO_DE_IMAGEN';
+  } else if (isAudio) {
+    iconSrc = 'URL_DEL_ICONO_DE_AUDIO';
+  } else {
+    // Icono por defecto o mensaje de error
+    iconSrc = 'URL_DEL_ICONO_POR_DEFECTO_O_MENSAJE_DE_ERROR';
+  }
+
+  return (
+    <Box
+      p={4}
+      bg="#E98643"
+      shadow="md"
+      borderRadius="lg"
+      w="15.4375rem"
+      h="12.4375rem"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <img src={iconSrc} alt="Icono de sesión" />
+
+      <Text
+        color="#041D39"
+        fontSize="1.2rem"
+        fontStyle="normal"
+        fontWeight="700"
+      >
+        {project.title}
+      </Text>
+
+      <Text
+        color="#041D39"
+        fontSize="0.8rem"
+        fontStyle="normal"
+        fontWeight="400"
+      >
+        {project.creationDate}
+      </Text>
+
+      <Button
+        w="8rem"
+        h="1.7rem"
+        bg="#041D39"
+        color="white"
+        fontSize="1rem"
+        fontWeight="400"
+        shadow="lg"
+        mt="1rem"
+        _hover={{ backgroundColor: 'gray.600' }}
+        onClick={() => onOpen(project.id)}
+      >
+        Abrir
+      </Button>
+    </Box>
+  );
+}
+
+export default ProjectCard;
+
+*/
+
+/*import React from 'react';
 import { Box, Text, Button, Center, HStack } from '@chakra-ui/react';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -62,7 +141,8 @@ function ProjectCard({ project, onOpen }) {
         fontStyle="normal"
         fontWeight="700"
       >
-        Project title
+        {/*{project.title}}
+        /*Project title
       </Text>
       <Text
         color="#041D39"
@@ -70,7 +150,8 @@ function ProjectCard({ project, onOpen }) {
         fontStyle="normal"
         fontWeight="400"
       >
-        Creation date
+        {/*{project.creationDate}}
+        /*Creation date
       </Text>
       <Button
         w="8rem"
@@ -90,4 +171,59 @@ function ProjectCard({ project, onOpen }) {
   );
 }
 
+export default ProjectCard;*/
+
+// ProjectCard.jsx
+
+import React from 'react';
+import { Box, Text, Button } from '@chakra-ui/react';
+import { useTranslation, Trans } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+
+function ProjectCard({ icon, title, creationDate, project, onOpen }) {
+  const {t} = useTranslation();
+
+  return (
+    <Box
+      p={4}
+      bg="#E98643"
+      shadow="md"
+      borderRadius="lg"
+      w="15.4375rem"
+      h="12.4375rem"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      {icon}
+      <Text color="#041D39" fontSize="1.2rem" fontStyle="normal" fontWeight="700">
+        {/*{project.title}*/}
+        {title}
+      </Text>
+      <Text color="#041D39" fontSize="0.8rem" fontStyle="normal" fontWeight="400">
+        {/*{project.creationDate}*/}
+        {creationDate}
+      </Text>
+      <Link to="/openSessions">
+        <Button
+          w="8rem"
+          h="1.7rem"
+          bg="#041D39"
+          color="white"
+          fontSize="1rem"
+          fontWeight="400"
+          shadow="lg"
+          mt="1rem"
+          _hover={{ backgroundColor: 'gray.600' }}
+          //onClick={onOpen}
+        >
+        {t('openButton')}
+      </Button>
+      </Link>
+    </Box>
+  );
+}
+
 export default ProjectCard;
+

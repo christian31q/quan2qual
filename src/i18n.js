@@ -54,6 +54,7 @@ i18n
           audioText: 'Audio',
           openButton: 'Open',
           openProjectTitle: 'Open Project',
+          openSessionTitle: 'Open Session', 
           returnButton: 'Return',
           languageText: 'Language',
           spanishButton:'Spanish'
@@ -95,6 +96,7 @@ i18n
             audioText: 'Audio',
             openButton: 'Abrir',
             openProjectTitle: 'Abrir Proyecto',
+            openSessionTitle: 'Abrir Sesión', 
             returnButton: 'Volver',
             languageText: 'Idioma',
             spanishButton:'Español'
