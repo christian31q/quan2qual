@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid, GridItem, Box } from '@chakra-ui/react';
 
 function ImagePage() {
   return (
