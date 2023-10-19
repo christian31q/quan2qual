@@ -54,8 +54,9 @@ i18n
           audioText: 'Audio',
           openButton: 'Open',
           openProjectTitle: 'Open Project',
-          returnButton: 'Return'
-            
+          returnButton: 'Return',
+          languageText: 'Language',
+          spanishButton:'Spanish'
         }
       },
       es: {
@@ -94,7 +95,9 @@ i18n
             audioText: 'Audio',
             openButton: 'Abrir',
             openProjectTitle: 'Abrir Proyecto',
-            returnButton: 'Volver'
+            returnButton: 'Volver',
+            languageText: 'Idioma',
+            spanishButton:'Español'
             
         }
 
