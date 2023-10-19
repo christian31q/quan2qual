@@ -2,7 +2,7 @@ import React from 'react';
 import { Flex, Image, Box, Button, AbsoluteCenter, Divider, HStack, Center, Text } from '@chakra-ui/react';
 import loginImage from '../assets/Trama.png';
 import LoginForm from '../components/LoginForm';
-import LanguageChanger from '../components/LanguageChanger';
+//import LanguageChanger from '../components/LanguageChanger';
 
 function LoginPage() {
   return (
@@ -32,7 +32,7 @@ function LoginPage() {
         marginRight={{ base: 0, md: '6.75rem' }}
       >
         <LoginForm />  
-        <LanguageChanger/>
+        {/*<LanguageChanger/>*/}
       </Box>
     </Flex>
   );

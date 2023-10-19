@@ -16,6 +16,8 @@ import { BiUser, BiShow, BiHide } from 'react-icons/bi';
 import { MdLockOutline } from 'react-icons/md';
 import LoadingPage from '../pages/LoadingPage';
 import { useTranslation, Trans } from 'react-i18next';
+import LanguageChanger from '../components/LanguageChanger';
+
 
 function LoginForm() {
   const {t} = useTranslation();
@@ -135,6 +137,7 @@ function LoginForm() {
         ) : null}
       </Stack>
       </form>
+      <LanguageChanger/>
     </Flex>
     )}
     </div>
