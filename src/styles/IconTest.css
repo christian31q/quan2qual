@@ -1,0 +1,8 @@
+.icon{
+    width: "3.6vw";
+    height: "auto";
+}
+.icon:hover {
+    fill: #91ff00;
+    stroke: #91ff00;
+  }
