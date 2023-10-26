@@ -1,8 +1,13 @@
 import React from 'react';
-import { Grid, GridItem, Box, VStack, Button, Text } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Stack, Button, HStack, Center } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 
-//import { TbCirclesRelation } from "react-icons/tb";
+import { TbCirclesRelation } from "react-icons/tb";
+import { CiSaveDown1, CiImport } from "react-icons/ci";
+import { AiOutlineLogout } from "react-icons/ai";
+import { BsPower} from "react-icons/bs";
+
+
 //import { IoPricetagOutline } from "react-icons/io5";
 //import { FiPlus } from "react-icons/fi";
 //import { TiDeleteOutline } from "react-icons/ti";
@@ -32,7 +37,17 @@ function SessionPage({ mainContent, pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-          Header
+          <HStack direction='row' spacing={{ base: "10px", md: "20px  ", lg: "2.5vmin" }} justifyContent='right' mt='1vh'>
+            <Button rightIcon={<CiSaveDown1 />} w='8vw' h='2vw' bg='#272F34' color='white' variant='solid'>
+              Guardar
+            </Button>
+            <Button rightIcon={<AiOutlineLogout />} w='8vw' h='2vw' bg='#272F34' color='white' variant='solid'>
+              Exportar
+            </Button>
+            <Button rightIcon={<BsPower />} w='8vw' h='2vw' bg='#272F34' color='white' variant='solid'>
+              Salir
+            </Button>
+          </HStack>
         </GridItem>
         <GridItem 
             color='white' 
