@@ -54,49 +54,6 @@ function SessionPage({ mainContent, pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-          {/*<HStack spacing={4}>
-            <Box 
-              w='30vw'
-              h='55vh'
-              p={4} 
-              borderWidth="3px" 
-              borderRadius="lg"
-              borderColor='#041D39'
-              align="center"
-              mt='2vh'
-              ml='2vh'
-              display='flex'
-              justifyContent='center'
-              alignItems='center'
-            >
-              <Text
-                fontSize='1.2vw'
-                color='withe'
-                fontWeight='400'
-                w='12vw'
-                h='10vh'
-              >
-                Importe un archivo de video para empezar
-              </Text>
-            </Box>
-            <Box 
-              w='60vw'
-              h='55vh' 
-              p={4} 
-              borderWidth="3px" 
-              borderRadius="lg"
-              borderColor='#041D39'
-              bg='#041D39'
-              align="center"
-              mt='2vh'
-              mr='2.5vh'
-              >
-              <Input 
-                type="file" 
-                accept="video/*" 
-              />
-            </Box>
-  </HStack>*/}
         <FileUploadSection/>
         </GridItem>
         <GridItem 
