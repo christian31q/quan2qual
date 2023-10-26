@@ -1,0 +1,33 @@
+/* HandleStyles.css */
+.box {
+    transition: transform 0.3s;
+    position: relative;
+  }
+  
+  .box.editing {
+    transform: translateX(-5px);
+  }
+  
+/*  .box:hover {
+    border: 2px solid #007BFF;
+    transition: border 0.3s; 
+  }
+  
+  .box::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background-color: transparent;
+    transition: background-color 0.3s; /* Duración de la transición 
+  }
+  
+  .box:hover::before {
+    background-color: #007BFF; /* Color del borde en hover 
+  }
+  */
+
+  
+  

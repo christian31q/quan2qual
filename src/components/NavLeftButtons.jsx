@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, VStack, Icon } from '@chakra-ui/react';
 
+
 function NavLeftButtons({icon, iconSize, buttonText}){
     return (
     <Box

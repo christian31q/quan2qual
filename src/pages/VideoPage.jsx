@@ -5,7 +5,7 @@ function VideoPage() {
   return (
     <SessionPage
       mainContent="Main Video"
-      pageTitle="Video Title"
+      pageTitle="Video Sesion Title"
     />
   );
 }
