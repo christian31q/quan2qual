@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, GridItem, Box, VStack, Button, Text } from '@chakra-ui/react';
-import NavLeftTools from '../components/NavLeftTools';
+import NavLeftTools from '../container/NavLeftToolsContainer';
 
 //import { TbCirclesRelation } from "react-icons/tb";
 //import { IoPricetagOutline } from "react-icons/io5";
