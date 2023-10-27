@@ -1,9 +1,12 @@
 import React from 'react';
-import { Grid, GridItem, Box, Button, HStack, Text, Input, VStack, Center } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
+import { CgBoy, CgGirl } from "react-icons/cg";
+import { BiBook } from "react-icons/bi";
+import { RiUser4Line } from "react-icons/ri";
 
 
 function SessionPage({ mainContent, pageTitle }) {
@@ -57,7 +60,6 @@ function SessionPage({ mainContent, pageTitle }) {
         <FileUploadSection/>
         </GridItem>
         <GridItem 
-            pl='2' 
             borderLeft='1px' 
             borderColor='white' 
             color='white' 
@@ -68,7 +70,57 @@ function SessionPage({ mainContent, pageTitle }) {
             rowEnd={3}
             shadow='xl'
         >
-          Nav Right
+          {/*<Thead bg='#272F34'>
+                <Tr h='6.11vh'>
+                  <Th color='white' textAlign='left' fontSize='1.2vw' fontWeight='400' textTransform='none'>Actores</Th>
+                  <Th color='white' textAlign='center'></Th>
+                  <Th color='white' textAlign='right'><Icon as={RiUser4Line} fontSize='1.5vw'/></Th>
+                </Tr>
+  </Thead>*/}
+          <TableContainer>
+            <Text 
+              display='flex'
+              justifyContent='space-between'
+              align='center'
+              alignItems='center'
+              fontSize="1.2vw"
+              h='6.11vh' 
+              bg='#272F34' 
+              borderBottom='1px' 
+              fontWeight='400'
+              pl='1vw'
+              pr='1vw'
+            >
+              Actores
+              <Icon as={RiUser4Line} fontSize='1.5vw'/>
+            </Text>
+            <Table size='sm' color='white'>
+              <Thead bg='#272F34'>
+                <Tr>
+                  <Th w='7vw' color='white' textAlign='center' borderRight='1px'>Icono</Th>
+                  <Th color='white' textAlign='center' borderRight='1px'>LABEL</Th>
+                  <Th color='white' textAlign='center'>ID</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr bg='#272F34'> 
+                  <Td textAlign='center' borderRight='1px'><Icon as={CgBoy} bg='red' borderRadius="20px" fontSize='2.5vw'/></Td>
+                  <Td textAlign='center' borderRight='1px'>Santiao</Td>
+                  <Td textAlign='center' >1</Td>
+                </Tr>
+                <Tr bg='#272F34'>
+                  <Td textAlign='center' borderRight='1px'><Icon as={BiBook} bg='green' borderRadius="20px" fontSize='2.5vw'/></Td>
+                  <Td textAlign='center' borderRight='1px'>Libro</Td>
+                  <Td textAlign='center'>2</Td>
+                </Tr>
+                <Tr bg='#272F34'>
+                  <Td textAlign='center' borderRight='1px'><Icon as={CgGirl} bg='purple' borderRadius="20px" fontSize='2.5vw'/></Td>
+                  <Td textAlign='center' borderRight='1px'>Lina</Td>
+                  <Td textAlign='center'>3</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+        </TableContainer>
         </GridItem>
         <GridItem 
             pl='2' 

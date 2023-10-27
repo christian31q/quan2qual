@@ -33,6 +33,7 @@ function NavHeader({pageTitleText}){
               variant='solid'
               fontSize='1.2vw'
               _hover={{bg: '#9F9F9F', color:'black'}}
+              isDisabled
             >
               Exportar
             </Button>
