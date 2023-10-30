@@ -1,17 +1,30 @@
 import React from 'react';
-import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon, Center } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
 import { CgBoy, CgGirl } from "react-icons/cg";
 import { BiBook } from "react-icons/bi";
+import { FiMoreVertical, FiSettings  } from "react-icons/fi";
 import { RiUser4Line } from "react-icons/ri";
+import { FiEdit, FiTrash } from 'react-icons/fi';
+import '../styles/HandleStyles.css'
 
 
 function SessionPage({ mainContent, pageTitle }) {
+  const handleEdit = (elementId) => {
+    // Agrega aquí la lógica para editar el elemento con el ID proporcionado
+    console.log("Editar elemento con ID:", elementId);
+  };
+  const handleDelete = (elementId) => {
+    // Agrega aquí la lógica para eliminar el elemento con el ID proporcionado
+    console.log("Eliminar elemento con ID:", elementId);
+  };
+  
   
   return (
+    
     <Box height="100vh">
       <Grid
         templateAreas={`"header header"
@@ -70,13 +83,6 @@ function SessionPage({ mainContent, pageTitle }) {
             rowEnd={3}
             shadow='xl'
         >
-          {/*<Thead bg='#272F34'>
-                <Tr h='6.11vh'>
-                  <Th color='white' textAlign='left' fontSize='1.2vw' fontWeight='400' textTransform='none'>Actores</Th>
-                  <Th color='white' textAlign='center'></Th>
-                  <Th color='white' textAlign='right'><Icon as={RiUser4Line} fontSize='1.5vw'/></Th>
-                </Tr>
-  </Thead>*/}
           <TableContainer>
             <Text 
               display='flex'
@@ -94,11 +100,47 @@ function SessionPage({ mainContent, pageTitle }) {
               Actores
               <Icon as={RiUser4Line} fontSize='1.5vw'/>
             </Text>
-            <Table size='sm' color='white'>
+            <Table size="sm" color="white">
+              <Thead bg="#272F34">
+              <Tr>
+                <Th w="15vw" color="white" textAlign="center" borderRight="1px">
+                  Icono
+                </Th>
+                <Th w="15vw" color="white" textAlign="center" borderRight="1px">
+                  LABEL
+                </Th>
+                <Th w="6vw" color="white" textAlign="center" borderRight="1px">
+                  ID
+                </Th>
+                <Th w="1vw" color="white" textAlign="center">
+                    <Icon as={FiSettings} fontSize="1vw" />
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+            <Tr bg="#272F34">
+              <Td textAlign="center" borderRight="1px">
+                <Icon as={CgBoy} bg="red" borderRadius="20px" fontSize="2.5vw" />
+              </Td>
+              <Td textAlign="center" borderRight="1px">Santiao</Td>
+              <Td textAlign="center" borderRight="1px">1</Td>
+              <Td className="hover-element">
+                <Icon as={FiMoreVertical} fontSize="1.5vw" />
+                <div className="edit-icon">
+                  <FiEdit fontSize="1.5vw" onClick={() => handleEdit(1)} />
+                </div>
+                <div className="delete-icon">
+                  <FiTrash fontSize="1.5vw" onClick={() => handleDelete(1)} />
+                </div>
+              </Td>
+            </Tr>
+          </Tbody>
+            </Table>
+            {/*<Table size='sm' color='white'>
               <Thead bg='#272F34'>
                 <Tr>
                   <Th w='7vw' color='white' textAlign='center' borderRight='1px'>Icono</Th>
-                  <Th color='white' textAlign='center' borderRight='1px'>LABEL</Th>
+                  <Th w='10vw' color='white' textAlign='center' borderRight='1px'>LABEL</Th>
                   <Th color='white' textAlign='center'>ID</Th>
                 </Tr>
               </Thead>
@@ -119,7 +161,7 @@ function SessionPage({ mainContent, pageTitle }) {
                   <Td textAlign='center'>3</Td>
                 </Tr>
               </Tbody>
-            </Table>
+</Table>*/}
         </TableContainer>
         </GridItem>
         <GridItem 
