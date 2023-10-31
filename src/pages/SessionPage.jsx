@@ -118,23 +118,19 @@ function SessionPage({ mainContent, pageTitle }) {
               </Tr>
             </Thead>
             <Tbody>
-            <Tr bg="#272F34">
-              <Td textAlign="center" borderRight="1px">
-                <Icon as={CgBoy} bg="red" borderRadius="20px" fontSize="2.5vw" />
-              </Td>
-              <Td textAlign="center" borderRight="1px">Santiao</Td>
-              <Td textAlign="center" borderRight="1px">1</Td>
-              <Td className="hover-element">
-                <Icon as={FiMoreVertical} fontSize="1.5vw" />
-                <div className="edit-icon">
-                  <FiEdit fontSize="1.5vw" onClick={() => handleEdit(1)} />
-                </div>
-                <div className="delete-icon">
-                  <FiTrash fontSize="1.5vw" onClick={() => handleDelete(1)} />
-                </div>
-              </Td>
-            </Tr>
-          </Tbody>
+              <Tr bg="#272F34">
+                <Td textAlign="center" borderRight="1px">
+                  <Icon as={CgBoy} bg="red" borderRadius="20px" fontSize="2.5vw" />
+                </Td>
+                <Td textAlign="center" borderRight="1px">Santiao</Td>
+                <Td textAlign="center" borderRight="1px">1</Td>
+                <Td className="hover-element">
+                  <Icon as={FiMoreVertical} fontSize="1.5vw" />
+                    <FiEdit className="edit-icon"  onClick={() => handleEdit(1)} />
+                    <FiTrash className="delete-icon" onClick={() => handleDelete(1)} />
+                </Td>
+              </Tr>
+            </Tbody>
             </Table>
             {/*<Table size='sm' color='white'>
               <Thead bg='#272F34'>

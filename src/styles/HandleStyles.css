@@ -10,36 +10,45 @@
   
 
 /*Estilos Tablas*/
-
 .hover-element {
   position: relative;
   overflow: hidden;
   transition: 0.3s; /* Duración de la animación */
-
-  .edit-icon,
-  .delete-icon {
-    cursor: pointer;
-    transition: right 0.3s; /* Añade una transición para el desplazamiento */
-    position: absolute;
-    top: 0;
-    right: -100%; /* Inicialmente ocultos */
-    width: 50%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #007BFF; /* Color de fondo del botón de edición */
-    color: #fff; /* Color del ícono */
-    font-size: 1.5vw; /* Tamaño del ícono */
-  }
-
-  .edit-icon:hover,
-  .delete-icon:hover {
-    right: 0; /* Aparecen al pasar el cursor por encima */
-  }
 }
 
+.edit-icon,
+.delete-icon {
+  cursor: pointer;
+  transition: right 0.3s; /* Agregamos una transición a la propiedad right */
+  position: absolute;
+  top: 0;
+  right: -100%; /* Inicialmente ocultos */
+  width: 100%; /* Ajustar el ancho al 100% para cubrir el espacio */
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5vw;
+}
 
+.edit-icon {
+  background-color: #007BFF;
+  color: #fff;
+}
+
+.delete-icon {
+  top: 50%;
+  background-color: #e40909;
+  color: #fff;
+}
+
+.hover-element:hover .edit-icon {
+  right: 0; /* Aparecen al pasar el cursor por encima */
+}
+
+.hover-element:hover .delete-icon {
+  right: 0; /* Aparecen al pasar el cursor por encima */
+}
 
 
 /*  .box:hover {
