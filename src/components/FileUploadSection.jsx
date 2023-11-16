@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Input, HStack, Text } from "@chakra-ui/react";
 import '../styles/HandleStyles.css'
 

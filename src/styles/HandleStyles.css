@@ -100,5 +100,21 @@
   color: white;
 }
 
-  
-  
+/* Estilos para la barra de desplazamiento */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #D25644; 
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Para navegadores que no admiten la personalización de la barra de desplazamiento */
+/*scrollbar-width: thin;
+scrollbar-color: #4CAF50 #f1f1f1;
+*/

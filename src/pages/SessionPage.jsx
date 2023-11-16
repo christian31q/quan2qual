@@ -4,24 +4,42 @@ import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
-import { CgBoy, CgGirl } from "react-icons/cg";
-import { BiBook } from "react-icons/bi";
-import { FiMoreVertical, FiSettings  } from "react-icons/fi";
-import { RiUser4Line } from "react-icons/ri";
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import HeaderTableActors from '../components/actors/HeaderTableActors';
+import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
+import TableBodyActors from '../components/actors/TableBodyActors'
 import '../styles/HandleStyles.css'
 
 
 function SessionPage({ mainContent, pageTitle }) {
-  const handleEdit = (elementId) => {
+  const data = [
+    { id: 1, label: 'Santiao' },
+    { id: 2, label: 'Lina'},
+    { id: 3, label: 'Juan'},
+    { id: 4, label: 'Libro'},
+    { id: 5, label: 'Lina'},
+    { id: 6, label: 'Juan'},
+    { id: 7, label: 'Libro'},
+    { id: 8, label: 'Juan'},
+    { id: 9, label: 'Libro'},
+    { id: 10, label: 'Lina'},
+    { id: 11, label: 'Juan'},
+    { id: 12, label: 'Libro'},
+    { id: 13, label: 'Libro'},
+    { id: 14, label: 'Lina'},
+    { id: 15, label: 'Juan'},
+    { id: 16, label: 'Libro'},
+
+    //Agregar más si es necesario
+  ];
+
+  const handleEdit = (id) => {
     // Agrega aquí la lógica para editar el elemento con el ID proporcionado
-    console.log("Editar elemento con ID:", elementId);
+    console.log("Editar elemento con ID:", id);
   };
-  const handleDelete = (elementId) => {
+  const handleDelete = (id) => {
     // Agrega aquí la lógica para eliminar el elemento con el ID proporcionado
-    console.log("Eliminar elemento con ID:", elementId);
+    console.log("Eliminar elemento con ID:", id);
   };
-  
   
   return (
     
@@ -82,83 +100,14 @@ function SessionPage({ mainContent, pageTitle }) {
             rowStart={1} 
             rowEnd={3}
             shadow='xl'
+            style={{ overflowY: 'hidden'}}
         >
-          <TableContainer>
-            <Text 
-              display='flex'
-              justifyContent='space-between'
-              align='center'
-              alignItems='center'
-              fontSize="1.2vw"
-              h='6.11vh' 
-              bg='#272F34' 
-              borderBottom='1px' 
-              fontWeight='400'
-              pl='1vw'
-              pr='1vw'
-            >
-              Actores
-              <Icon as={RiUser4Line} fontSize='1.5vw'/>
-            </Text>
-            <Table size="sm" color="white">
-              <Thead bg="#272F34">
-              <Tr>
-                <Th w="15vw" color="white" textAlign="center" borderRight="1px">
-                  Icono
-                </Th>
-                <Th w="15vw" color="white" textAlign="center" borderRight="1px">
-                  LABEL
-                </Th>
-                <Th w="6vw" color="white" textAlign="center" borderRight="1px">
-                  ID
-                </Th>
-                <Th w="1vw" color="white" textAlign="center">
-                    <Icon as={FiSettings} fontSize="1vw" />
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr bg="#272F34">
-                <Td textAlign="center" borderRight="1px">
-                  <Icon as={CgBoy} bg="red" borderRadius="20px" fontSize="2.5vw" />
-                </Td>
-                <Td textAlign="center" borderRight="1px">Santiao</Td>
-                <Td textAlign="center" borderRight="1px">1</Td>
-                <Td className="hover-element">
-                  <Icon as={FiMoreVertical} fontSize="1.5vw" />
-                    <FiEdit className="edit-icon"  onClick={() => handleEdit(1)} />
-                    <FiTrash className="delete-icon" onClick={() => handleDelete(1)} />
-                </Td>
-              </Tr>
-            </Tbody>
-            </Table>
-            {/*<Table size='sm' color='white'>
-              <Thead bg='#272F34'>
-                <Tr>
-                  <Th w='7vw' color='white' textAlign='center' borderRight='1px'>Icono</Th>
-                  <Th w='10vw' color='white' textAlign='center' borderRight='1px'>LABEL</Th>
-                  <Th color='white' textAlign='center'>ID</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr bg='#272F34'> 
-                  <Td textAlign='center' borderRight='1px'><Icon as={CgBoy} bg='red' borderRadius="20px" fontSize='2.5vw'/></Td>
-                  <Td textAlign='center' borderRight='1px'>Santiao</Td>
-                  <Td textAlign='center' >1</Td>
-                </Tr>
-                <Tr bg='#272F34'>
-                  <Td textAlign='center' borderRight='1px'><Icon as={BiBook} bg='green' borderRadius="20px" fontSize='2.5vw'/></Td>
-                  <Td textAlign='center' borderRight='1px'>Libro</Td>
-                  <Td textAlign='center'>2</Td>
-                </Tr>
-                <Tr bg='#272F34'>
-                  <Td textAlign='center' borderRight='1px'><Icon as={CgGirl} bg='purple' borderRadius="20px" fontSize='2.5vw'/></Td>
-                  <Td textAlign='center' borderRight='1px'>Lina</Td>
-                  <Td textAlign='center'>3</Td>
-                </Tr>
-              </Tbody>
-</Table>*/}
-        </TableContainer>
+          {/*Tabla Actores*/}
+          <HeaderTableActors />
+          <HeaderLabelsActors/>
+          <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
+            <TableBodyActors data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+          </div>
         </GridItem>
         <GridItem 
             pl='2' 
