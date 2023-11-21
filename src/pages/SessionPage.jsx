@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon, Center } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
+import VideoControls from '../components/VideoControls';
 import HeaderTableActors from '../components/actors/HeaderTableActors';
 import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
 import TableBodyActors from '../components/actors/TableBodyActors'
@@ -40,6 +41,14 @@ function SessionPage({ mainContent, pageTitle }) {
     // Agrega aquí la lógica para eliminar el elemento con el ID proporcionado
     console.log("Eliminar elemento con ID:", id);
   };
+
+  //Sección video 
+  const videoRef = useRef(null);
+  const handleFileSelect = (file) => {
+    // realizar acciones adicionales cuando se selecciona un archivo
+    console.log("Archivo seleccionado:", file);
+  };
+
   
   return (
     
@@ -88,7 +97,7 @@ function SessionPage({ mainContent, pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-        <FileUploadSection/>
+          <FileUploadSection videoRef={videoRef} />
         </GridItem>
         <GridItem 
             borderLeft='1px' 
@@ -119,7 +128,8 @@ function SessionPage({ mainContent, pageTitle }) {
             rowEnd={3}
             shadow='xl'
         >
-          Reproductor
+          {/*Reproductor*/}
+          <VideoControls videoRef={videoRef} />
         </GridItem>
         <GridItem 
             pl='2' 
