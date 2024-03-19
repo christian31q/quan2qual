@@ -14,19 +14,19 @@ import '../styles/HandleStyles.css'
 function SessionPage({ mainContent, pageTitle }) {
   const data = [
     { id: 1, label: 'Santiao' },
-    { id: 2, label: 'Lina'},
+    { id: 2, label: 'Ana'},
     { id: 3, label: 'Juan'},
     { id: 4, label: 'Libro'},
-    { id: 5, label: 'Lina'},
+    { id: 5, label: 'Ana'},
     { id: 6, label: 'Juan'},
     { id: 7, label: 'Libro'},
     { id: 8, label: 'Juan'},
     { id: 9, label: 'Libro'},
-    { id: 10, label: 'Lina'},
+    { id: 10, label: 'Ana'},
     { id: 11, label: 'Juan'},
     { id: 12, label: 'Libro'},
     { id: 13, label: 'Libro'},
-    { id: 14, label: 'Lina'},
+    { id: 14, label: 'Ana'},
     { id: 15, label: 'Juan'},
     { id: 16, label: 'Libro'},
 
@@ -34,11 +34,9 @@ function SessionPage({ mainContent, pageTitle }) {
   ];
 
   const handleEdit = (id) => {
-    // Agrega aquí la lógica para editar el elemento con el ID proporcionado
     console.log("Editar elemento con ID:", id);
   };
   const handleDelete = (id) => {
-    // Agrega aquí la lógica para eliminar el elemento con el ID proporcionado
     console.log("Eliminar elemento con ID:", id);
   };
 
@@ -127,6 +125,7 @@ function SessionPage({ mainContent, pageTitle }) {
             rowStart={3} 
             rowEnd={3}
             shadow='xl'
+            display='flex'
         >
           {/*Reproductor*/}
           <VideoControls videoRef={videoRef} />

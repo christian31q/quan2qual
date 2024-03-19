@@ -28,7 +28,7 @@ const TableBodyActors = ({ data, handleEdit, handleDelete }) => {
         {data.map((item) => (
           <Tr key={item.id} bg="#272F34">
             <Td width='30.1%' textAlign="center" borderRight="1px">
-              <Icon as={CgBoy} bg="red" borderRadius="20px" fontSize="2.5vw" />
+              <Icon as={CgBoy} bg="red" borderRadius="100%" fontSize="2.5vw" />
             </Td>
             <Td width='28.5%' textAlign="center" borderRight="1px">{item.label}</Td>
             <Td width='19.5%' textAlign="center" borderRight="1px">{item.id}</Td>
