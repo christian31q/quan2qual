@@ -115,6 +115,9 @@ function SessionPage({ mainContent, pageTitle }) {
           <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
             <TableBodyActors data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
           </div>
+          <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
+            <TableBodyActors data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+          </div>
         </GridItem>
         <GridItem 
             pl='2' 
