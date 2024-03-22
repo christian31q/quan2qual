@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, VStack, Icon } from '@chakra-ui/react';
 
 
-function NavLeftButtons({icon, iconSize, buttonText}){
+function NavLeftButtons({icon, iconSize, buttonText, onClick}){
     return (
     <Box
         as='button'
@@ -29,6 +29,7 @@ function NavLeftButtons({icon, iconSize, buttonText}){
             '0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)',
             color:'white',
         }}
+        onClick={onClick}
     >
         <VStack spacing={0} alignItems="center">
             <Icon as={icon} fontSize={iconSize}/>
