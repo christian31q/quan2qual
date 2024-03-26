@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon, Center } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
@@ -12,33 +12,36 @@ import '../styles/HandleStyles.css'
 
 
 function SessionPage({ mainContent, pageTitle }) {
-  const data = [
-    { id: 1, label: 'Santiao' },
-    { id: 2, label: 'Ana'},
-    { id: 3, label: 'Juan'},
-    { id: 4, label: 'Libro'},
-    { id: 5, label: 'Ana'},
-    { id: 6, label: 'Juan'},
-    { id: 7, label: 'Libro'},
-    { id: 8, label: 'Juan'},
-    { id: 9, label: 'Libro'},
-    { id: 10, label: 'Ana'},
-    { id: 11, label: 'Juan'},
-    { id: 12, label: 'Libro'},
-    { id: 13, label: 'Libro'},
-    { id: 14, label: 'Ana'},
-    { id: 15, label: 'Juan'},
-    { id: 16, label: 'Libro'},
+  const [actors, setActors] = useState([]);
 
-    //Agregar más si es necesario
-  ];
+  useEffect(() => {
+    const actorsData = localStorage.getItem('actors');
+    if (actorsData) {
+      setActors(JSON.parse(actorsData));
+    }
+  }, []);
 
   const handleEdit = (id) => {
     console.log("Editar elemento con ID:", id);
   };
-  const handleDelete = (id) => {
-    console.log("Eliminar elemento con ID:", id);
-  };
+
+  /*const handleDelete = (index) => {
+    // Mostrar cuadro de diálogo de confirmación
+    const isConfirmed = window.confirm('¿Estás seguro de que deseas eliminar este actor?');
+    
+    // Verificar si el usuario confirmó la eliminación
+    if (isConfirmed) {
+      // Crea una copia del array de actores actual
+      const updatedActors = [...actors];
+      // Elimina el actor en la posición del índice especificado
+      updatedActors.splice(index, 1);
+      // Actualiza el estado local y el almacenamiento local con los actores actualizados
+      setActors(updatedActors);
+      localStorage.setItem('actors', JSON.stringify(updatedActors));
+    }
+  };*/
+  
+
 
   //Sección video 
   const videoRef = useRef(null);
@@ -110,13 +113,10 @@ function SessionPage({ mainContent, pageTitle }) {
             style={{ overflowY: 'hidden'}}
         >
           {/*Tabla Actores*/}
-          <HeaderTableActors />
+          <HeaderTableActors/>
           <HeaderLabelsActors/>
           <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-            <TableBodyActors data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
-          </div>
-          <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-            <TableBodyActors data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+            <TableBodyActors data={actors} handleEdit={handleEdit} />
           </div>
         </GridItem>
         <GridItem 

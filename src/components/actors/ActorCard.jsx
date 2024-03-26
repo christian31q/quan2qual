@@ -2,8 +2,11 @@ import React from 'react';
 import { GridItem, Icon } from '@chakra-ui/react';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 
+import { IconPickerItem } from 'react-icons-picker'
+import { icon } from '@fortawesome/fontawesome-svg-core';
+
 const ActorCard = ({ actor, handleEdit, handleDelete }) => {
-  const { id, label, color, icon: IconComponent } = actor;
+  const { name, color, icon: iconName } = actor;
 
   return (
     <GridItem 
@@ -21,17 +24,20 @@ const ActorCard = ({ actor, handleEdit, handleDelete }) => {
       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}      
     >
       {/* Icono */}
-      <Icon 
-        as={IconComponent} 
+      <Icon
         bg={color} 
         borderRadius="100%" 
-        fontSize="60px" 
         position="relative"
-        zIndex="1"           
-      />
-      
+        fontSize="60px"
+        zIndex="1"
+      >
+        <IconPickerItem 
+          value={iconName}
+          size={24}
+        />
+      </Icon>
       {/* Label */}
-      <div style={{ position: 'relative', zIndex: '0' }}>{label}</div>
+      <div style={{ position: 'relative', zIndex: '0' }}>{name}</div>
     </GridItem>
   );
 };

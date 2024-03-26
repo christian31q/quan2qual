@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Divider,
@@ -10,57 +10,180 @@ import {
   Input,
   IconButton,
 } from '@chakra-ui/react';
-import { SketchPicker } from 'react-color';
-import { FiEdit3 } from 'react-icons/fi';
 import { IoMdAddCircleOutline } from "react-icons/io";
-
+import { TiDeleteOutline } from "react-icons/ti";
 import ColorPicker from '@radial-color-picker/react-color-picker';
+
 import '@radial-color-picker/react-color-picker/dist/style.css';
+import IconPicker from 'react-icons-picker';
+
+import { createStandaloneToast } from '@chakra-ui/react';
+
+const { ToastContainer, toast } = createStandaloneToast();
 
 function LiveBoxActors({ isOpen, onClose }) {
   const [actorName, setActorName] = useState('');
-  const [actorColor, setActorColor] = useState('#ffffff');
-
-  const handleColorChange = (color) => {
-    setActorColor(color.hex);
-  };
-
-  const handleIconPickerClick = () => {
-    // Aquí puedes implementar la lógica para elegir un ícono
-  };
-
-  const handleAddAttribute = () => {
-    console.log("Añadir atributo");
-    // Aquí puedes implementar la lógica para agregar un nuevo atributo
-  };
-
-  const handleCancel = () => {
-    // Lógica para cerrar el LiveBox
-    onClose();
-  };
-
-  const handleCreateActor = () => {
-    // Lógica para crear un nuevo actor
-    console.log('Crear actor:', actorName, actorColor);
-    onClose();
-  };
-
-  const [color, setColor] = React.useState({
+  const [actorColor, setActorColor] = useState({
     hue: 90,
-    saturation: 100,
+    saturation: 70,
     luminosity: 50,
     alpha: 1,
-});
+  });
+  const [actorIcon, setActorIcon] = useState("FaUsers");
+  const [attributes, setAttributes] = useState([]);
+  
+  //Save actors 
+  const [actors, setActors] = useState([]);
+  
+  const saveActorsToLocalStorage = (actors) => {
+    localStorage.setItem('actors', JSON.stringify(actors));
+  };
 
-const onInput = hue => {
-    setColor(prev => {
-        return {
-            ...prev,
-            hue,
-        };
-    });
+  //Función para agregar el actor, más adelante usar función para añadir a la BD
+  const handleAddActor = (newActorC) => {
+    const newActor = {
+      name: newActorC.name,
+      color: newActorC.color,
+      icon: newActorC.icon,
+      attributes: newActorC.attributes,
+    };
+  
+    // Actualizar el estado de los actores
+    setActors((prevActors) => [...prevActors, newActor]);
+  
+    // Disparar un evento personalizado para notificar la creación de un nuevo actor
+    const event = new CustomEvent('newActor', { detail: newActor });
+    document.dispatchEvent(event);
+  
+    // Guardar los actores actualizados en el almacenamiento local
+    saveActorsToLocalStorage([...actors, newActor]);
+  };
+  
+  
+  useEffect(() => {
+    const storedActors = JSON.parse(localStorage.getItem('actors'));
+    if (storedActors) {
+      setActors(storedActors);
+    }
+  }, []);
+
+
+  const handleColorChange = (color) => {
+    setActorColor((prev) => ({...prev, color}));
+  }
+
+  const handleIconChange = (icon) => {
+    setActorIcon(icon);
+  };
+
+  const onInput = (hue) => {
+    setColor((prev) => ({ ...prev, hue }));
 };
 
+  const handleAddAttribute = () => {
+    setAttributes([...attributes, { key: '', value: '' }]);
+  };
+
+  const handleAttributeChange = (index, key, value) => {
+    const updatedAttributes = [...attributes];
+    updatedAttributes[index] = { key, value };
+    setAttributes(updatedAttributes);
+  };
+
+  const handleRemoveAttribute = (index) => {
+    const updatedAttributes = [...attributes];
+    updatedAttributes.splice(index, 1);
+    setAttributes(updatedAttributes);
+  };
+  
+
+  const handleCancel = () => {
+    resetFields();
+    onClose();
+  };
+
+  function hslToHex(h, s, l) {
+    // Convertir los valores HSL a RGB
+    let r, g, b;
+    h /= 360;
+    s /= 100;
+    l /= 100;
+  
+    if (s === 0) {
+      r = g = b = l; // Escala de grises
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+  
+    // Convertir RGB a hexadecimal
+    const toHex = (x) => {
+      const hex = Math.round(x * 255).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+  
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  const validateAndCreateActor = () => {
+    // Verificar si se han completado los campos obligatorios
+    if (!actorName.trim()) {
+      showToast('Por favor, ingresa un label para el actor.', 'error');
+      return;
+    }
+  
+    if (typeof actorColor.color !== 'number' || isNaN(actorColor.color)) {
+      showToast('Por favor, selecciona un color para el actor.', 'error');
+      return;
+    }
+  
+    // Crear el actor si todos los campos están completos
+    const hexColor = hslToHex(actorColor.color, actorColor.saturation, actorColor.luminosity);
+    const actor = {
+      name: actorName,
+      color: hexColor,
+      icon: actorIcon,
+      attributes: attributes,
+    };
+    // Agregar el actor a la lista de actores
+    handleAddActor(actor);
+    showToast('Actor creado correctamente', 'success');
+    console.log('Crear actor:', actor);
+    onClose();
+    // Restablecer los campos después de cerrar el LiveBox
+    resetFields();
+  };
+  
+
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const resetFields = () => {
+    setActorName('');
+    setActorColor({ hue: 90, saturation: 100, luminosity: 50, alpha: 1 });
+    setActorIcon('FaUsers');
+    setAttributes([]);
+  };
+  
+  
   return (
     <Box
       position="absolute"
@@ -75,64 +198,71 @@ const onInput = hue => {
       zIndex="999"
       minWidth="650px"
     >
-      <Text fontSize="rem" mb="4" textAlign="center">
+      <Text fontSize="1.5rem" mb="4" textAlign="center">
         Crear nuevo actor
       </Text>
       <Divider mb="4" />
-      <Flex alignItems="center" mb="4">
-        {/*<SketchPicker color={actorColor} onChange={handleColorChange} />*/}
-        <ColorPicker {...color} onInput={onInput} />
-        <Button ml="4" onClick={handleIconPickerClick}>
-          <FiEdit3 />
-        </Button>
+      <Flex alignItems="center" mb="4" justifyContent="center">
+      <ColorPicker
+        {...actorColor}
+        onInput={handleColorChange} 
+      />
+        <IconPicker value={actorIcon} onChange={handleIconChange}/>
       </Flex>
       <Divider mb="4" />
-      <HStack mb="4" spacing="4" justifyContent="center">
-        <VStack spacing="4">
-          <Text>ID</Text>
+      <VStack mb="4" spacing="2">
+        <HStack spacing="4">
+          <Text>Label:</Text>
           <Input
             value={actorName}
             onChange={(e) => setActorName(e.target.value)}
-            placeholder="ID del actor"
-          />
-        </VStack>
-        <VStack spacing="4">
-          <Text>Label</Text>
-          <Input
             placeholder="Label del actor" 
+          />
+        </HStack>
+        <Text fontSize="xl" mb="4" textAlign="center">
+          Añadir Atributos
+        </Text>
+        {attributes.map((attribute, index) => (
+          <HStack key={index} spacing="4">
+            <Input
+              placeholder="Atributo"
+              value={attribute.key}
+              onChange={(e) => handleAttributeChange(index, e.target.value, attribute.value)}
             />
-        </VStack>
-      </HStack>
-      <Text fontSize="xl" mb="4" textAlign="center">
-        Atributos adicionales
-      </Text>
-      <VStack mb="4" spacing="2">
-        <HStack spacing="4">
-          <Input placeholder="Atributo 1" />
-          <Input placeholder="Valor 1" />
-        </HStack>
-        <HStack spacing="4">
-          <Input placeholder="Atributo 2" />
-          <Input placeholder="Valor 2" />
-        </HStack>
+            <Input
+              placeholder="Valor"
+              value={attribute.value}
+              onChange={(e) => handleAttributeChange(index, attribute.key, e.target.value)}
+            />
+            <IconButton
+              aria-label="Eliminar atributo"
+              icon={<TiDeleteOutline />}
+              onClick={() => handleRemoveAttribute(index)}
+              fontSize="30px"
+              variant="ghost"
+              color="white"
+            />
+          </HStack>
+        ))}
         <IconButton
-            colorScheme='gray'
-            aria-label='Search database'
-            icon={<IoMdAddCircleOutline />}
-            onClick={handleAddAttribute}
-            fontSize="30px"
-            width="10rem"
-            borderRadius="0.75rem"
+          colorScheme='gray'
+          aria-label='Añadir atributo'
+          icon={<IoMdAddCircleOutline />}
+          onClick={handleAddAttribute}
+          fontSize="30px"
+          width="10rem"
+          borderRadius="0.75rem"
         />
       </VStack>
-      <Flex justify="center" justifyContent="space-evenly"> {/* Centra los botones */}
+      <Flex justify="center" justifyContent="space-evenly">
         <Button mr="2" onClick={handleCancel} colorScheme='red' width= "10.375rem" height= "2.8125rem">
           Cancelar
         </Button>
-        <Button mr="2" onClick={handleCreateActor} colorScheme="green" width= "10.375rem" height= "2.8125rem">
+        <Button mr="2" onClick={validateAndCreateActor} colorScheme="green" width= "10.375rem" height= "2.8125rem">
           Crear
         </Button>
       </Flex>
+      <ToastContainer />
     </Box>
   );
 }

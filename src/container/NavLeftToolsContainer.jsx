@@ -53,6 +53,7 @@ const DeleteIcon = (props) => (
 
 function NavRightTools(){
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
+  const [actors, setActors] = useState([]);
 
   const handleActorsIconClick = () => {
     setLiveBoxActorsOpen(true);
@@ -61,7 +62,7 @@ function NavRightTools(){
   const handleCloseLiveBoxActors = () => {
     setLiveBoxActorsOpen(false);
   };
-  
+ 
     return(
       <VStack spacing={{ base: "10px", md: "20px  ", lg: "2.5vmin" }} justifyContent='center' mt='3.5vh'>  
         <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText="Relacionar"/>
@@ -69,7 +70,7 @@ function NavRightTools(){
         <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText="Nuevo tipo"/>
         <NavLeftButtons icon={EditIcon} iconSize='3.5vw' buttonText="Editar"/>
         <NavLeftButtons icon={DeleteIcon} iconSize='3.5vw' buttonText="Eliminar"/>
-        <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors} />
+        <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors}/>
       </VStack>
     );
 

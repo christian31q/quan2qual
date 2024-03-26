@@ -1,10 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Input, HStack, Text } from "@chakra-ui/react";
 import VideoControls from './VideoControls';
 import GridBodyActors from './actors/GridBodyActors';
 import '../styles/HandleStyles.css';
-import { CgBoy } from 'react-icons/cg';
-import { MdLaptopChromebook } from "react-icons/md";
 
 
 
@@ -15,15 +13,19 @@ function FileUploadSection({ videoRef }) {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
-  const data = [
-    { id: 1, label: 'Santiao', color: '#ff0000', icon: CgBoy },
-    { id: 2, label: 'Ana', color: 'rgb(0, 0, 255)', icon: CgBoy }, 
-    { id: 3, label: 'Computador', color: 'green', icon: MdLaptopChromebook },
-    { id: 4, label: 'Juan', color: '#048c76', icon: CgBoy },
-    { id: 5, label: 'Camila', color: '#76048c', icon: CgBoy }, 
-    { id: 6, label: 'Computador', color: '#e8d905', icon: MdLaptopChromebook },
-  ];
-  
+
+  const [actors, setActors] = useState([]);
+
+  useEffect(() => {
+    // Recuperar datos del almacenamiento local al cargar el componente
+    const storedActors = JSON.parse(localStorage.getItem('actors'));
+    console.log('Actores recuperados del almacenamiento local:', storedActors);
+
+    if (storedActors) {
+      setActors(storedActors);
+    }
+  }, []);
+
 
   return (
     <HStack spacing={4}>
@@ -42,7 +44,7 @@ function FileUploadSection({ videoRef }) {
         alignItems='flex-start'
       >
         {/* Renderiza GridBodyActors fuera del Text */}
-        <GridBodyActors data={data} />
+        <GridBodyActors data={actors} />
         {/*<Text
           fontSize='1.2vw'
           color='white'

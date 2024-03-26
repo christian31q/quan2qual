@@ -50,6 +50,15 @@
   right: 0; /* Aparecen al pasar el cursor por encima */
 }
 
+.reactIconsPickerContainer{
+  position: absolute;
+  font-size: 40px;
+  top: 204px;
+}
+.pickButton{
+  border: none;
+}
+
 
 /*  .box:hover {
     border: 2px solid #007BFF;
