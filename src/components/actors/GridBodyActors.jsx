@@ -25,9 +25,20 @@ const GridBodyActors = () => {
     };
   }, []);
 
-  const updateActors = (updatedActors) => {
-    setActors(updatedActors);
-  };
+  useEffect(() => {
+    const handleDeleteActor = (event) => {
+      const { detail } = event;
+      const updatedActors = actors.filter((_, i) => i !== detail);
+      setActors(updatedActors);
+    };
+  
+    document.addEventListener('deleteActor', handleDeleteActor);
+  
+    return () => {
+      document.removeEventListener('deleteActor', handleDeleteActor);
+    };
+  }, [actors]);
+  
 
   return (
     <Grid

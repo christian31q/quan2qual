@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Grid, GridItem, Box, Flex, Text, IconButton, Table, Thead, Tbody, Tr, Th, Td, Tfoot, TableContainer, TableCaption, Icon, Center } from '@chakra-ui/react';
+import { Grid, GridItem, Box } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
@@ -8,6 +8,12 @@ import VideoControls from '../components/VideoControls';
 import HeaderTableActors from '../components/actors/HeaderTableActors';
 import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
 import TableBodyActors from '../components/actors/TableBodyActors'
+
+import HeaderTableTypes from '../components/types relations/HeaderTableTypes';
+import HeadeLabelsTypes from '../components/types relations/HeadeLabelsTypes';
+
+import HeaderTableRelations from '../components/relations/HeaderTableRelations';
+import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations';
 import '../styles/HandleStyles.css'
 
 
@@ -24,24 +30,6 @@ function SessionPage({ mainContent, pageTitle }) {
   const handleEdit = (id) => {
     console.log("Editar elemento con ID:", id);
   };
-
-  /*const handleDelete = (index) => {
-    // Mostrar cuadro de diálogo de confirmación
-    const isConfirmed = window.confirm('¿Estás seguro de que deseas eliminar este actor?');
-    
-    // Verificar si el usuario confirmó la eliminación
-    if (isConfirmed) {
-      // Crea una copia del array de actores actual
-      const updatedActors = [...actors];
-      // Elimina el actor en la posición del índice especificado
-      updatedActors.splice(index, 1);
-      // Actualiza el estado local y el almacenamiento local con los actores actualizados
-      setActors(updatedActors);
-      localStorage.setItem('actors', JSON.stringify(updatedActors));
-    }
-  };*/
-  
-
 
   //Sección video 
   const videoRef = useRef(null);
@@ -112,6 +100,12 @@ function SessionPage({ mainContent, pageTitle }) {
             shadow='xl'
             style={{ overflowY: 'hidden'}}
         >
+          {/*Tabla de relaciones*/}
+          {/*<HeaderTableRelations/>
+          <HeaderLabelsRelations/>*/}
+          {/*Tabla Tipos de relacion*/}
+          {/*<HeaderTableTypes/>
+          <HeadeLabelsTypes/>*/}
           {/*Tabla Actores*/}
           <HeaderTableActors/>
           <HeaderLabelsActors/>
