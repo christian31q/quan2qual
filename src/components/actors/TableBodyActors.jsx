@@ -7,6 +7,10 @@ import EditActorModal from './EditActorModal'
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import { IconPickerItem } from 'react-icons-picker';
 
+import { createStandaloneToast } from '@chakra-ui/react';
+
+const { ToastContainer, toast } = createStandaloneToast();
+
 const TableBodyActors = ({ data }) => {
   const [actors, setActors] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -28,13 +32,20 @@ const TableBodyActors = ({ data }) => {
     setIsEditModalOpen(false);
   };
 
-  const handleEdit = (editedName) => {
+  const handleEdit = (editedName, editedColor) => {
     const updatedActors = [...actors];
     updatedActors[actorIndexToEdit].name = editedName;
+    updatedActors[actorIndexToEdit].color = editedColor;
     setActors(updatedActors);
     localStorage.setItem('actors', JSON.stringify(updatedActors));
+    showToast('Actor editado correctamente', 'success');
     setIsEditModalOpen(false); // Cerrar el modal de edición
+    const editActorEvent = new CustomEvent('editActor', {
+      detail: { index: actorIndexToEdit, editedName: editedName, editedColor: editedColor }
+    });
+    document.dispatchEvent(editActorEvent);
   };
+  
   
   //Borrar actores
   const [actorIndexToDelete, setActorIndexToDelete] = useState(null);
@@ -46,6 +57,7 @@ const TableBodyActors = ({ data }) => {
     setActors(updatedActors);
     localStorage.setItem('actors', JSON.stringify(updatedActors));
     setIsOpen(false);
+    showToast('Actor eliminado correctamente', 'success');
     const deleteActorEvent = new CustomEvent('deleteActor', {
       detail: actorIndexToDelete // Envía el índice del actor eliminado como detalle
     });
@@ -60,6 +72,17 @@ const TableBodyActors = ({ data }) => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
+  };
+
+  
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
   };
 
   useEffect(() => {

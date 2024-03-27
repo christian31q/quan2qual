@@ -38,7 +38,24 @@ const GridBodyActors = () => {
       document.removeEventListener('deleteActor', handleDeleteActor);
     };
   }, [actors]);
+
+  useEffect(() => {
+    const handleEditActor = (event) => {
+      const { index, editedName, editedColor } = event.detail;
+      setActors(prevActors => {
+        const updatedActors = [...prevActors];
+        updatedActors[index] = { ...updatedActors[index], name: editedName, color: editedColor };
+        return updatedActors;
+      });
+    };
   
+    document.addEventListener('editActor', handleEditActor);
+  
+    return () => {
+      document.removeEventListener('editActor', handleEditActor);
+    };
+  }, [actors]);
+     
 
   return (
     <Grid
