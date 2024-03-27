@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { VStack, Button, Text, Icon} from '@chakra-ui/react';
 import NavLeftButtons from '../components/NavLeftButtons';
 import LiveBoxActors from '../components/LiveBoxActors';
+import LiveBoxTypes from '../components/LiveBoxTypes';
 
 const RelationIcon = (props) => (
   <Icon viewBox='0 0 200 200' {...props}>
@@ -51,29 +52,41 @@ const DeleteIcon = (props) => (
   </Icon>
 )
 
-function NavRightTools(){
+function NavLeftTools({ setActiveLiveBox }) {
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
-  const [actors, setActors] = useState([]);
+  const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
 
   const handleActorsIconClick = () => {
     setLiveBoxActorsOpen(true);
+    setLiveBoxTypesOpen(false); // Cerrar LiveBoxTypes si está abierto
+    setActiveLiveBox('Actors'); 
   };
 
   const handleCloseLiveBoxActors = () => {
     setLiveBoxActorsOpen(false);
   };
- 
-    return(
-      <VStack spacing={{ base: "10px", md: "20px  ", lg: "2.5vmin" }} justifyContent='center' mt='3.5vh'>  
-        <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText="Relacionar"/>
-        <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText="Actores" onClick={handleActorsIconClick}/>
-        <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText="Nuevo tipo"/>
-        <NavLeftButtons icon={EditIcon} iconSize='3.5vw' buttonText="Editar"/>
-        <NavLeftButtons icon={DeleteIcon} iconSize='3.5vw' buttonText="Eliminar"/>
-        <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors}/>
-      </VStack>
-    );
 
+  const handleTypesIconClick = () => {
+    setLiveBoxTypesOpen(true);
+    setLiveBoxActorsOpen(false); // Cerrar LiveBoxActors si está abierto
+    setActiveLiveBox('Types'); // Establecer Types como el LiveBox activo
+  };
+
+  const handleCloseLiveBoxTypes = () => {
+    setLiveBoxTypesOpen(false);
+  };
+
+  return (
+    <VStack spacing={{ base: '10px', md: '20px', lg: '2.5vmin' }} justifyContent='center' mt='3.5vh'>
+      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Relacionar' />
+      <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
+      <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Nuevo tipo' onClick={handleTypesIconClick} />
+      <NavLeftButtons icon={EditIcon} iconSize='3.5vw' buttonText='Editar' />
+      <NavLeftButtons icon={DeleteIcon} iconSize='3.5vw' buttonText='Eliminar' />
+      <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors} />
+      <LiveBoxTypes isOpen={isLiveBoxTypesOpen} onClose={handleCloseLiveBoxTypes} />
+    </VStack>
+  );
 }
 
-export default NavRightTools;
+export default NavLeftTools;

@@ -38,6 +38,8 @@ function SessionPage({ mainContent, pageTitle }) {
     console.log("Archivo seleccionado:", file);
   };
 
+  const [activeLiveBox, setActiveLiveBox] = useState('Actors');
+
   
   return (
     
@@ -76,7 +78,7 @@ function SessionPage({ mainContent, pageTitle }) {
             shadow='xl'
             alignItems='center'
         >
-            <NavLeftTools/>
+            <NavLeftTools setActiveLiveBox={setActiveLiveBox} />
         </GridItem>
         <GridItem 
             pl='2' 
@@ -100,18 +102,40 @@ function SessionPage({ mainContent, pageTitle }) {
             shadow='xl'
             style={{ overflowY: 'hidden'}}
         >
-          {/*Tabla de relaciones*/}
-          {/*<HeaderTableRelations/>
-          <HeaderLabelsRelations/>*/}
-          {/*Tabla Tipos de relacion*/}
-          {/*<HeaderTableTypes/>
-          <HeadeLabelsTypes/>*/}
-          {/*Tabla Actores*/}
-          <HeaderTableActors/>
-          <HeaderLabelsActors/>
-          <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-            <TableBodyActors data={actors} handleEdit={handleEdit} />
-          </div>
+        <div>
+          {/* Table and Labels related to Actors */}
+          {activeLiveBox !== 'Types' && (
+            <>
+              <HeaderTableActors />
+              <HeaderLabelsActors />
+              <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
+                <TableBodyActors data={actors} handleEdit={handleEdit} />
+              </div>
+            </>
+          )}
+
+          {/* Table and Labels related to Types */}
+          {activeLiveBox !== 'Actors' && (
+            <>
+              <HeaderTableTypes />
+              <HeadeLabelsTypes />
+              <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
+                {/*<TableBodyTypes />*/}
+              </div>
+            </>
+          )}
+
+          {/* Table and Labels related to Relations */}
+          {activeLiveBox !== 'Relations' && (
+            <>
+              {/*<HeaderTableRelations />
+              <HeaderLabelsRelations />*/}
+              <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
+                {/*<TableBodyRelations />*/}
+              </div>
+            </>
+          )}
+        </div>
         </GridItem>
         <GridItem 
             pl='2' 
