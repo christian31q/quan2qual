@@ -102,7 +102,7 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
-            <FormLabel>Nombre</FormLabel>
+            <FormLabel fontSize='20px'>Label</FormLabel>
             <Input
               type="text"
               name="name"
@@ -111,8 +111,8 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
               placeholder={actor ? actor.name : ''}
             />
           </FormControl>
-          <FormControl>
-            <FormLabel>Color</FormLabel>
+          <FormControl display='flex' alignItems='center' flexDirection='column' mt='20px'>
+            <FormLabel fontSize='20px'>Color</FormLabel>
             <ColorPicker
               {...actorEditColor}
               onInput={handleColorChange}
