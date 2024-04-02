@@ -9,53 +9,109 @@ import {
   Select,
   Input,
   Textarea,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  InputGroup,
-  Tooltip
+  Icon
 } from '@chakra-ui/react';
-import { TbWeight } from "react-icons/tb";
+import { IoMdAddCircleOutline } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import { createStandaloneToast } from '@chakra-ui/react';
+import SliderWeight from './SliderWeight';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const LiveBoxTypes = ({ isOpen, onClose }) => {
   // Estado para el nombre del tipo de relación
   const [relationTypeName, setRelationTypeName] = useState('');
-  // Estado para el ícono del tipo de relación
-  const [relationTypeIcon, setRelationTypeIcon] = useState("FaUsers");
   // Estado para los atributos del tipo de relación
   const [attributes, setAttributes] = useState([]);
   // Estado para la opción seleccionada en el dropdown
   const [selectedOption, setSelectedOption] = useState('');
+  // Estado para los valores de los inputs
+  const [inputValues, setInputValues] = useState({});
+  // Añadir mas campos en la opción personalizada al crear tipo de relación 
+  const [customFields, setCustomFields] = useState([]);
+  // Estado par almacenar en el local storage
+  const [types, setTypes] = useState([]);
 
-  // Estado para los valores de los inputs de la relación de amistad
-  const [friendshipInputs, setFriendshipInputs] = useState({
-    nivel: '',
-    frecuencia: '',
-    intereses: '',
-    fecha: '',
-    notas: '',
-    peso: 1,
-  });
+  const optionsData = {
+    option1: {
+      label: 'Relación de amistad',
+      fields: [
+        { name: 'nivel_amistad', label: 'Nivel de amistad', type: 'input' },
+        { name: 'frecuencia_amistad', label: 'Frecuencia de interacción', type: 'input' },
+        { name: 'intereses_amistad', label: 'Intereses compartidos', type: 'input' },
+        { name: 'fecha_amistad', label: 'Fecha de inicio de la relación', type: 'date' },
+        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+      ],
+    },
+    option2: {
+      label: 'Relación de trabajo en equipo',
+      fields: [
+        { name: 'proyecto_te', label: 'Proyecto colaborativo', type: 'input' },
+        { name: 'roles_te', label: 'Roles en el proyecto', type: 'input' },
+        { name: 'intereses_te', label: 'Intereses compartidos', type: 'input' },
+        { name: 'contribuciones_te', label: 'Contribuciones individuales', type: 'input' },
+        { name: 'impacto_te', label: 'Impacto en el proyecto', type: 'input' },
+        { name: 'tipo_colaboracion_te', label: 'Tipo de colaboración', type: 'input' },
+        { name: 'fecha_colaboracion_te', label: 'Fecha de colaboración', type: 'date' },
+        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+      ],
+    },
+    option3: {
+      label: 'Relación de comunicación',
+      fields: [
+        { name: 'tipo_comunicacion', label: 'Tipo de comunicación', type: 'input' },
+        { name: 'contenido_comunicacion', label: 'Contenido de la comunicación', type: 'input' },
+        { name: 'frecuencia_comunicacion', label: 'Frecuencia', type: 'input' },
+        { name: 'contribuciones', label: 'Contribuciones individuales', type: 'input' },
+        { name: 'temas_comunicacion', label: 'Temas recurrentes', type: 'input' },
+        { name: 'resulado_comunicacion', label: 'Resuldato de la comunicación', type: 'input' },
+        { name: 'fecha_comunicacion', label: 'Fecha de la comunicación', type: 'date' },
+        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+      ],
+    },
+    option4: {
+      label: 'Relación de impacto',
+      fields: [
+        { name: 'tipo_impacto', label: 'Tipo de impacto', type: 'input' },
+        { name: 'cambios_impacto', label: 'Cambios generados', type: 'input' },
+        { name: 'naturaleza_impacto', label: 'Naturaleza del impacto', type: 'input' },
+        { name: 'actores_impacto', label: 'Actores afectados', type: 'input' },
+        { name: 'fecha_impacto', label: 'Fecha del impacto', type: 'date' },
+        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+      ],
+    },
+    custom: {
+      label: 'Relación personalizada',
+      fields: [
+        { name: 'nombre_personalizada', label: 'Nombre del tipo de relación', type: 'input' },
+        { name: 'descripcion_personalizada', label: 'Descripción', type: 'textarea' },
+        { name: 'peso_relacion', label: 'Peso de la relación personalizada', type: 'slider' },
+      ],
+    }
+  };
 
-  // Función para reiniciar los valores del LiveBox
-  const resetLiveBox = () => {
-    setRelationTypeName('');
-    setRelationTypeIcon("FaUsers");
-    setAttributes([]);
-    setSelectedOption('');
-    setFriendshipInputs({
-      nivel: '',
-      frecuencia: '',
-      intereses: '',
-      fecha: '',
-      notas: '',
-      peso: 1,
-    });
+  useEffect(() => {
+    const storedTypes = localStorage.getItem('types');
+    if (storedTypes) {
+      setTypes(JSON.parse(storedTypes));
+    }
+  }, []);
+
+  //Inputs personalizados en relación personalizada 
+  const handleAddField = () => {
+    setCustomFields([...customFields, { name: '', value: '' }]);
+  };
+  //Remover inputs personalizados en relación personalizada
+  const handleRemoveField = (index) => {
+    const updatedFields = [...customFields];
+    updatedFields.splice(index, 1);
+    setCustomFields(updatedFields);
+  };
+
+  const handleCustomFieldChange = (index, name, value) => {
+    const updatedFields = [...customFields];
+    updatedFields[index] = { name, value };
+    setCustomFields(updatedFields);
   };
 
   // Efecto para reiniciar los valores cuando se abre el LiveBox
@@ -65,24 +121,65 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  const resetLiveBox = () => {
+    setRelationTypeName('');
+    setAttributes([]);
+    setSelectedOption('');
+    setInputValues({});
+    setCustomFields([]);
+  };
+
   const handleCancel = () => {
     // Lógica para cancelar y cerrar el LiveBox
     onClose();
   };
 
   const handleCreateRelationType = () => {
-    // Lógica para validar y crear el nuevo tipo de relación
-    // Se debería implementar la lógica de validación aquí
-    // Una vez validado, se puede crear el tipo de relación
-    // y cerrar el LiveBox
 
+    if (!selectedOption) {
+      // Mostrar toast si no se ha seleccionado una opción
+      showToast('Por favor seleccione una opción', 'warning');
+      return;
+    }
+
+    let requiredFields = [];
+    // Obtener los campos requeridos para la opción seleccionada
+    if (selectedOption && optionsData[selectedOption]) {
+      requiredFields = optionsData[selectedOption].fields.map(field => field.name);
+    }
+  
+    // Verificar si todos los campos requeridos están llenos
+    const areAllFieldsFilled = requiredFields.every(fieldName => inputValues[fieldName] !== '' && inputValues[fieldName] !== undefined);
+    const areAllCustomFieldsFilled = customFields.every(field => field.name !== '' && field.value !== '');
+  
+    if (!areAllFieldsFilled || !areAllCustomFieldsFilled) {
+      // Mostrar toast si algún campo requerido está vacío
+      showToast('Por favor llene todos los campos', 'warning');
+      return;
+    }
+
+    const newType = {
+      label: optionsData[selectedOption].label,
+      selectedOption,
+      inputValues,
+      customFields,
+    };
+
+    const updatedTypes = [...types, newType];
+    setTypes(updatedTypes);
+    localStorage.setItem('types', JSON.stringify(updatedTypes));
+
+    // Disparar un evento personalizado para notificar la creación de un nuevo tipo
+    const event = new CustomEvent('newType', {detail: newType});
+    document.dispatchEvent(event);
+  
     // Ejemplo de función para mostrar un mensaje de éxito
     showToast('Tipo de relación creado correctamente', 'success');
-
+  
     // Cerrar el LiveBox
     onClose();
-  };
-
+  };  
+  
   const showToast = (message, type) => {
     // Función para mostrar un mensaje de toast
     toast({
@@ -96,28 +193,18 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
 
   // Función para manejar el cambio en la opción seleccionada
   const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
+    const selectedOption = e.target.value;
+    setSelectedOption(selectedOption);
   };
 
-  // Funciones para manejar los cambios en los inputs de la relación de amistad
-  const handleFriendshipInputChange = (e) => {
+  // Función para manejar los cambios en los inputs
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFriendshipInputs((prevInputs) => ({
+    setInputValues((prevInputs) => ({
       ...prevInputs,
       [name]: value,
     }));
   };
-
-  // Función para manejar el cambio en el slider del peso de la relación de amistad
-  const handleFriendshipSliderChange = (value) => {
-    setFriendshipInputs((prevInputs) => ({
-      ...prevInputs,
-      peso: value,
-    }));
-  };
-
-  const [sliderValue, setSliderValue] = React.useState(5)
-  const [showTooltip, setShowTooltip] = React.useState(false)
 
   return (
     <Box
@@ -131,7 +218,9 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
       boxShadow="md"
       display={isOpen ? 'block' : 'none'}
       zIndex="999"
+      maxHeight='1000px'
       minWidth="650px"
+      overflowY='auto'
     >
       {/* Título del LiveBox */}
       <Text fontSize="1.5rem" mb="4" textAlign="center">
@@ -147,87 +236,79 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
           onChange={handleOptionChange}
           width="300px"
         >
-          <option style={{color: 'black'}} value="option1">Relación de amistad</option>
-          <option style={{color: 'black'}} value="option2">Relación de trabajo en equipo</option>
-          <option style={{color: 'black'}} value="option3">Relación de comunicación</option>
-          <option style={{color: 'black'}} value="option4">Relación de impacto</option>
-          <option style={{color: 'black'}} value="custom">Relación personalizada</option>
+          {Object.keys(optionsData).map((key) => (
+            <option key={key} style={{color: 'black'}} value={key}>{optionsData[key].label}</option>
+          ))}
         </Select>
       </Flex>
       {/* Inputs específicos para cada opción */}
-      {selectedOption === 'option1' && (
+      {selectedOption && optionsData[selectedOption] && (
         <VStack spacing="4" align="stretch">
-          <InputGroup flexDirection='column' gap='20px'>
-            <Text mb='8px'>Nivel de amistad:</Text>
-            <Input
-              placeholder="Cercano, conocido"
-              name="nivel"
-              value={friendshipInputs.nivel}
-              onChange={handleFriendshipInputChange}
-              mb='10px'
-            />
-            <Text mb='8px'>Frecuencia de interacción:</Text>
-             <Input
-              placeholder="3 veces por semana"
-              name="frecuencia"
-              value={friendshipInputs.frecuencia}
-              onChange={handleFriendshipInputChange}
-              mb='10px'
-            />
-            <Text mb='8px'>Intereses compartidos:</Text>
-             <Input
-              placeholder="Música, deportes"
-              name="intereses"
-              value={friendshipInputs.intereses}
-              onChange={handleFriendshipInputChange}
-              mb='10px'
-            />
-            <Text mb='8px'>Fecha de inicio de la relación:</Text>
-            <Input
-              placeholder="Fecha de inicio de la relación"
-              name="fecha"
-              value={friendshipInputs.fecha}
-              onChange={handleFriendshipInputChange}
-              type='date'
-              mb='10px'
-            />
-            <Text mb='8px'>Notas adicionales:</Text>
-            <Textarea
-              placeholder="Añade una pequeña nota (opcional)"
-              name="notas"
-              value={friendshipInputs.notas}
-              onChange={handleFriendshipInputChange}
-              mb='10px'
-            />
-          </InputGroup>
-          <Flex align="center">
-            <Text mr="2">Peso de la relación: {friendshipInputs.peso}</Text>
-            <Slider
-              id='peso'
-              defaultValue={1}
-              flex="1"
-              onChange={handleFriendshipSliderChange}
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              min={0}
-              max={1}
-              step={0.1}
-            >
-              <SliderTrack bg="gray.100">
-                <SliderFilledTrack bg="blue.500" />
-              </SliderTrack>
-                <Tooltip
-                  hasArrow
-                  bg='teal.500'
-                  color='white'
-                  placement='top'
-                  isOpen={showTooltip}
-                  label={`${friendshipInputs.peso}`}
-                >
-                  <SliderThumb />
-                </Tooltip>         
-            </Slider>
-          </Flex>
+          {optionsData[selectedOption].fields.map((field) => (
+            <Box key={field.name}>
+              <Text mb="8px">{field.label}:</Text>
+              {field.type === 'input' && (
+                <Input
+                  placeholder={field.label}
+                  name={field.name}
+                  value={inputValues[field.name] || ''}
+                  onChange={handleInputChange}
+                  mb="10px"
+                />
+              )}
+              {field.type === 'textarea' && (
+                <Textarea
+                  placeholder={field.label}
+                  name={field.name}
+                  value={inputValues[field.name] || ''}
+                  onChange={handleInputChange}
+                  mb="10px"
+                />
+              )}
+              {field.type === 'date' && (
+                <Input
+                  placeholder={field.label}
+                  name={field.name}
+                  value={inputValues[field.name] || ''}
+                  onChange={handleInputChange}
+                  type="date"
+                  mb="10px"
+                />
+              )}
+              {field.type === 'slider' && (
+                <Flex align="center">
+                  <SliderWeight
+                    value={inputValues[field.name] || 1}
+                    onChange={(value) => setInputValues((prevInputs) => ({
+                      ...prevInputs,
+                      [field.name]: value,
+                    }))}
+                  />
+                </Flex>
+              )}
+            </Box>
+          ))}
+          {selectedOption === 'custom' && (
+            <VStack spacing="4" align="center">
+              {customFields.map((field, index) => (
+                <Box key={index} alignItems='center' display='flex' flexDirection='column' width='100%' gap='24px'>
+                  <Text mb="8px">Campo adicional {index + 1}:</Text>
+                  <Input
+                    placeholder={`Nombre del campo ${index + 1}`}
+                    value={field.name}
+                    onChange={(e) => handleCustomFieldChange(index, e.target.value, field.value)}
+                  />
+                  <Input
+                    placeholder={`Valor del campo ${index + 1}`}
+                    value={field.value}
+                    onChange={(e) => handleCustomFieldChange(index, field.name, e.target.value)}
+                  />
+                  <Button borderRadius='0.75rem' colorScheme='red' fontSize='30px' width='10rem' onClick={() => handleRemoveField(index)}><Icon as={TiDeleteOutline}/></Button>
+                </Box>
+              ))}
+              <Button borderRadius='0.75rem' fontSize='30px' width='10rem' onClick={handleAddField}><Icon as={IoMdAddCircleOutline}/></Button>
+            </VStack>
+          )}
         </VStack>
       )}
       {/* Botones de acción */}
@@ -246,4 +327,3 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
 };
 
 export default LiveBoxTypes;
-

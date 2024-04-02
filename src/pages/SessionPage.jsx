@@ -5,12 +5,14 @@ import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
 import VideoControls from '../components/VideoControls';
+
 import HeaderTableActors from '../components/actors/HeaderTableActors';
 import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
 import TableBodyActors from '../components/actors/TableBodyActors'
 
 import HeaderTableTypes from '../components/types relations/HeaderTableTypes';
 import HeadeLabelsTypes from '../components/types relations/HeadeLabelsTypes';
+import TableBodyTypes from '../components/relations/TableBodyTypes';
 
 import HeaderTableRelations from '../components/relations/HeaderTableRelations';
 import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations';
@@ -19,11 +21,17 @@ import '../styles/HandleStyles.css'
 
 function SessionPage({ mainContent, pageTitle }) {
   const [actors, setActors] = useState([]);
+  const [types, setTypes] = useState([]);
 
   useEffect(() => {
     const actorsData = localStorage.getItem('actors');
+    const typesData = localStorage.getItem('types');
+
     if (actorsData) {
       setActors(JSON.parse(actorsData));
+    }
+    if(typesData){
+      setTypes(JSON.parse(typesData));
     }
   }, []);
 
@@ -109,7 +117,7 @@ function SessionPage({ mainContent, pageTitle }) {
               <HeaderTableActors />
               <HeaderLabelsActors />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-                <TableBodyActors data={actors} handleEdit={handleEdit} />
+                <TableBodyActors data={actors} />
               </div>
             </>
           )}
@@ -120,7 +128,7 @@ function SessionPage({ mainContent, pageTitle }) {
               <HeaderTableTypes />
               <HeadeLabelsTypes />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-                {/*<TableBodyTypes />*/}
+                {<TableBodyTypes data={types}/>}
               </div>
             </>
           )}

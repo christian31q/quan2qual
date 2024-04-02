@@ -29,6 +29,12 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
   useEffect(() => {
     if (!isOpen) {
       setEditedActor({ name: ''});
+      setActorColor({
+        hue: 90,
+        saturation: 70,
+        luminosity: 50,
+        alpha: 1,
+      });
     }
   }, [isOpen]);
 
