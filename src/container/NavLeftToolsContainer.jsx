@@ -77,12 +77,10 @@ function NavLeftTools({ setActiveLiveBox }) {
   };
 
   return (
-    <VStack spacing={{ base: '10px', md: '20px', lg: '2.5vmin' }} justifyContent='center' mt='3.5vh'>
-      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Relacionar' />
+    <VStack spacing={{ base: '10px', md: '20px', lg: '2.5vmin' }} justifyContent='center'>
+      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' />
       <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
-      <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Nuevo tipo' onClick={handleTypesIconClick} />
-      <NavLeftButtons icon={EditIcon} iconSize='3.5vw' buttonText='Editar' />
-      <NavLeftButtons icon={DeleteIcon} iconSize='3.5vw' buttonText='Eliminar' />
+      <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Relaciones' onClick={handleTypesIconClick} />
       <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors} />
       <LiveBoxTypes isOpen={isLiveBoxTypesOpen} onClose={handleCloseLiveBoxTypes} />
     </VStack>

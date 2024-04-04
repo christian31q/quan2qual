@@ -35,10 +35,6 @@ function SessionPage({ mainContent, pageTitle }) {
     }
   }, []);
 
-  const handleEdit = (id) => {
-    console.log("Editar elemento con ID:", id);
-  };
-
   //Sección video 
   const videoRef = useRef(null);
   const handleFileSelect = (file) => {
@@ -78,7 +74,8 @@ function SessionPage({ mainContent, pageTitle }) {
           <NavHeader pageTitleText={pageTitle}/>
         </GridItem>
         <GridItem 
-            color='white' 
+            color='white'
+            display='flex' 
             bg='#041D39' 
             area={'nav'} 
             rowStart={1} 
