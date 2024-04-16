@@ -81,8 +81,6 @@ function NavLeftTools({ setActiveLiveBox }) {
       <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' />
       <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
       <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Relaciones' onClick={handleTypesIconClick} />
-      <LiveBoxActors isOpen={isLiveBoxActorsOpen} onClose={handleCloseLiveBoxActors} />
-      <LiveBoxTypes isOpen={isLiveBoxTypesOpen} onClose={handleCloseLiveBoxTypes} />
     </VStack>
   );
 }

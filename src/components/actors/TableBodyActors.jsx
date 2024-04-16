@@ -32,19 +32,20 @@ const TableBodyActors = ({ data }) => {
     setIsEditModalOpen(false);
   };
 
-  const handleEdit = (editedName, editedColor) => {
+  const handleEdit = (editedName, editedColor, editedAttributes) => {
     const updatedActors = [...actors];
     updatedActors[actorIndexToEdit].name = editedName;
     updatedActors[actorIndexToEdit].color = editedColor;
+    updatedActors[actorIndexToEdit].attributes = editedAttributes; 
     setActors(updatedActors);
     localStorage.setItem('actors', JSON.stringify(updatedActors));
     showToast('Actor editado correctamente', 'success');
-    setIsEditModalOpen(false); // Cerrar el modal de edición
+    setIsEditModalOpen(false);
     const editActorEvent = new CustomEvent('editActor', {
       detail: { index: actorIndexToEdit, editedName: editedName, editedColor: editedColor }
     });
     document.dispatchEvent(editActorEvent);
-  };
+  };  
   
   
   //Borrar actores

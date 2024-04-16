@@ -17,7 +17,8 @@ import ColorPicker from '@radial-color-picker/react-color-picker';
 import '@radial-color-picker/react-color-picker/dist/style.css';
 
 const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
-  const [editedActor, setEditedActor] = useState(actor || { name: ''});
+  const [editedAttributes, setEditedAttributes] = useState([]);
+  const [editedActor, setEditedActor] = useState({ name: ''});
   const [actorEditColor, setActorColor] = useState({
     hue: 90,
     saturation: 70,
@@ -25,9 +26,10 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
     alpha: 1,
   });
 
-  // Limpiar el estado del actor editado cuando el modal se cierra
+  // Inicializar los estados cuando se abre el modal o cambia el actor seleccionado
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen && actor) {
+      setEditedAttributes([...actor.attributes]);
       setEditedActor({ name: ''});
       setActorColor({
         hue: 90,
@@ -36,7 +38,7 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
         alpha: 1,
       });
     }
-  }, [isOpen]);
+  }, [isOpen, actor]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,12 +95,20 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
     const hexColor = actorEditColor.color !== undefined ? hslToHex(actorEditColor.color, actorEditColor.saturation, actorEditColor.luminosity) : actor.color;
   
     // Llamar a handleEdit con el nombre y el color del actor editado
-    onEdit(editedName, hexColor);
+    onEdit(editedName, hexColor, editedAttributes);
   
     // Cerrar el modal después de guardar los cambios
     onClose();
   };
-  
+
+  const handleAttributeChange = (index, e) => {
+    const { value } = e.target;
+    setEditedAttributes(prevState => {
+      const newAttributes = [...prevState];
+      newAttributes[index].value = value;
+      return newAttributes;
+    });
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
@@ -125,6 +135,17 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
             />
           </FormControl>
           {/* Aquí puedes agregar más campos para editar otros detalles del actor */}
+          {editedAttributes.map((attribute, index) => (
+            <FormControl key={index}>
+              <FormLabel fontSize="20px">{attribute.key}</FormLabel>
+              <Input
+                type="text"
+                value={attribute.value}
+                onChange={(e) => handleAttributeChange(index, e)}
+                placeholder={attribute.value}
+              />
+            </FormControl>
+          ))}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme='red' mr={3} onClick={onClose}>

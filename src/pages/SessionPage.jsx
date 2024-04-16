@@ -11,7 +11,7 @@ import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
 import TableBodyActors from '../components/actors/TableBodyActors'
 
 import HeaderTableTypes from '../components/types relations/HeaderTableTypes';
-import HeadeLabelsTypes from '../components/types relations/HeadeLabelsTypes';
+import HeaderLabelsTypes from '../components/types relations/HeadeLabelsTypes';
 import TableBodyTypes from '../components/relations/TableBodyTypes';
 
 import HeaderTableRelations from '../components/relations/HeaderTableRelations';
@@ -123,7 +123,7 @@ function SessionPage({ mainContent, pageTitle }) {
           {activeLiveBox !== 'Actors' && (
             <>
               <HeaderTableTypes />
-              <HeadeLabelsTypes />
+              <HeaderLabelsTypes />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
                 {<TableBodyTypes data={types}/>}
               </div>
