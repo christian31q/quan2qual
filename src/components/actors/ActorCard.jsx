@@ -1,31 +1,35 @@
 import React from 'react';
-import { GridItem, Icon } from '@chakra-ui/react';
-import { FiEdit, FiTrash } from 'react-icons/fi';
-
-import { IconPickerItem } from 'react-icons-picker'
-import { icon } from '@fortawesome/fontawesome-svg-core';
+import { GridItem, Icon, Box } from '@chakra-ui/react';
+import { IconPickerItem } from 'react-icons-picker';
 
 const ActorCard = ({ actor, handleEdit, handleDelete }) => {
   const { name, color, icon: iconName } = actor;
 
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('actorName', name);
+  };
+
   return (
     <GridItem 
+      draggable // Permite que el elemento sea arrastrable
+      onDragStart={handleDragStart} // Manejador para el evento de inicio del arrastre
       display="flex" 
       cursor="pointer"
       flexDirection="column" 
       justifyContent="space-evenly" 
       alignItems="center" 
-      bg="#272F34" 
+      bg="transparent" 
       borderRadius="lg" 
       textAlign="center"
       position="relative"
       transition="transform 0.3s ease"  
       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} 
-      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}      
+      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+      padding="16px"
     >
       {/* Icono */}
       <Icon
-        bg={color} 
+        backgroundColor={color} 
         borderRadius="100%" 
         position="relative"
         fontSize="60px"
@@ -37,11 +41,9 @@ const ActorCard = ({ actor, handleEdit, handleDelete }) => {
         />
       </Icon>
       {/* Label */}
-      <div style={{ position: 'relative', zIndex: '0' }}>{name}</div>
+      <Box style={{ position: 'relative', zIndex: '0' }}>{name}</Box>
     </GridItem>
   );
 };
 
 export default ActorCard;
-
-

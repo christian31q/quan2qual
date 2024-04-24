@@ -55,30 +55,33 @@ const DeleteIcon = (props) => (
 function NavLeftTools({ setActiveLiveBox }) {
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
   const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
+  const [isLiveBoxAttach, setLiveBoxAttach] = useState(false);
 
   const handleActorsIconClick = () => {
+    setLiveBoxAttach(false); // Cerrar LiveBoxAttach si está abierto
     setLiveBoxActorsOpen(true);
     setLiveBoxTypesOpen(false); // Cerrar LiveBoxTypes si está abierto
     setActiveLiveBox('Actors'); 
   };
 
-  const handleCloseLiveBoxActors = () => {
-    setLiveBoxActorsOpen(false);
-  };
-
   const handleTypesIconClick = () => {
-    setLiveBoxTypesOpen(true);
+    setLiveBoxAttach(false); // Cerrar LiveBoxAttach si está abierto
     setLiveBoxActorsOpen(false); // Cerrar LiveBoxActors si está abierto
+    setLiveBoxTypesOpen(true);
     setActiveLiveBox('Types'); // Establecer Types como el LiveBox activo
   };
 
-  const handleCloseLiveBoxTypes = () => {
-    setLiveBoxTypesOpen(false);
+  const handleAttachIconClick = () => {
+    setLiveBoxAttach(true);
+    setLiveBoxActorsOpen(false); // Cerrar LiveBoxActors si está abierto
+    setLiveBoxTypesOpen(false); // Cerrar Types si está abierto
+    setActiveLiveBox('Attach'); // Establecer Relations como el LiveBox activo
   };
+  
 
   return (
     <VStack spacing={{ base: '10px', md: '20px', lg: '2.5vmin' }} justifyContent='center'>
-      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' />
+      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' onClick={handleAttachIconClick}/>
       <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
       <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Relaciones' onClick={handleTypesIconClick} />
     </VStack>

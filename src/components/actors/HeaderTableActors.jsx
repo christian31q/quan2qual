@@ -35,7 +35,7 @@ const HeaderTableActors = () => {
           <IconButton
             colorScheme='green'
             aria-label='create actor'
-            fontSize='30px'
+            fontSize='35px'
             icon={<IoMdAddCircleOutline />}
             onClick={handleActorsIconClick}
           />

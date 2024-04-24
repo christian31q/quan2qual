@@ -12,7 +12,7 @@ import TableBodyActors from '../components/actors/TableBodyActors'
 
 import HeaderTableTypes from '../components/types relations/HeaderTableTypes';
 import HeaderLabelsTypes from '../components/types relations/HeadeLabelsTypes';
-import TableBodyTypes from '../components/relations/TableBodyTypes';
+import TableBodyTypes from '../components/types relations/TableBodyTypes';
 
 import HeaderTableRelations from '../components/relations/HeaderTableRelations';
 import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations';
@@ -109,7 +109,7 @@ function SessionPage({ mainContent, pageTitle }) {
         >
         <div>
           {/* Table and Labels related to Actors */}
-          {activeLiveBox !== 'Types' && (
+          {activeLiveBox == 'Actors' && (
             <>
               <HeaderTableActors />
               <HeaderLabelsActors />
@@ -120,7 +120,7 @@ function SessionPage({ mainContent, pageTitle }) {
           )}
 
           {/* Table and Labels related to Types */}
-          {activeLiveBox !== 'Actors' && (
+          {activeLiveBox == 'Types' && (
             <>
               <HeaderTableTypes />
               <HeaderLabelsTypes />
@@ -131,10 +131,10 @@ function SessionPage({ mainContent, pageTitle }) {
           )}
 
           {/* Table and Labels related to Relations */}
-          {activeLiveBox !== 'Relations' && (
+          {activeLiveBox == 'Attach' && (
             <>
-              {/*<HeaderTableRelations />
-              <HeaderLabelsRelations />*/}
+              <HeaderTableRelations />
+              <HeaderLabelsRelations />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
                 {/*<TableBodyRelations />*/}
               </div>
