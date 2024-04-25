@@ -13,10 +13,8 @@ import {
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import ColorPicker from '@radial-color-picker/react-color-picker';
-
 import '@radial-color-picker/react-color-picker/dist/style.css';
 import IconPicker from 'react-icons-picker';
-
 import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
@@ -32,53 +30,49 @@ function LiveBoxActors({ isOpen, onClose }) {
   const [actorIcon, setActorIcon] = useState("FaUsers");
   const [attributes, setAttributes] = useState([]);
   
-  //Save actors 
   const [actors, setActors] = useState([]);
+  const [nextActorId, setNextActorId] = useState(1); // Para mantener el ID del siguiente actor a crear
   
   const saveActorsToLocalStorage = (actors) => {
     localStorage.setItem('actors', JSON.stringify(actors));
   };
 
-  //Función para agregar el actor, más adelante usar función para añadir a la BD
   const handleAddActor = (newActorC) => {
     const newActor = {
+      id: nextActorId, // Asignar ID al nuevo actor
       name: newActorC.name,
       color: newActorC.color,
       icon: newActorC.icon,
       attributes: newActorC.attributes,
     };
-  
-    // Actualizar el estado de los actores
+
     setActors((prevActors) => [...prevActors, newActor]);
-  
-    // Disparar un evento personalizado para notificar la creación de un nuevo actor
+    saveActorsToLocalStorage([...actors, newActor]);
+    
+    setNextActorId(nextActorId + 1); // Incrementar el siguiente ID
+
     const event = new CustomEvent('newActor', { detail: newActor });
     document.dispatchEvent(event);
-  
-    // Guardar los actores actualizados en el almacenamiento local
-    saveActorsToLocalStorage([...actors, newActor]);
   };
-  
-  
+
   useEffect(() => {
     const storedActors = JSON.parse(localStorage.getItem('actors'));
     if (storedActors) {
       setActors(storedActors);
+      
+      // Obtener el mayor ID existente y ajustar `nextActorId`
+      const maxId = Math.max(...storedActors.map((actor) => actor.id), 0);
+      setNextActorId(maxId + 1); // Establecer el siguiente ID basado en el mayor ID
     }
   }, []);
 
-
   const handleColorChange = (color) => {
     setActorColor((prev) => ({...prev, color}));
-  }
+  };
 
   const handleIconChange = (icon) => {
     setActorIcon(icon);
   };
-
-  const onInput = (hue) => {
-    setColor((prev) => ({ ...prev, hue }));
-};
 
   const handleAddAttribute = () => {
     setAttributes([...attributes, { key: '', value: '' }]);
@@ -95,7 +89,6 @@ function LiveBoxActors({ isOpen, onClose }) {
     updatedAttributes.splice(index, 1);
     setAttributes(updatedAttributes);
   };
-  
 
   const handleCancel = () => {
     resetFields();
@@ -103,7 +96,6 @@ function LiveBoxActors({ isOpen, onClose }) {
   };
 
   function hslToHex(h, s, l) {
-    // Convertir los valores HSL a RGB
     let r, g, b;
     h /= 360;
     s /= 100;
@@ -127,7 +119,6 @@ function LiveBoxActors({ isOpen, onClose }) {
       b = hue2rgb(p, q, h - 1 / 3);
     }
   
-    // Convertir RGB a hexadecimal
     const toHex = (x) => {
       const hex = Math.round(x * 255).toString(16);
       return hex.length === 1 ? '0' + hex : hex;
@@ -137,40 +128,36 @@ function LiveBoxActors({ isOpen, onClose }) {
   }
 
   const validateAndCreateActor = () => {
-    // Verificar si se han completado los campos obligatorios
     if (!actorName.trim()) {
       showToast('Por favor, ingresa un label para el actor.', 'error');
       return;
     }
-  
+
     if (typeof actorColor.color !== 'number' || isNaN(actorColor.color)) {
       showToast('Por favor, selecciona un color para el actor.', 'error');
       return;
     }
-  
-    // Crear el actor si todos los campos están completos
+
     const hexColor = hslToHex(actorColor.color, actorColor.saturation, actorColor.luminosity);
     const actor = {
+      id: nextActorId,
       name: actorName,
       color: hexColor,
       icon: actorIcon,
-      attributes: attributes,
+      attributes,
     };
-    // Agregar el actor a la lista de actores
+
     handleAddActor(actor);
     showToast('Actor creado correctamente', 'success');
-    console.log('Crear actor:', actor);
     onClose();
-    // Restablecer los campos después de cerrar el LiveBox
     resetFields();
   };
-  
 
   const showToast = (message, type) => {
     toast({
-      title: `${type}`,
+      title: type,
       description: message,
-      status: `${type}`,
+      status: type,
       duration: 3000,
       isClosable: true,
     });
@@ -178,12 +165,16 @@ function LiveBoxActors({ isOpen, onClose }) {
 
   const resetFields = () => {
     setActorName('');
-    setActorColor({ hue: 90, saturation: 100, luminosity: 50, alpha: 1 });
+    setActorColor({
+      hue: 90,
+      saturation: 100,
+      luminosity: 50,
+      alpha: 1,
+    });
     setActorIcon('FaUsers');
     setAttributes([]);
   };
-  
-  
+
   return (
     <Box
       position="absolute"
@@ -203,11 +194,11 @@ function LiveBoxActors({ isOpen, onClose }) {
       </Text>
       <Divider mb="4" />
       <Flex alignItems="center" mb="4" justifyContent="center">
-      <ColorPicker
-        {...actorColor}
-        onInput={handleColorChange} 
-      />
-        <IconPicker value={actorIcon} onChange={handleIconChange}/>
+        <ColorPicker
+          {...actorColor}
+          onInput={handleColorChange}
+        />
+        <IconPicker value={actorIcon} onChange={handleIconChange} />
       </Flex>
       <Divider mb="4" />
       <VStack mb="4" spacing="2">
@@ -216,7 +207,7 @@ function LiveBoxActors({ isOpen, onClose }) {
           <Input
             value={actorName}
             onChange={(e) => setActorName(e.target.value)}
-            placeholder="Label del actor" 
+            placeholder="Label del actor"
           />
         </HStack>
         <Text fontSize="xl" mb="4" textAlign="center">
@@ -254,11 +245,21 @@ function LiveBoxActors({ isOpen, onClose }) {
           borderRadius="0.75rem"
         />
       </VStack>
-      <Flex justify="center" justifyContent="space-evenly">
-        <Button mr="2" onClick={handleCancel} colorScheme='red' width= "10.375rem" height= "2.8125rem">
+      <Flex justifyContent="space-evenly">
+        <Button
+          onClick={handleCancel}
+          colorScheme='red'
+          width= "10.375rem"
+          height= "2.8125rem"
+        >
           Cancelar
         </Button>
-        <Button mr="2" onClick={validateAndCreateActor} colorScheme="green" width= "10.375rem" height= "2.8125rem">
+        <Button
+          onClick={validateAndCreateActor}
+          colorScheme="green"
+          width= "10.375rem"
+          height= "2.8125rem"
+        >
           Crear
         </Button>
       </Flex>

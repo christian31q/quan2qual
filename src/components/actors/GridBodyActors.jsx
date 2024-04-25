@@ -5,47 +5,48 @@ import ActorCard from './ActorCard';
 const GridBodyActors = () => {
   const [actors, setActors] = useState([]);
 
-  useEffect(() => {
+  // Función para cargar actores desde el almacenamiento local
+  const loadActors = () => {
     const storedActors = JSON.parse(localStorage.getItem('actors'));
     if (storedActors) {
       setActors(storedActors);
     }
+  };
+
+  useEffect(() => {
+    // Cargar actores al montar el componente
+    loadActors();
   }, []);
 
+  // Manejar el evento de agregar un nuevo actor
   useEffect(() => {
     const handleNewActor = (event) => {
       const { detail } = event;
-      setActors((prevActors) => [...prevActors, detail]);
+      setActors((prevActors) => {
+        const updatedActors = [...prevActors, detail];
+        localStorage.setItem('actors', JSON.stringify(updatedActors)); // Guardar en el almacenamiento local
+        return updatedActors;
+      });
     };
-  
+
     document.addEventListener('newActor', handleNewActor);
-  
+
     return () => {
       document.removeEventListener('newActor', handleNewActor);
     };
   }, []);
-
-  useEffect(() => {
-    const handleDeleteActor = (event) => {
-      const { detail } = event;
-      const updatedActors = actors.filter((_, i) => i !== detail);
-      setActors(updatedActors);
-    };
-  
-    document.addEventListener('deleteActor', handleDeleteActor);
-  
-    return () => {
-      document.removeEventListener('deleteActor', handleDeleteActor);
-    };
-  }, [actors]);
-
+ 
+  // Manejar el evento de editar un actor
   useEffect(() => {
     const handleEditActor = (event) => {
-      const { index, editedName, editedColor } = event.detail;
-      setActors(prevActors => {
-        const updatedActors = [...prevActors];
-        updatedActors[index] = { ...updatedActors[index], name: editedName, color: editedColor };
-        return updatedActors;
+      const { id, editedName, editedColor } = event.detail;
+      setActors((prevActors) => {
+        return prevActors.map((actor) => {
+          if (actor.id === id) {
+            return { ...actor, name: editedName, color: editedColor };
+          }
+          return actor;
+        });
       });
     };
   
@@ -54,8 +55,24 @@ const GridBodyActors = () => {
     return () => {
       document.removeEventListener('editActor', handleEditActor);
     };
-  }, [actors]);
-     
+  }, []);
+
+    // Manejar el evento de eliminar un actor
+    useEffect(() => {
+      const handleDeleteActor = (event) => {
+        const { detail } = event;
+        setActors((prevActors) => {
+          return prevActors.filter((actor) => actor.id !== detail);
+        });
+      };
+    
+      document.addEventListener('deleteActor', handleDeleteActor);
+    
+      return () => {
+        document.removeEventListener('deleteActor', handleDeleteActor);
+      };
+    }, []); 
+  
 
   return (
     <Grid
@@ -67,7 +84,7 @@ const GridBodyActors = () => {
       autoRows="minmax(100px, auto)"
     >
       {actors.map((actor) => (
-        <ActorCard key={actor.name} actor={actor} />
+        <ActorCard key={actor.id} actor={actor} />
       ))}
     </Grid>
   );

@@ -3,7 +3,7 @@ import { Table, Tbody, Tr, Td, Icon } from '@chakra-ui/react';
 import { FiMoreVertical } from 'react-icons/fi';
 import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
-import EditActorModal from './EditActorModal'
+import EditActorModal from './EditActorModal';
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import { IconPickerItem } from 'react-icons-picker';
 
@@ -17,57 +17,75 @@ const TableBodyActors = ({ data }) => {
 
   //Editar actores
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [actorIndexToEdit, setActorIndexToEdit] = useState(null);
+  const [actorIdToEdit, setActorIdToEdit] = useState(null);
   const [actorToEdit, setActorToEdit] = useState(null);
-  
-  const handleOpenEditModal = (index, actor) => {
-    setActorIndexToEdit(index);
-    // Pasar todo el objeto actor
-    setActorToEdit(actor);
+
+  const handleOpenEditModal = (actor) => {
+    setActorIdToEdit(actor.id); // Usa el ID del actor
+    setActorToEdit(actor); // Proporciona el actor completo
     setIsEditModalOpen(true);
   };
-  
-  
+
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
   };
 
+  // Editar actores
   const handleEdit = (editedName, editedColor, editedAttributes) => {
-    const updatedActors = [...actors];
-    updatedActors[actorIndexToEdit].name = editedName;
-    updatedActors[actorIndexToEdit].color = editedColor;
-    updatedActors[actorIndexToEdit].attributes = editedAttributes; 
+    // Emitir evento para indicar que un actor ha sido editado
+    const event = new CustomEvent('editActor', {
+      detail: {
+        id: actorIdToEdit,
+        editedName,
+        editedColor,
+        editedAttributes,
+      },
+    });
+    document.dispatchEvent(event); // Emitir el evento
+  
+    // Actualizar la lista de actores y el almacenamiento local
+    const updatedActors = actors.map((actor) => {
+      if (actor.id === actorIdToEdit) {
+        return {
+          ...actor,
+          name: editedName,
+          color: editedColor,
+          attributes: editedAttributes,
+        };
+      }
+      return actor;
+    });
+  
     setActors(updatedActors);
     localStorage.setItem('actors', JSON.stringify(updatedActors));
     showToast('Actor editado correctamente', 'success');
-    setIsEditModalOpen(false);
-    const editActorEvent = new CustomEvent('editActor', {
-      detail: { index: actorIndexToEdit, editedName: editedName, editedColor: editedColor }
-    });
-    document.dispatchEvent(editActorEvent);
-  };  
+    setIsEditModalOpen(false); // Cerrar modal
+  };
   
-  
+
   //Borrar actores
-  const [actorIndexToDelete, setActorIndexToDelete] = useState(null);
+  const [actorIdToDelete, setActorIdToDelete] = useState(null);
   const [actorNameToDelete, setActorNameToDelete] = useState(null);
 
   const handleConfirmDelete = () => {
-    const updatedActors = [...actors];
-    updatedActors.splice(actorIndexToDelete, 1);
+    // Emitir evento para indicar que un actor ha sido eliminado
+    const event = new CustomEvent('deleteActor', {
+      detail: actorIdToDelete,
+    });
+    document.dispatchEvent(event); // Emitir el evento
+  
+    // Actualizar la lista de actores y el almacenamiento local
+    const updatedActors = actors.filter((actor) => actor.id !== actorIdToDelete);
     setActors(updatedActors);
     localStorage.setItem('actors', JSON.stringify(updatedActors));
-    setIsOpen(false);
+    setIsOpen(false); // Cerrar modal
     showToast('Actor eliminado correctamente', 'success');
-    const deleteActorEvent = new CustomEvent('deleteActor', {
-      detail: actorIndexToDelete // Envía el índice del actor eliminado como detalle
-    });
-    document.dispatchEvent(deleteActorEvent);
   };
+  
 
-  const handleOpenModal = (index, name) => {
-    setActorIndexToDelete(index);
-    setActorNameToDelete(name);
+  const handleOpenModal = (actor) => {
+    setActorIdToDelete(actor.id); // Usa el ID del actor para eliminar
+    setActorNameToDelete(actor.name); // Guarda el nombre para mostrarlo
     setIsOpen(true);
   };
 
@@ -75,7 +93,6 @@ const TableBodyActors = ({ data }) => {
     setIsOpen(false);
   };
 
-  
   const showToast = (message, type) => {
     toast({
       title: `${type}`,
@@ -98,9 +115,9 @@ const TableBodyActors = ({ data }) => {
       const { detail } = event;
       setActors((prevActors) => [...prevActors, detail]);
     };
-  
+
     document.addEventListener('newActor', handleNewActor);
-  
+
     return () => {
       document.removeEventListener('newActor', handleNewActor);
     };
@@ -110,26 +127,26 @@ const TableBodyActors = ({ data }) => {
     <>
       <Table size="sm" color="white">
         <Tbody>
-          {actors.map((actor, index) => (
-            <Tr key={actor.name} bg="#272F34">
+          {actors.map((actor) => (
+            <Tr key={actor.id} bg="#272F34">
               <Td width='30.1%' textAlign="center" borderRight="1px">
-                <Icon 
-                  bg={actor.color} 
-                  borderRadius="100%" 
-                  fontSize="2.5vw" 
+                <Icon
+                  bg={actor.color}
+                  borderRadius="100%"
+                  fontSize="2.5vw"
                 >
-                  <IconPickerItem 
+                  <IconPickerItem
                     value={actor.icon}
                     size={24}
                   />
                 </Icon>
               </Td>
               <Td width='29%' textAlign="center" borderRight="1px">{actor.name}</Td>
-              <Td width='8.9%' textAlign="center" borderRight="1px">{index + 1}</Td>
+              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.id}</Td>
               <Td width='0%' className="hover-element" textAlign="center">
                 <Icon as={FiMoreVertical} fontSize="1.5vw" />
-                <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(index, actor)} />
-                <TiDeleteOutline className="delete-icon" onClick={() => handleOpenModal(index, actor.name)} />
+                <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(actor)} />
+                <TiDeleteOutline className="delete-icon" onClick={() => handleOpenModal(actor)} />
               </Td>
             </Tr>
           ))}
@@ -147,6 +164,7 @@ const TableBodyActors = ({ data }) => {
         onConfirm={handleConfirmDelete}
         type={`actor ${actorNameToDelete}`}
       />
+      <ToastContainer />
     </>
   );
 };
