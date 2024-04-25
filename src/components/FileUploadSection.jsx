@@ -59,61 +59,73 @@ function FileUploadSection({ videoRef }) {
 
   const handleDrop = (e) => {
     e.preventDefault();
-
+  
     const containerRect = videoContainerRef.current.getBoundingClientRect();
-
-    const dropX = e.clientX - containerRect.left - dragOffset.x; // Calcular coordenadas relativas
+  
+    //Calcular coordenadas relativas
+    const dropX = e.clientX - containerRect.left - dragOffset.x;
     const dropY = e.clientY - containerRect.top - dragOffset.y;
-
-    const actorName = e.dataTransfer.getData('actorName');
-    const actor = actors.find((a) => a.name === actorName);
-
+  
+    const actorId = e.dataTransfer.getData('actorId'); // Verificar si se pasa una ID
+    const actorName = e.dataTransfer.getData('actorName'); // Verificar si se pasa un nombre
+  
+    let actor;
+    if (actorId) {
+      actor = actors.find((a) => a.id === parseInt(actorId, 10)); // Buscar actor por ID
+    } else if (actorName) {
+      actor = actors.find((a) => a.name === actorName); // Buscar actor por nombre
+    }
+  
     if (!actor) {
-      console.error(`Actor not found: ${actorName}`);
+      console.error(`Actor no encontrado: ID=${actorId} NAME=${actorName}`);
       return;
     }
-
+  
     const newActorInstance = {
-      id: uuidv4(), // ID único para cada instancia
+      id: uuidv4(),
       actor,
       position: { x: dropX, y: dropY },
     };
-
-    setDroppedActors((prev) => [...prev, newActorInstance]); // Agregar nuevo actor
-  };
-
+  
+    setDroppedActors((prev) => [...prev, newActorInstance]);
+    console.log("Dropped actors: ", newActorInstance);
+  };  
+  
   const handleDragStart = (e, actorId, isExistingActor) => {
     const containerRect = videoContainerRef.current.getBoundingClientRect();
     const elementRect = e.target.getBoundingClientRect();
-
+  
     const offsetX = e.clientX - elementRect.left;
     const offsetY = e.clientY - elementRect.top;
-
+  
     setDragOffset({ x: offsetX, y: offsetY });
-
-    if (!isExistingActor) {
-      e.dataTransfer.setData('actorName', actorId);
+  
+    if (isExistingActor) {
+      e.dataTransfer.setData('actorId', actorId); // Para mover actores existentes, usar ID
     } else {
-      e.dataTransfer.setData('actorId', actorId); // Para identificar al actor en el área de arrastre
+      const actor = actors.find((a) => a.id === actorId); // Asegurarse de obtener el actor
+      if (actor) {
+        e.dataTransfer.setData('actorName', actor.name); // Asigna el nombre para arrastrar
+      }
     }
-  };
+  };  
 
   const handleActorMove = (e) => {
-    const actorId = e.dataTransfer.getData('actorId');
+    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID del actor
     const containerRect = videoContainerRef.current.getBoundingClientRect();
-
+  
     const dropX = e.clientX - containerRect.left - dragOffset.x; // Coordenadas relativas
     const dropY = e.clientY - containerRect.top - dragOffset.y;
-
-    setDroppedActors((prev) =>
-      prev.map((actor) => {
+  
+    setDroppedActors((prev) => {
+      return prev.map((actor) => {
         if (actor.id === actorId) {
           return { ...actor, position: { x: dropX, y: dropY } };
         }
         return actor;
-      })
-    );
-  };
+      });
+    });
+  };  
 
   return (
     <HStack spacing={4}>
