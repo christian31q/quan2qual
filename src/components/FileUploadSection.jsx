@@ -40,6 +40,32 @@ function FileUploadSection({ videoRef }) {
     };
   }, [actors]);
 
+  useEffect(() => {
+    const handleNewActor = (event) => {
+      const { detail } = event;
+      setActors((prevActors) => {
+        const updatedActors = [...prevActors, detail];
+        localStorage.setItem('actors', JSON.stringify(updatedActors)); 
+        return updatedActors;
+      });
+    };
+  
+    document.addEventListener('newActor', handleNewActor);
+  
+    return () => {
+      document.removeEventListener('newActor', handleNewActor);
+    };
+  }, []);
+  
+  /*
+    al editar color y nombre las instancias no cambian su estado, solo los 
+    actores originales, revisar esa parte y forma de borrar el actor una vez
+    está en la zona 
+  */
+
+
+
+
   // Este efecto es para actualizar los droppedActors cuando cambian los actores base
   useEffect(() => {
     setDroppedActors((prevDroppedActors) => {
@@ -53,79 +79,89 @@ function FileUploadSection({ videoRef }) {
     });
   }, [actors]);
 
-  const handleDragOver = (e) => {
-    e.preventDefault(); // Permitir el evento de soltar
-  };
-
   const handleDrop = (e) => {
     e.preventDefault();
-  
+    
+    const actorId = e.dataTransfer.getData('actorId'); // Verificar si hay ID
+    if (!actorId) {
+      console.error("No actorId found in dataTransfer!"); // Manejo de errores
+      return;
+    }
+    
     const containerRect = videoContainerRef.current.getBoundingClientRect();
-  
-    //Calcular coordenadas relativas
     const dropX = e.clientX - containerRect.left - dragOffset.x;
     const dropY = e.clientY - containerRect.top - dragOffset.y;
-  
-    const actorId = e.dataTransfer.getData('actorId'); // Verificar si se pasa una ID
-    const actorName = e.dataTransfer.getData('actorName'); // Verificar si se pasa un nombre
-  
-    let actor;
-    if (actorId) {
-      actor = actors.find((a) => a.id === parseInt(actorId, 10)); // Buscar actor por ID
-    } else if (actorName) {
-      actor = actors.find((a) => a.name === actorName); // Buscar actor por nombre
+    
+    // Verificar si es un actor existente
+    const existingActor = droppedActors.find((a) => a.id === actorId);
+
+    if (existingActor) {
+      // Mover el actor existente
+      setDroppedActors((prev) => 
+        prev.map((actorInstance) => {
+          if (actorInstance.id === actorId) {
+            return { ...actorInstance, position: { x: dropX, y: dropY } }; // Actualizar posición
+          }
+          return actorInstance;
+        })
+      );
+    } else {
+      console.log("Current actors:", actors);
+
+      // Si es un actor nuevo, encontrar el actor original por su ID
+      const originalActor = actors.find((a) => a.id === parseInt(actorId, 10)); // Buscar el actor original
+      if (!originalActor) {
+        console.error(`Actor not found with ID: ${actorId}`); // Manejo de errores
+        return;
+      }
+
+      // Crear una nueva instancia
+      const newActorInstance = {
+        id: uuidv4(), // Nuevo ID para la instancia
+        actor: originalActor,
+        position: { x: dropX, y: dropY },
+      };
+
+      setDroppedActors((prev) => [...prev, newActorInstance]); // Agregar la nueva instancia
     }
+  };
   
-    if (!actor) {
-      console.error(`Actor no encontrado: ID=${actorId} NAME=${actorName}`);
+  const handleDragStart = (e, actorId, isExistingActor) => {
+    const elementRect = e.target.getBoundingClientRect();
+    const offsetX = e.clientX - elementRect.left;
+    const offsetY = e.clientY - elementRect.top;
+
+    setDragOffset({ x: offsetX, y: offsetY });
+
+    e.dataTransfer.setData('actorId', actorId.toString()); // Asignar el ID
+
+    if (isExistingActor) {
+      console.log("Dragging existing actor with ID:", actorId); // Depuración
+    } else {
+      console.log("Dragging new actor with ID:", actorId); // Depuración
+    }
+  };
+
+  const handleActorMove = (e) => {
+    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID
+    if (!actorId) {
+      console.error("No actorId found in dataTransfer!"); // Manejo de errores
       return;
     }
   
-    const newActorInstance = {
-      id: uuidv4(),
-      actor,
-      position: { x: dropX, y: dropY },
-    };
-  
-    setDroppedActors((prev) => [...prev, newActorInstance]);
-    console.log("Dropped actors: ", newActorInstance);
-  };  
-  
-  const handleDragStart = (e, actorId, isExistingActor) => {
     const containerRect = videoContainerRef.current.getBoundingClientRect();
-    const elementRect = e.target.getBoundingClientRect();
-  
-    const offsetX = e.clientX - elementRect.left;
-    const offsetY = e.clientY - elementRect.top;
-  
-    setDragOffset({ x: offsetX, y: offsetY });
-  
-    if (isExistingActor) {
-      e.dataTransfer.setData('actorId', actorId); // Para mover actores existentes, usar ID
-    } else {
-      const actor = actors.find((a) => a.id === actorId); // Asegurarse de obtener el actor
-      if (actor) {
-        e.dataTransfer.setData('actorName', actor.name); // Asigna el nombre para arrastrar
-      }
-    }
-  };  
-
-  const handleActorMove = (e) => {
-    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID del actor
-    const containerRect = videoContainerRef.current.getBoundingClientRect();
-  
-    const dropX = e.clientX - containerRect.left - dragOffset.x; // Coordenadas relativas
+    const dropX = e.clientX - containerRect.left - dragOffset.x;
     const dropY = e.clientY - containerRect.top - dragOffset.y;
   
     setDroppedActors((prev) => {
-      return prev.map((actor) => {
-        if (actor.id === actorId) {
-          return { ...actor, position: { x: dropX, y: dropY } };
+      return prev.map((actorInstance) => {
+        if (actorInstance.id === actorId) { // Compara con el ID único del actor
+          return { ...actorInstance, position: { x: dropX, y: dropY } }; // Actualizar posición
         }
-        return actor;
+        return actorInstance;
       });
     });
-  };  
+  };
 
   return (
     <HStack spacing={4}>
@@ -145,7 +181,7 @@ function FileUploadSection({ videoRef }) {
       >
         <GridBodyActors
           actors={actors}
-          handleDragStart={(e) => handleDragStart(e, e.target.getAttribute('data-actor-name'), false)}
+          handleDragStart={(e, actorId) => handleDragStart(e, actorId, false)} // Configurar el ID correctamente
         />
       </Box>
       <Box
@@ -164,14 +200,8 @@ function FileUploadSection({ videoRef }) {
         justifyContent='center'
         alignItems='center'
         position='relative'
-        onDragOver={handleDragOver}
-        onDrop={(e) => {
-          if (e.dataTransfer.getData('actorId')) {
-            handleActorMove(e); // Mover actor existente
-          } else {
-            handleDrop(e); // Agregar nuevo actor
-          }
-        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
       >
         {selectedFile ? (
           <video

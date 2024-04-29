@@ -84,7 +84,19 @@ const GridBodyActors = () => {
       autoRows="minmax(100px, auto)"
     >
       {actors.map((actor) => (
-        <ActorCard key={actor.id} actor={actor} />
+        <ActorCard
+          key={actor.id}
+          actor={actor}
+          draggable
+          onDragStart={(e) => {
+            if (actor.id) { // Asegurarse de que el ID está disponible
+              e.dataTransfer.setData('actorId', actor.id.toString()); // Asignar actorId
+              handleDragStart(e, actor.id, false);
+            } else {
+              console.error("Actor ID is not available."); // Depuración
+            }
+          }}
+        />
       ))}
     </Grid>
   );

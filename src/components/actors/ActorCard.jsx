@@ -3,10 +3,15 @@ import { GridItem, Icon, Box } from '@chakra-ui/react';
 import { IconPickerItem } from 'react-icons-picker';
 
 const ActorCard = ({ actor, handleEdit, handleDelete }) => {
-  const { name, color, icon: iconName } = actor;
+  const { id, name, color, icon: iconName } = actor;
 
   const handleDragStart = (e) => {
-    e.dataTransfer.setData('actorName', name);
+    if (actor.id) {
+      e.dataTransfer.setData('actorId', actor.id.toString()); // Establecer el `actorId`
+      console.log("Setting actorId during drag:", actor.id); // Verificar
+    } else {
+      console.error("Actor ID is not available."); // Manejo de errores
+    }
   };
 
   return (
