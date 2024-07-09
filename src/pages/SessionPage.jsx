@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Grid, GridItem, Box } from '@chakra-ui/react';
+import { Grid, GridItem, Box, HStack } from '@chakra-ui/react';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
@@ -16,6 +16,9 @@ import TableBodyTypes from '../components/types relations/TableBodyTypes';
 
 import HeaderTableRelations from '../components/relations/HeaderTableRelations';
 import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations';
+
+import CardTimeLine from '../components/CardTimeLine';
+import Timeline from '../components/TimeLine';
 import '../styles/HandleStyles.css'
 
 
@@ -43,6 +46,13 @@ function SessionPage({ mainContent, pageTitle }) {
   };
 
   const [activeLiveBox, setActiveLiveBox] = useState('Actors');
+
+  const [currentTime, setCurrentTime] = useState(0);
+  const duration = 100; // Duración del video en segundos, ajusta según sea necesario
+
+  const handleSeek = (time) => {
+    setCurrentTime(time);
+  };
 
   
   return (
@@ -157,7 +167,9 @@ function SessionPage({ mainContent, pageTitle }) {
           <VideoControls videoRef={videoRef} />
         </GridItem>
         <GridItem 
-            pl='2' 
+            alignItems='center'
+            display='flex'
+            p='2' 
             color='white' 
             bg='#566066' 
             area={'footer'} 
@@ -165,7 +177,10 @@ function SessionPage({ mainContent, pageTitle }) {
             rowStart={4}
             shadow='xl'
         >
-          Footer
+          <HStack width='100%'>
+            <CardTimeLine />
+            <Timeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />
+          </HStack>
         </GridItem> 
       </Grid>
     </Box>

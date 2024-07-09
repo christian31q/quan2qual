@@ -13,7 +13,7 @@ function NavLeftButtons({icon, iconSize, buttonText, onClick}){
         border='1px'
         px='8px'
         borderRadius='2px'
-        fontSize={{ base: "2.2vmin", md: "2.2vmin", lg: "1.9vmin" }}
+        fontSize={{ base: "2.2vmin", md: "2.2vmin", lg: "1.45vmin" }}
         fontWeight='400'
         bg='transparent'
         borderColor='transparent'

@@ -30,10 +30,12 @@ const ActorCard = ({ actor, handleEdit, handleDelete }) => {
       transition="transform 0.3s ease"  
       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} 
       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-      padding="16px"
+      padding="12px"
     >
       {/* Icono */}
       <Icon
+        width='50px'
+        height='50px'
         backgroundColor={color} 
         borderRadius="100%" 
         position="relative"
@@ -46,7 +48,7 @@ const ActorCard = ({ actor, handleEdit, handleDelete }) => {
         />
       </Icon>
       {/* Label */}
-      <Box style={{ position: 'relative', zIndex: '0' }}>{name}</Box>
+      <Box style={{ fontSize: '14px',fontWeight: '600', position: 'relative', zIndex: '0' }}>{name}</Box>
     </GridItem>
   );
 };

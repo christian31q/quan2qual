@@ -9,7 +9,7 @@ function FileUploadSection({ videoRef }) {
   const [droppedActors, setDroppedActors] = useState([]); // Para almacenar actores soltados
   const videoContainerRef = useRef(); // Para el contenedor del área de destino
   const [actors, setActors] = useState([]);
-  const [dragOffset, setDragOffset] = useState({ x: 50, y: 50 });
+  const [dragOffset, setDragOffset] = useState({ x: 10, y: 10 });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -82,86 +82,69 @@ function FileUploadSection({ videoRef }) {
   const handleDrop = (e) => {
     e.preventDefault();
     
-    const actorId = e.dataTransfer.getData('actorId'); // Verificar si hay ID
+    const actorId = e.dataTransfer.getData('actorId');
     if (!actorId) {
-      console.error("No actorId found in dataTransfer!"); // Manejo de errores
+      console.error("No actorId found in dataTransfer!");
       return;
     }
-    
+  
     const containerRect = videoContainerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left - dragOffset.x;
-    const dropY = e.clientY - containerRect.top - dragOffset.y;
-    
-    // Verificar si es un actor existente
+    const dropX = e.clientX - containerRect.left;
+    const dropY = e.clientY - containerRect.top;
+  
+    const posX = Math.max(0, Math.min(dropX, containerRect.width));
+    const posY = Math.max(0, Math.min(dropY, containerRect.height));
+  
+    const percentX = (posX / containerRect.width) * 100;
+    const percentY = (posY / containerRect.height) * 100;
+  
     const existingActor = droppedActors.find((a) => a.id === actorId);
-
+  
     if (existingActor) {
-      // Mover el actor existente
-      setDroppedActors((prev) => 
+      setDroppedActors((prev) =>
         prev.map((actorInstance) => {
           if (actorInstance.id === actorId) {
-            return { ...actorInstance, position: { x: dropX, y: dropY } }; // Actualizar posición
+            return { ...actorInstance, position: { x: percentX, y: percentY } };
           }
           return actorInstance;
         })
       );
     } else {
-      console.log("Current actors:", actors);
-
-      // Si es un actor nuevo, encontrar el actor original por su ID
-      const originalActor = actors.find((a) => a.id === parseInt(actorId, 10)); // Buscar el actor original
+      const originalActor = actors.find((a) => a.id === parseInt(actorId, 10));
       if (!originalActor) {
-        console.error(`Actor not found with ID: ${actorId}`); // Manejo de errores
+        console.error(`Actor not found with ID: ${actorId}`);
         return;
       }
-
-      // Crear una nueva instancia
+  
       const newActorInstance = {
-        id: uuidv4(), // Nuevo ID para la instancia
+        id: uuidv4(),
         actor: originalActor,
-        position: { x: dropX, y: dropY },
+        position: { x: percentX, y: percentY },
       };
-
-      setDroppedActors((prev) => [...prev, newActorInstance]); // Agregar la nueva instancia
+  
+      setDroppedActors((prev) => [...prev, newActorInstance]);
     }
-  };
+  };   
   
   const handleDragStart = (e, actorId, isExistingActor) => {
-    const elementRect = e.target.getBoundingClientRect();
-    const offsetX = e.clientX - elementRect.left;
-    const offsetY = e.clientY - elementRect.top;
+    const containerRect = videoContainerRef.current.getBoundingClientRect();
+    const offsetX = containerRect.right - e.clientX;
+    const offsetY = containerRect.bottom - e.clientY;
 
+    console.log('container rect: ', containerRect);
+    console.log('offsetX: ', offsetX);
+    console.log('offsetY: ', offsetY);
+  
     setDragOffset({ x: offsetX, y: offsetY });
-
+  
     e.dataTransfer.setData('actorId', actorId.toString()); // Asignar el ID
-
+  
     if (isExistingActor) {
       console.log("Dragging existing actor with ID:", actorId); // Depuración
     } else {
       console.log("Dragging new actor with ID:", actorId); // Depuración
     }
-  };
-
-  const handleActorMove = (e) => {
-    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID
-    if (!actorId) {
-      console.error("No actorId found in dataTransfer!"); // Manejo de errores
-      return;
-    }
-  
-    const containerRect = videoContainerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left - dragOffset.x;
-    const dropY = e.clientY - containerRect.top - dragOffset.y;
-  
-    setDroppedActors((prev) => {
-      return prev.map((actorInstance) => {
-        if (actorInstance.id === actorId) { // Compara con el ID único del actor
-          return { ...actorInstance, position: { x: dropX, y: dropY } }; // Actualizar posición
-        }
-        return actorInstance;
-      });
-    });
-  };
+  };  
 
   return (
     <HStack spacing={4}>
@@ -187,7 +170,7 @@ function FileUploadSection({ videoRef }) {
       <Box
         ref={videoContainerRef}
         w='60vw'
-        h='55vh'
+        h='auto'
         p={4}
         borderWidth='3px'
         borderRadius='lg'
@@ -225,26 +208,27 @@ function FileUploadSection({ videoRef }) {
             />
           </label>
         )}
-
-        {droppedActors.map((dropped, index) => (
+        {droppedActors.map((dropped) => (
           <Box
-            key={dropped.id} // Usar el ID único para identificar
+            key={dropped.id}
             position='absolute'
-            left={`${dropped.position.x}px`}
-            top={`${dropped.position.y}px`}
-            draggable // Permite mover dentro de la zona
-            onDragStart={(e) => handleDragStart(e, dropped.id, true)} // Para mover actores existentes
+            left={`${dropped.position.x}%`}
+            top={`${dropped.position.y}%`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, dropped.id, true)}
             display='flex'
             flexDirection='column'
             justifyContent='center'
             alignItems='center'
             borderRadius='lg'
-            padding='16px'
+            padding='12px'
             backgroundColor='transparent'
           >
             {dropped.actor && (
               <>
                 <Icon
+                  width='50px'
+                  height='50px'
                   fontSize='60px'
                   bg={dropped.actor.color}
                   borderRadius='100%'
@@ -254,7 +238,10 @@ function FileUploadSection({ videoRef }) {
                 <Box
                   bg='black'
                   color='white'
-                  borderRadius='5px'
+                  borderRadius='4px'
+                  fontSize='14px'
+                  fontWeight='600'
+                  width='max-content'
                 >
                   {dropped.actor.name}
                 </Box>
