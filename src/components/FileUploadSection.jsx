@@ -4,7 +4,7 @@ import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 
-function FileUploadSection({ videoRef }) {
+function FileUploadSection({ videoRef, currentTime, setCurrentTime, setDuration }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [droppedActors, setDroppedActors] = useState([]); // Para almacenar actores soltados
   const videoContainerRef = useRef(); // Para el contenedor del área de destino
@@ -15,6 +15,26 @@ function FileUploadSection({ videoRef }) {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const handleTimeUpdate = () => {
+        setCurrentTime(videoRef.current.currentTime);
+      };
+
+      const handleLoadedMetadata = () => {
+        setDuration(videoRef.current.duration);
+      };
+
+      videoRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+      return () => {
+        videoRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+        videoRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      };
+    }
+  }, [videoRef, setCurrentTime, setDuration]);
 
   useEffect(() => {
     const storedActors = JSON.parse(localStorage.getItem('actors'));

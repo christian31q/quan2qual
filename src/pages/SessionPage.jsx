@@ -21,7 +21,6 @@ import CardTimeLine from '../components/CardTimeLine';
 import Timeline from '../components/TimeLine';
 import '../styles/HandleStyles.css'
 
-
 function SessionPage({ mainContent, pageTitle }) {
   const [actors, setActors] = useState([]);
   const [types, setTypes] = useState([]);
@@ -38,25 +37,21 @@ function SessionPage({ mainContent, pageTitle }) {
     }
   }, []);
 
-  //Sección video 
+  // Video
   const videoRef = useRef(null);
-  const handleFileSelect = (file) => {
-    // realizar acciones adicionales cuando se selecciona un archivo
-    console.log("Archivo seleccionado:", file);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const handleSeek = (time) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
+    setCurrentTime(time);
   };
 
   const [activeLiveBox, setActiveLiveBox] = useState('Actors');
 
-  const [currentTime, setCurrentTime] = useState(0);
-  const duration = 100; // Duración del video en segundos, ajusta según sea necesario
-
-  const handleSeek = (time) => {
-    setCurrentTime(time);
-  };
-
-  
   return (
-    
     <Box height="100vh">
       <Grid
         templateAreas={`"header header"
@@ -103,7 +98,12 @@ function SessionPage({ mainContent, pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-          <FileUploadSection videoRef={videoRef} />
+          <FileUploadSection 
+            videoRef={videoRef}
+            currentTime={currentTime}
+            setCurrentTime={setCurrentTime}
+            setDuration={setDuration} 
+          />
         </GridItem>
         <GridItem 
             borderLeft='1px' 
@@ -118,8 +118,7 @@ function SessionPage({ mainContent, pageTitle }) {
             style={{ overflowY: 'hidden'}}
         >
         <div>
-          {/* Table and Labels related to Actors */}
-          {activeLiveBox == 'Actors' && (
+          {activeLiveBox === 'Actors' && (
             <>
               <HeaderTableActors />
               <HeaderLabelsActors />
@@ -129,24 +128,22 @@ function SessionPage({ mainContent, pageTitle }) {
             </>
           )}
 
-          {/* Table and Labels related to Types */}
-          {activeLiveBox == 'Types' && (
+          {activeLiveBox === 'Types' && (
             <>
               <HeaderTableTypes />
               <HeaderLabelsTypes />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-                {<TableBodyTypes data={types}/>}
+                <TableBodyTypes data={types} />
               </div>
             </>
           )}
 
-          {/* Table and Labels related to Relations */}
-          {activeLiveBox == 'Attach' && (
+          {activeLiveBox === 'Attach' && (
             <>
               <HeaderTableRelations />
               <HeaderLabelsRelations />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-                {/*<TableBodyRelations />*/}
+                {/* <TableBodyRelations /> */}
               </div>
             </>
           )}

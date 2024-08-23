@@ -6,8 +6,10 @@ import { TiDeleteOutline } from "react-icons/ti";
 import EditActorModal from './EditActorModal';
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import { IconPickerItem } from 'react-icons-picker';
+import requestMongo from '../../api/request';
 
 import { createStandaloneToast } from '@chakra-ui/react';
+import { color } from 'framer-motion';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
@@ -21,7 +23,7 @@ const TableBodyActors = ({ data }) => {
   const [actorToEdit, setActorToEdit] = useState(null);
 
   const handleOpenEditModal = (actor) => {
-    setActorIdToEdit(actor.id); // Usa el ID del actor
+    setActorIdToEdit(actor._id); // Usa el ID del actor
     setActorToEdit(actor); // Proporciona el actor completo
     setIsEditModalOpen(true);
   };
@@ -31,37 +33,61 @@ const TableBodyActors = ({ data }) => {
   };
 
   // Editar actores
-  const handleEdit = (editedName, editedColor, editedAttributes) => {
-    // Emitir evento para indicar que un actor ha sido editado
-    const event = new CustomEvent('editActor', {
-      detail: {
-        id: actorIdToEdit,
-        editedName,
-        editedColor,
-        editedAttributes,
-      },
-    });
-    document.dispatchEvent(event); // Emitir el evento
-  
-    // Actualizar la lista de actores y el almacenamiento local
-    const updatedActors = actors.map((actor) => {
-      if (actor.id === actorIdToEdit) {
-        return {
-          ...actor,
+  const handleEdit = async (editedName, editedColor, editedAttributes) => {
+    try{
+      // Emitir evento para indicar que un actor ha sido editado
+      const event = new CustomEvent('editActor', {
+        detail: {
+          id: actorIdToEdit,
+          editedName,
+          editedColor,
+          editedAttributes,
+        },
+      });
+      document.dispatchEvent(event); // Emitir el evento
+      
+      // Actualizar la lista de actores y el almacenamiento local
+      const updatedActors = actors.map((actor) => {
+        if (actor.id === actorIdToEdit) {
+          return {
+            ...actor,
+            name: editedName,
+            color: editedColor,
+            attributes: editedAttributes,
+          };
+        }
+        return actor;
+      });
+
+      setActors(updatedActors);
+
+      // Filtro y cuerpo
+      const filter = {_id: { $oid: actorIdToEdit} };
+      const update = {
+        $set: {
           name: editedName,
           color: editedColor,
           attributes: editedAttributes,
-        };
+        }
+      };
+
+      const result = await requestMongo("actors", { filter, update }, "updateOne");
+
+      if (result && result.modifiedCount > 0){
+        showToast('Actor editado correctamente', 'success');
+      } else{
+        setIsEditModalOpen(false); // Cerrar el modal
       }
-      return actor;
-    });
-  
-    setActors(updatedActors);
-    localStorage.setItem('actors', JSON.stringify(updatedActors));
-    showToast('Actor editado correctamente', 'success');
-    setIsEditModalOpen(false); // Cerrar modal
+    } catch (error){
+      console.error('Error al editar el actor: ', error);
+      showToast('Error al editar el actor', 'error');
+    }
   };
+
+  /*
+    Actualizar el estado del actor cuando se edita 
   
+  */   
 
   //Borrar actores
   const [actorIdToDelete, setActorIdToDelete] = useState(null);
@@ -102,12 +128,19 @@ const TableBodyActors = ({ data }) => {
       isClosable: true,
     });
   };
-
   useEffect(() => {
-    const storedActors = JSON.parse(localStorage.getItem('actors'));
-    if (storedActors) {
-      setActors(storedActors);
+    async function getActors() {
+      try{
+        const storedActors = await requestMongo("actors", "", "find");
+        console.log('Actores DB: ', storedActors);
+        setActors(storedActors);
+  
+      } catch (error){
+        console.log("Error al obtener los actores: ", error);
+      }
+      
     }
+    getActors();
   }, []);
 
   useEffect(() => {
@@ -128,7 +161,7 @@ const TableBodyActors = ({ data }) => {
       <Table size="sm" color="white">
         <Tbody>
           {actors.map((actor) => (
-            <Tr key={actor.id} bg="#272F34">
+            <Tr key={actor.id_front} bg="#272F34">
               <Td width='30.1%' textAlign="center" borderRight="1px">
                 <Icon
                   bg={actor.color}
@@ -142,7 +175,7 @@ const TableBodyActors = ({ data }) => {
                 </Icon>
               </Td>
               <Td width='29%' textAlign="center" borderRight="1px">{actor.name}</Td>
-              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.id}</Td>
+              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.id_front}</Td>
               <Td width='0%' className="hover-element" textAlign="center">
                 <Icon as={FiMoreVertical} fontSize="1.5vw" />
                 <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(actor)} />
