@@ -98,7 +98,7 @@ function PasswordRecoveryContainer() {
               h="2.375rem"
               bg="#041D39"
               fontSize="1.25rem"
-              fontWeight="400"
+              fontWeight="500"
               _hover={{ backgroundColor: 'gray.600' }}
               isLoading={isLoading} // Aquí es donde se muestra el spinner
               loadingText={t('verifying')}

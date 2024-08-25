@@ -9,12 +9,16 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
+  VStack,
+  StylesProvider,
 } from '@chakra-ui/react';
 import { Formik, Form, Field } from 'formik';
 import { useTranslation, Trans } from 'react-i18next';
 import requestMongo from '../api/request';
 import bcrypt from 'bcryptjs';
 import { createStandaloneToast } from '@chakra-ui/react';
+import '../styles/HandleStyles.css'
+
 
 const { ToastContainer, toast } = createStandaloneToast();
 
@@ -38,8 +42,10 @@ function ResetPasswordContainer() {
 
   const email = location.state?.email;
   console.log('Email verificado: ', email);
-
-
+  
+  const handleBack = () =>{
+    navigateTo('/login')
+  };
   const handleResetPassword = async (values) => {
     if (values.password === values.confirmPassword) {
       console.log('Coinciden');
@@ -76,7 +82,7 @@ function ResetPasswordContainer() {
 
   return (
     <Center>
-      <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="26.25rem" h="22.375rem" textAlign="center">
+      <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="26.25rem" h="25rem" textAlign="center">
         <Text fontSize="1.875rem" fontWeight="bold" mb="4" fontFamily="Optima LT Pro" color="#041D39">
           {t('resetPassword')}
         </Text>
@@ -135,22 +141,34 @@ function ResetPasswordContainer() {
                   </FormControl>
                 )}
               </Field>
-              <Center>
-                <Button
-                  type='submit'
-                  color="white"
-                  w="20rem"
-                  h="2.375rem"
-                  bg="#041D39"
-                  fontSize="1.25rem"
-                  fontWeight="400"
-                  _hover={{ backgroundColor: 'gray.600' }}
-                  isLoading={isLoading} // Aquí es donde se muestra el spinner
-                  loadingText={t('loading')} // Texto mientras carga
-                >
-                  {t('resetPassword')}
-                </Button>
-              </Center>
+              <VStack>
+                  <Button
+                    type='submit'
+                    color="white"
+                    w="20rem"
+                    h="2.375rem"
+                    bg="#041D39"
+                    fontSize="1.25rem"
+                    fontWeight="500"
+                    _hover={{ backgroundColor: 'gray.600' }}
+                    isLoading={isLoading} // Aquí es donde se muestra el spinner
+                    loadingText={t('loading')} // Texto mientras carga
+                  >
+                    {t('resetPassword')}
+                  </Button>
+                  <Button
+                    color="white"
+                    w="20rem"
+                    h="2.375rem"
+                    bg="#041D39"
+                    fontSize="1.25rem"
+                    fontWeight="500"
+                    _hover={{ backgroundColor: 'gray.600' }}
+                    onClick={handleBack}
+                  >
+                    {t('cancel')}
+                  </Button>
+              </VStack>
             </Form>
           )}
         </Formik>
