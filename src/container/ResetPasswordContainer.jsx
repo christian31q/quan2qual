@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation , useNavigate } from 'react-router-dom';
 import {
   Box,
   Text,
@@ -12,19 +12,63 @@ import {
 } from '@chakra-ui/react';
 import { Formik, Form, Field } from 'formik';
 import { useTranslation, Trans } from 'react-i18next';
+import requestMongo from '../api/request';
+import bcrypt from 'bcryptjs';
+import { createStandaloneToast } from '@chakra-ui/react';
 
+const { ToastContainer, toast } = createStandaloneToast();
 
 function ResetPasswordContainer() {
   const {t} = useTranslation();
-
+  const location = useLocation();
   const navigateTo = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleResetPassword = (values) => {
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const email = location.state?.email;
+  console.log('Email verificado: ', email);
+
+
+  const handleResetPassword = async (values) => {
     if (values.password === values.confirmPassword) {
-      // Las contraseñas coinciden
-      navigateTo('/login');
+      console.log('Coinciden');
+      setIsLoading(true);
+      try {
+        // Encriptar la nueva contraseña
+        const hashedPassword = await bcrypt.hash(values.password, 10);
+
+        // Actualizar la contraseña en la base de datos
+        const result = await requestMongo('users', {
+          filter: { email: email },
+          update: { $set: { password: hashedPassword } },
+        }, 'updateOne');
+
+        if (result && result.modifiedCount > 0) {
+          showToast('Contraseña actualizada exitosamente.', 'success');
+          setTimeout(() => {
+            navigateTo('/login');
+          }, 2500); 
+        } else {
+          showToast('No se pudo actualizar la contraseña.', 'error');
+        }
+
+      } catch (error) {
+        console.error('Error al actualizar la contraseña:', error);
+        alert('Hubo un error al actualizar la contraseña.');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       // Las contraseñas no coinciden
     }
@@ -44,22 +88,22 @@ function ResetPasswordContainer() {
             <Form>
               <Field name='password' validate={(value) => (value ? undefined : 'La contraseña es requerida')}>
                 {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.password && form.touched.password}>
+                  <FormControl isInvalid={form.errors.password && form.touched.password} textAlign="center">
                     <FormLabel ml="2rem">{t('newPassword')}</FormLabel>
-                    <Input
-                      type='password'
-                      w="20rem"
-                      h="3rem"
-                      bg="white"
-                      textAlign="center"
-                      placeholder={t('newPasswordInput')}
-                      _placeholder={{ color: '#041D39' }}
-                      mb="1.19rem"
-                      fontSize="1.25rem"
-                      shadow="lg"
-                      isRequired
-                      {...field}
-                    />
+                      <Input
+                        type='password'
+                        w="20rem"
+                        h="3rem"
+                        bg="white"
+                        textAlign="center"
+                        placeholder={t('newPasswordInput')}
+                        _placeholder={{ color: '#041D39' }}
+                        mb="1.19rem"
+                        fontSize="1.25rem"
+                        shadow="lg"
+                        isRequired
+                        {...field}
+                      />
                     <Center>
                       <FormErrorMessage color="white" mt="0">{form.errors.password}</FormErrorMessage>
                     </Center>
@@ -101,6 +145,8 @@ function ResetPasswordContainer() {
                   fontSize="1.25rem"
                   fontWeight="400"
                   _hover={{ backgroundColor: 'gray.600' }}
+                  isLoading={isLoading} // Aquí es donde se muestra el spinner
+                  loadingText={t('loading')} // Texto mientras carga
                 >
                   {t('resetPassword')}
                 </Button>

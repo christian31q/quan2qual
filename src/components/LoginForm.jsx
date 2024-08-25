@@ -10,17 +10,21 @@ import {
   InputLeftElement,
   InputGroup,
   InputRightElement,
+  Spinner,
 } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BiUser, BiShow, BiHide } from 'react-icons/bi';
 import { MdLockOutline } from 'react-icons/md';
-import LoadingPage from '../pages/LoadingPage';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import LanguageChanger from '../components/LanguageChanger';
+import bcrypt from 'bcryptjs';
+import requestMongo from '../api/request';
+import { createStandaloneToast } from '@chakra-ui/react';
 
+const { ToastContainer, toast } = createStandaloneToast();
 
 function LoginForm() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
@@ -30,116 +34,151 @@ function LoginForm() {
 
   const handleShowClick = () => setShowPassword(!showPassword);
 
-  const handleLogin = () => {
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault(); // Evita el comportamiento predeterminado del formulario
+  
     if (email && password) {
       setIsLoading(true);
+  
+      try {
+        // Buscar al usuario en la base de datos
+        const result = await requestMongo("users", { filter: { email: email } }, "findOne");
+        
+        if (result.document != null) {
+          const user = result.document;
+          
+          // Verificar la contraseña
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (passwordMatch) {
+            setTimeout(() => {
+              setIsAuthenticated(true);
+              navigateTo('/dashboardNewLoadProject')
+            }, 3000); 
 
-      //Simulación carga de datos 
-      setTimeout(() =>{
+            return navigateTo('/loadingPage');
+          } else {
+            showToast('Contraseña incorrecta', 'error');
+            setIsAuthenticated(false);
+          }
+        } else {
+          showToast('El usuario proporcionado no existe.', 'error');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        alert('Hubo un error en la autenticación');
+      } finally {
         setIsLoading(false);
-        navigateTo('/dashboardNewLoadProject')
-        // Realizar aquí la lógica de autenticación
-        // Por ahora, simplemente marca como autenticado
-        setIsAuthenticated(true);
-      }, 4000);
+      }
     }
   };
 
   return (
     <div>
-      {isLoading ? (<LoadingPage/>) : (
-    <Flex alignItems="center" flexDirection="column" h="100%">
-      <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#041D39">
-        {t('welcomeText')}
-      </Text>
-      <form onSubmit={handleLogin}>
-      <Stack spacing={6}>
-        <FormControl id="email" maxW="20rem" textAlign="center" >
-        <FormLabel></FormLabel>
-          <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<BiUser fontSize="1.5rem" color="#041D39" />}
-            />
-            <Input
-              type="email"
-              placeholder={t('inputLoginEmail')}
-              _placeholder={{ color: '#041D39' }}
-              textAlign="center"
-              fontSize="1rem"
-              bg="white"
-              shadow="lg"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              isRequired
-            />
-          </InputGroup>
-        </FormControl>
+      <Flex alignItems="center" flexDirection="column" h="100%">
+        <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#041D39">
+          {t('welcomeText')}
+        </Text>
+        <form onSubmit={handleLogin}>
+          <Stack spacing={6}>
+            <FormControl id="email" maxW="20rem" textAlign="center" >
+              <FormLabel></FormLabel>
+              <InputGroup>
+                <InputLeftElement
+                  pointerEvents="none"
+                  children={<BiUser fontSize="1.5rem" color="#041D39" />}
+                />
+                <Input
+                  type="email"
+                  placeholder={t('inputLoginEmail')}
+                  _placeholder={{ color: '#041D39' }}
+                  textAlign="center"
+                  fontSize="1rem"
+                  bg="white"
+                  shadow="lg"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  isRequired
+                />
+              </InputGroup>
+            </FormControl>
 
-        <FormControl id="password" maxW="20rem" textAlign="center">
-          <FormLabel></FormLabel>
-          <InputGroup>
-            <InputLeftElement
-              pointerEvents="none"
-              children={<MdLockOutline fontSize="1.5rem" color="#041D39" />}
-            />
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder={t('inputLoginPassword')}
-              _placeholder={{ color: '#041D39' }}
-              textAlign="center"
-              fontSize="1rem"
-              bg="white"
-              shadow="lg"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              isRequired
-            />
-            <InputRightElement width="4.5rem">
-              <Button
-                h="1.75rem"
-                size="sm"
-                onClick={handleShowClick}
-                bg="transparent"
-                _hover={{ bg: "transparent" }}
-              >
-                {showPassword ? (
-                  <BiShow fontSize="1.5rem" color="#041D39" />
-                ) : (
-                  <BiHide fontSize="1.5rem" color="#041D39" />
-                )}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
+            <FormControl id="password" maxW="20rem" textAlign="center">
+              <FormLabel></FormLabel>
+              <InputGroup>
+                <InputLeftElement
+                  pointerEvents="none"
+                  children={<MdLockOutline fontSize="1.5rem" color="#041D39" />}
+                />
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete='on'
+                  placeholder={t('inputLoginPassword')}
+                  _placeholder={{ color: '#041D39' }}
+                  textAlign="center"
+                  fontSize="1rem"
+                  bg="white"
+                  shadow="lg"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  isRequired
+                />
+                <InputRightElement width="4.5rem">
+                  <Button
+                    h="1.75rem"
+                    size="sm"
+                    onClick={handleShowClick}
+                    bg="transparent"
+                    _hover={{ bg: "transparent" }}
+                  >
+                    {showPassword ? (
+                      <BiShow fontSize="1.5rem" color="#041D39" />
+                    ) : (
+                      <BiHide fontSize="1.5rem" color="#041D39" />
+                    )}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
 
-        <Flex justify="flex-end">
-          <Text _hover={{ textDecoration: 'underline' }} cursor="pointer">
-            <Link to="/passwordRecovery">{t('forgotPassword')}</Link>
-          </Text>
-        </Flex>
+            <Flex justify="flex-end">
+              <Text _hover={{ textDecoration: 'underline' }} cursor="pointer">
+                <Link to="/passwordRecovery">{t('forgotPassword')}</Link>
+              </Text>
+            </Flex>
 
-        <Button
-          type='submit'
-          color="white"
-          w="20rem"
-          h="2.375rem"
-          bg="#041D39"
-          _hover={{ backgroundColor: 'gray.600' }}
-          //onClick={handleLogin}
-        >
-          {t('buttonLogIn')}
-        </Button>
-        {isAuthenticated ? (
-          <Text color="green.500" fontWeight="bold" mb={6}>
-            ¡Credenciales correctas! Acceso concedido.
-          </Text>
-        ) : null}
-      </Stack>
-      </form>
-      <LanguageChanger/>
-    </Flex>
-    )}
+            <Button
+              type='submit'
+              color="white"
+              w="20rem"
+              h="2.375rem"
+              bg="#041D39"
+              _hover={{ backgroundColor: 'gray.600' }}
+              isLoading={isLoading} // Aquí es donde se muestra el spinner
+              loadingText={t('loading')} // Texto mientras carga
+            >
+              {t('buttonLogIn')}
+            </Button>
+
+            {isAuthenticated ? (
+              <Text color="green.500" fontWeight="bold" mb={6}>
+                ¡Credenciales correctas! Acceso concedido.
+              </Text>
+            ) : null}
+          </Stack>
+        </form>
+        <LanguageChanger/>
+      </Flex>
     </div>
   );
 }

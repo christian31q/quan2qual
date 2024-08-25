@@ -72,6 +72,7 @@ const TableBodyActors = ({ data }) => {
       };
 
       const result = await requestMongo("actors", { filter, update }, "updateOne");
+      console.log('Result: ', result);
 
       if (result && result.modifiedCount > 0){
         showToast('Actor editado correctamente', 'success');
@@ -132,8 +133,8 @@ const TableBodyActors = ({ data }) => {
     async function getActors() {
       try{
         const storedActors = await requestMongo("actors", "", "find");
-        console.log('Actores DB: ', storedActors);
-        setActors(storedActors);
+        console.log('Actores DB: ', storedActors.documents);
+        setActors(storedActors.documents);
   
       } catch (error){
         console.log("Error al obtener los actores: ", error);

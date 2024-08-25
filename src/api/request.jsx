@@ -13,6 +13,7 @@ export default async function requestMongo(collection, body, action) {
           "dataSource": "Quan2Qual",
           ...body
         });
+        console.log('Raw: ', raw);
     } else{
         raw = JSON.stringify({
             "collection": `${collection}`,
@@ -32,7 +33,7 @@ export default async function requestMongo(collection, body, action) {
       .then((response) => response.json())
       .then((result) => result)
       .catch((error) => console.error(error));
-    return result.documents;  
+    return result;  
 };
 
 async function requestTokenMongo(){

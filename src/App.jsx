@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Im
 import Login from './pages/LoginPage';
 import PasswordRecovery from './pages/PasswordRecoveryPage';
 import ResetPassword from './pages/ResetPasswordPage'
+import LoadingPage from './pages/LoadingPage';
 import Dashboard from './pages/DashboardPage';
 import CreateProject from './pages/CreateProjectPage'
 import AddSessionType from './pages/AddSessionTypePage'
@@ -28,6 +29,7 @@ export function App() {
           <Route path="/passwordRecovery" element={<PasswordRecovery/>} /> {/* Ruta para otra página*/}
           <Route path="/resetPassword" element={<ResetPassword/>}/>
           <Route path="/login" element={<Login/>}/>
+          <Route path='/loadingPage' element={<LoadingPage/>}/>
           <Route path="/dashboardNewLoadProject" element={<Dashboard/>}/>
           <Route path="/createProject" element={<CreateProject/>}/>
           <Route path="/addSessionType" element={<AddSessionType/>}/>
