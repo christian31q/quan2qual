@@ -1,44 +1,46 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Importa las partes necesarias de react-router-dom
-// Importa las páginas que desea navegar
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/LoginPage';
 import PasswordRecovery from './pages/PasswordRecoveryPage';
-import ResetPassword from './pages/ResetPasswordPage'
+import ResetPassword from './pages/ResetPasswordPage';
 import LoadingPage from './pages/LoadingPage';
 import Dashboard from './pages/DashboardPage';
-import CreateProject from './pages/CreateProjectPage'
-import AddSessionType from './pages/AddSessionTypePage'
+import CreateProject from './pages/CreateProjectPage';
+import AddSessionType from './pages/AddSessionTypePage';
 import VideoPage from './pages/VideoPage';
 import ImagePage from './pages/ImagePage';
 import AudioPage from './pages/AudioPage';
-import OpenProjecPage from './pages/OpenProjectPage'
-import OpenSessionPage from './pages/OpenSessionPage'
+import OpenProjecPage from './pages/OpenProjectPage';
+import OpenSessionPage from './pages/OpenSessionPage';
+import ProtectedRoute from './ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 
-
-//i18next framework 
 import './i18n';
-
 
 export function App() {
   return (
     <ChakraProvider>
-      <Router> {/* Envuelve tu aplicación en el componente Router */}
-        <Routes>
-          <Route path="/" element={<Login/>} /> {/* Ruta para la página de inicio */}
-          <Route path="/passwordRecovery" element={<PasswordRecovery/>} /> {/* Ruta para otra página*/}
-          <Route path="/resetPassword" element={<ResetPassword/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path='/loadingPage' element={<LoadingPage/>}/>
-          <Route path="/dashboardNewLoadProject" element={<Dashboard/>}/>
-          <Route path="/createProject" element={<CreateProject/>}/>
-          <Route path="/addSessionType" element={<AddSessionType/>}/>
-          <Route path="/videoWindow" element={<VideoPage/>} />
-          <Route path="/imagenWindow" element={<ImagePage/>} />
-          <Route path="/audioWindow" element={<AudioPage/>} />
-          <Route path="/openProjects" element={<OpenProjecPage/>}/>
-          <Route path="/openSessions" element={<OpenSessionPage/>}/>
-        </Routes>
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/passwordRecovery" element={<PasswordRecovery />} />
+            <Route path="/resetPassword" element={<ResetPassword />} />
+            <Route path="/login" element={<Login />} />
+            
+            {/* Envolviendo los componentes con ProtectedRoute */}
+            <Route path='/loadingPage' element={<ProtectedRoute><LoadingPage /></ProtectedRoute>} />
+            <Route path="/dashboardNewLoadProject" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/createProject" element={<ProtectedRoute><CreateProject /></ProtectedRoute>} />
+            <Route path="/addSessionType" element={<ProtectedRoute><AddSessionType /></ProtectedRoute>} />
+            <Route path="/videoWindow" element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
+            <Route path="/imagenWindow" element={<ProtectedRoute><ImagePage /></ProtectedRoute>} />
+            <Route path="/audioWindow" element={<ProtectedRoute><AudioPage /></ProtectedRoute>} />
+            <Route path="/openProjects" element={<ProtectedRoute><OpenProjecPage /></ProtectedRoute>} />
+            <Route path="/openSessions" element={<ProtectedRoute><OpenSessionPage /></ProtectedRoute>} />
+          </Routes>
+        </AuthProvider>
       </Router>
     </ChakraProvider>
   );

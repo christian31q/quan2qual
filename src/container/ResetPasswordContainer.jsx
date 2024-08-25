@@ -41,7 +41,6 @@ function ResetPasswordContainer() {
   };
 
   const email = location.state?.email;
-  console.log('Email verificado: ', email);
   
   const handleBack = () =>{
     navigateTo('/login')

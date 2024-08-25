@@ -20,11 +20,13 @@ import LanguageChanger from '../components/LanguageChanger';
 import bcrypt from 'bcryptjs';
 import requestMongo from '../api/request';
 import { createStandaloneToast } from '@chakra-ui/react';
+import { useAuth } from '../context/AuthContext';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 function LoginForm() {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
@@ -46,7 +48,7 @@ function LoginForm() {
 
   const handleLogin = async (event) => {
     event.preventDefault(); // Evita el comportamiento predeterminado del formulario
-  
+
     if (email && password) {
       setIsLoading(true);
   
@@ -60,6 +62,7 @@ function LoginForm() {
           // Verificar la contraseña
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (passwordMatch) {
+            login();
             setTimeout(() => {
               setIsAuthenticated(true);
               navigateTo('/dashboardNewLoadProject')
