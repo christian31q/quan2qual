@@ -12,7 +12,7 @@ function DashboardContainer() {
  
   return (
     <Center>
-      <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="46.875rem" h="34.8125em" textAlign="center">
+      <Box p="6" bg="gray.300" borderRadius="md" boxShadow="lg" w="46.875rem" h="34.8125em" textAlign="center">
         <WelcomeMessage username={t('username')} />
         <VStack spacing="5.75rem">
           <ActionButtonIcon

@@ -7,7 +7,7 @@ import LoginForm from '../components/LoginForm';
 function LoginPage() {
   return (
     <Flex
-      bg="#041D39"
+      bg="white"
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
@@ -18,18 +18,21 @@ function LoginPage() {
         alt="Imagen de inicio de sesión"
         maxH={{ base: 'auto', md: '100vh' }}
         flex={{ base: 'none', md: 2 }}
-        marginRight={{ base: '0', md: '6.75rem' }}
+        marginRight={{ base: '0', md: '2.75rem' }}
       />
 
       <Box
-        bg="#D05543"
+        bg="gray.300"
         p="1.25em"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
         borderRadius="md"
         boxShadow="lg"
         w={{ base: '100%', md: '26.25rem' }}
         h="32.9375rem"
         textAlign="center"
-        marginRight={{ base: 0, md: '6.75rem' }}
+        marginRight={{ base: 0, md: '2.75rem' }}
       >
         <LoginForm />  
         {/*<LanguageChanger/>*/}

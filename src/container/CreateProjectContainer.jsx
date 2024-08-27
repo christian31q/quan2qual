@@ -6,7 +6,7 @@ function CreateProjectContainer() {
   return (
     <Box
       p="6"
-      bg="#D05543"
+      bg="gray.300"
       borderRadius="md"
       boxShadow="lg"
       w="26.25rem"

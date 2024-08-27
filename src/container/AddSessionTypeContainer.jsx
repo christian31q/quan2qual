@@ -56,12 +56,12 @@ function AddSessionTypeContainer() {
   };
 
   return (
-    <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="46.875rem" h="40rem" textAlign="center">
+    <Box p="6" bg="gray.300" borderRadius="md" boxShadow="lg" w="46.875rem" h="40rem" textAlign="center">
       <Stack spacing={4} align="center">
-        <Text fontSize="2.8125rem" fontWeight="700" fontFamily="Optima LT Pro" color="#041D39" mt="1.5rem">
+        <Text fontSize="2.8125rem" fontWeight="700" fontFamily="Optima LT Pro" color="#3450E2" mt="1.5rem">
           {t('addSessionTypeTitle')}
         </Text>
-        <Text fontSize="1.875rem" fontWeight="400" color="#041D39">
+        <Text fontSize="1.875rem" fontWeight="400" color="#3450E2">
           {t('newSessionText')}
         </Text>
         <Center>
@@ -73,11 +73,11 @@ function AddSessionTypeContainer() {
           />
         </Center>
         {showAlert && (
-          <Text fontSize="1rem" mt="0" color="white">
+          <Text fontSize="1rem" mt="0" color="#3450E2">
             {t('addSessionTypeErrorMessage')}
           </Text>
         )}
-        <Text fontSize="1.875rem" fontWeight="400" color="#041D39">
+        <Text fontSize="1.875rem" fontWeight="400" color="#3450E2">
           {t('typeFileText')}
         </Text>
         <IconButtons
@@ -91,7 +91,7 @@ function AddSessionTypeContainer() {
           <Button
             w="10rem"
             h="2.375rem"
-            bg="#041D39"
+            bg="#3450E2"
             color="white"
             fontSize="1.25rem"
             fontWeight="400"
@@ -104,7 +104,7 @@ function AddSessionTypeContainer() {
         <Button
           w="10rem"
           h="2.375rem"
-          bg="#041D39"
+          bg="#3450E2"
           color="white"
           fontSize="1.25rem"
           fontWeight="400"

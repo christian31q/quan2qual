@@ -15,7 +15,7 @@ function SessionTitleInput({ value, onChange, isInvalid, errorMessage }) {
         bg="white"
         textAlign="center"
         placeholder={t('addSessionTitleInput')}
-        _placeholder={{ color: 'rgba(4, 29, 57, 0.60)' }}
+        _placeholder={{ color: '#3450E2' }}
         mb="1.19rem"
         fontSize="1.25rem"
         shadow="lg"

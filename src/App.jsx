@@ -17,7 +17,11 @@ import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
 import './i18n';
+/*
+El login lo hace bien pero al momento de recargar la página
+una vez se está logeado, vuelve a sacar al login
 
+*/
 export function App() {
   return (
     <ChakraProvider>

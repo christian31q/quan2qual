@@ -12,7 +12,7 @@ function WelcomeMessage({ username }) {
         mt="4.06rem" 
         mb="2.06rem"
         fontFamily="Optima LT Pro" 
-        color="#041D39"
+        color="#3450E2"
     >
         {t('welcomeText')}, {username}
     </Text>

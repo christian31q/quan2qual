@@ -40,11 +40,11 @@ function CreateProjectContent() {
         fontSize="1.875rem"
         fontWeight="bold"
         fontFamily="Optima LT Pro"
-        color="#041D39"
+        color="#3450E2"
       >
         {t('createProjectTitle')}
       </Text>
-      <Text fontSize="lg" fontWeight="400" color="#041D39">
+      <Text fontSize="lg" fontWeight="400" color="#3450E2">
         {t('projectTitle')}
       </Text>
       <FormControl
@@ -56,7 +56,7 @@ function CreateProjectContent() {
         <Input
           type="text"
           placeholder={t('projectTitleInput')}
-          _placeholder={{ color: '#041D39' }}
+          _placeholder={{ color: '#3450E2' }}
           textAlign="center"
           fontSize="1rem"
           bg="white"
@@ -67,7 +67,7 @@ function CreateProjectContent() {
           onChange={(e) => setProjectName(e.target.value)}
         />
       </FormControl>
-      <Text color="white" fontSize="md">
+      <Text color="#3450E2" fontSize="md">
         {errorMessage}
       </Text>
       <Stack spacing={4} align="center">
@@ -76,7 +76,7 @@ function CreateProjectContent() {
             <Button
               w="10rem"
               h="2.375rem"
-              bg="#041D39"
+              bg="#3450E2"
               color="white"
               fontSize="1.25rem"
               fontWeight="400"
@@ -88,7 +88,7 @@ function CreateProjectContent() {
           <Button
             w="10rem"
             h="2.375rem"
-            bg="#041D39"
+            bg="#3450E2"
             color="white"
             fontSize="1.25rem"
             fontWeight="400"

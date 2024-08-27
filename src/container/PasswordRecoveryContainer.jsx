@@ -60,19 +60,19 @@ function PasswordRecoveryContainer() {
 
   return (
     <Center>
-      <Box p="6" bg="#D05543" borderRadius="md" boxShadow="lg" w="30rem" h="16.4375rem" textAlign="center">
+      <Box p="6" bg="gray.300" borderRadius="md" boxShadow="lg" w="30rem" h="16.4375rem" textAlign="center">
         <Text
           fontSize="1.875rem"
           fontWeight="bold"
           mb="4"
           fontFamily="Optima LT Pro"
-          color="#041D39"
+          color="#3450E2"
         >
           {t('forgotPassword')}
         </Text>
         <Center>
         <form onSubmit={handlePasswordRecovery}>
-          <FormControl id="passwordRecovery" color="#041D39" isRequired>
+          <FormControl id="passwordRecovery" color="#3450E2" isRequired>
             <FormLabel ml="0.5rem">{t('usertText')}</FormLabel>
             <InputGroup>
               <Input
@@ -82,7 +82,7 @@ function PasswordRecoveryContainer() {
                 bg="white"
                 textAlign="center"
                 placeholder={t('inputLoginEmail')}
-                _placeholder={{ color: '#041D39' }}
+                _placeholder={{ color: '#3450E2' }}
                 mb="1.88rem"
                 fontSize="1.25rem"
                 shadow="lg"
@@ -96,7 +96,7 @@ function PasswordRecoveryContainer() {
               color="white"
               w="23rem"
               h="2.375rem"
-              bg="#041D39"
+              bg="#3450E2"
               fontSize="1.25rem"
               fontWeight="500"
               _hover={{ backgroundColor: 'gray.600' }}

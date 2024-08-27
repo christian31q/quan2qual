@@ -186,7 +186,7 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
   return (
     <Box
       p={4}
-      bg="#E98643"
+      bg="white"
       shadow="md"
       borderRadius="lg"
       w="15.4375rem"
@@ -197,11 +197,11 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
       alignItems="center"
     >
       {icon}
-      <Text color="#041D39" fontSize="1.2rem" fontStyle="normal" fontWeight="700">
+      <Text color="#3450E2" fontSize="1.2rem" fontStyle="normal" fontWeight="700">
         {/*{project.title}*/}
         {title}
       </Text>
-      <Text color="#041D39" fontSize="0.8rem" fontStyle="normal" fontWeight="400">
+      <Text color="#3450E2" fontSize="0.8rem" fontStyle="normal" fontWeight="400">
         {/*{project.creationDate}*/}
         {creationDate}
       </Text>
@@ -209,7 +209,7 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
         <Button
           w="8rem"
           h="1.7rem"
-          bg="#041D39"
+          bg="#3450E2"
           color="white"
           fontSize="1rem"
           fontWeight="400"
