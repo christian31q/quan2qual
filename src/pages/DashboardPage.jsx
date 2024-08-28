@@ -1,12 +1,13 @@
 import React from 'react';
-import {Flex } from '@chakra-ui/react';
+import {background, Flex } from '@chakra-ui/react';
 import DashboardContainer from '../container/DashboardContainer';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/logoUMNG.png';
 
 function DashboardPage() {
     const backgroundImageStyle = {
-      backgroundSize: 'cover',
-      backgroundPosition: 'center center',
+      backgroundSize: '30%',
+      backgroundPosition: 'center bottom',
+      backgroundRepeat: 'no-repeat'
     };
   
     return (

@@ -87,7 +87,7 @@ function VideoControls({ videoRef }) {
         <IconButton icon={<MdSkipPrevious />} onClick={handleBackToStart} aria-label="Back to Start" fontSize='40px' colorScheme='transparent' />
         <Slider min={0} max={1} step={0.01} value={volume} onChange={handleVolumeChange}>
           <SliderTrack>
-            <SliderFilledTrack bg='tomato'/>
+            <SliderFilledTrack bg='#173378'/>
           </SliderTrack>
           <SliderThumb boxSize={3}/>
         </Slider>

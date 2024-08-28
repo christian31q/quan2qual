@@ -82,7 +82,7 @@ function ResetPasswordContainer() {
   return (
     <Center>
       <Box p="6" bg="gray.300" borderRadius="md" boxShadow="lg" w="26.25rem" h="25rem" textAlign="center">
-        <Text fontSize="1.875rem" fontWeight="bold" mb="4" fontFamily="Optima LT Pro" color="#3450E2">
+        <Text fontSize="1.875rem" fontWeight="bold" mb="4" fontFamily="Optima LT Pro" color="#173378">
           {t('resetPassword')}
         </Text>
         <Formik
@@ -94,7 +94,7 @@ function ResetPasswordContainer() {
               <Field name='password' validate={(value) => (value ? undefined : 'La contraseña es requerida')}>
                 {({ field, form }) => (
                   <FormControl isInvalid={form.errors.password && form.touched.password} textAlign="center">
-                    <FormLabel color="#3450E2" ml="2rem">{t('newPassword')}</FormLabel>
+                    <FormLabel color="#173378" ml="2rem">{t('newPassword')}</FormLabel>
                       <Input
                         type='password'
                         w="20rem"
@@ -119,7 +119,7 @@ function ResetPasswordContainer() {
               <Field name='confirmPassword' validate={(value) => (value === values.password ? undefined : 'Las contraseñas no coinciden')}>
                 {({ field, form }) => (
                   <FormControl isInvalid={form.errors.confirmPassword && form.touched.confirmPassword}>
-                    <FormLabel color="#3450E2" ml="2rem">{t('confirmPassword')}</FormLabel>
+                    <FormLabel color="#173378" ml="2rem">{t('confirmPassword')}</FormLabel>
                     <Input
                       type='password'
                       w="20rem"
@@ -146,7 +146,7 @@ function ResetPasswordContainer() {
                     color="white"
                     w="20rem"
                     h="2.375rem"
-                    bg="#3450E2"
+                    bg="#173378"
                     fontSize="1.25rem"
                     fontWeight="500"
                     _hover={{ backgroundColor: 'gray.600' }}
@@ -159,7 +159,7 @@ function ResetPasswordContainer() {
                     color="white"
                     w="20rem"
                     h="2.375rem"
-                    bg="#3450E2"
+                    bg="#173378"
                     fontSize="1.25rem"
                     fontWeight="500"
                     _hover={{ backgroundColor: 'gray.600' }}

@@ -96,7 +96,7 @@ const TableBodyTypes = () => {
       <Table size="sm" color="white">
         <Tbody>
           {types.map((type, index) => (
-            <Tr key={index} bg="#272F34">
+            <Tr key={index} bg="#173378">
               <Td width='37%' textAlign="center" borderRight="1px">{type.label === 'Relación personalizada' ? type.inputValues.nombre_personalizada : type.label}</Td>
               <Td width='29%' textAlign="center" borderRight="1px">{type.inputValues.peso_relacion}</Td>
               <Td width='0%' className="hover-element" textAlign="center">

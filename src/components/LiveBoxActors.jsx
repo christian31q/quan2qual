@@ -181,7 +181,7 @@ function LiveBoxActors({ isOpen, onClose }) {
       top="50%"
       left="50%"
       transform="translate(-50%, -50%)"
-      bg="#272F34"
+      bg="#173378"
       p="30px"
       borderRadius="md"
       boxShadow="md"
@@ -208,6 +208,7 @@ function LiveBoxActors({ isOpen, onClose }) {
             value={actorName}
             onChange={(e) => setActorName(e.target.value)}
             placeholder="Label del actor"
+            _placeholder={{ color: 'gray.400' }}
           />
         </HStack>
         <Text fontSize="xl" mb="4" textAlign="center">
@@ -232,6 +233,7 @@ function LiveBoxActors({ isOpen, onClose }) {
               fontSize="30px"
               variant="ghost"
               color="white"
+              _hover={{ bg: "red.600" }}
             />
           </HStack>
         ))}

@@ -89,7 +89,7 @@ function LoginForm() {
   return (
     <div>
       <Flex alignItems="center" flexDirection="column" h="100%">
-        <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#3450E2">
+        <Text fontSize="3xl" fontWeight="700" mb={6} fontFamily="Optima LT Pro" color="#173378">
           {t('welcomeText')}
         </Text>
         <form onSubmit={handleLogin}>
@@ -99,12 +99,12 @@ function LoginForm() {
               <InputGroup>
                 <InputLeftElement
                   pointerEvents="none"
-                  children={<BiUser fontSize="1.5rem" color="#3450E2" />}
+                  children={<BiUser fontSize="1.5rem" color="#173378" />}
                 />
                 <Input
                   type="email"
                   placeholder={t('inputLoginEmail')}
-                  _placeholder={{ color: '#041D39' }}
+                  _placeholder={{ color: '#173378' }}
                   textAlign="center"
                   fontSize="1rem"
                   bg="white"
@@ -121,13 +121,13 @@ function LoginForm() {
               <InputGroup>
                 <InputLeftElement
                   pointerEvents="none"
-                  children={<MdLockOutline fontSize="1.5rem" color="#3450E2" />}
+                  children={<MdLockOutline fontSize="1.5rem" color="#173378" />}
                 />
                 <Input
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='on'
                   placeholder={t('inputLoginPassword')}
-                  _placeholder={{ color: '#041D39' }}
+                  _placeholder={{ color: '#173378' }}
                   textAlign="center"
                   fontSize="1rem"
                   bg="white"
@@ -145,9 +145,9 @@ function LoginForm() {
                     _hover={{ bg: "transparent" }}
                   >
                     {showPassword ? (
-                      <BiShow fontSize="1.5rem" color="#3450E2" />
+                      <BiShow fontSize="1.5rem" color="#173378" />
                     ) : (
-                      <BiHide fontSize="1.5rem" color="#3450E2" />
+                      <BiHide fontSize="1.5rem" color="#173378" />
                     )}
                   </Button>
                 </InputRightElement>
@@ -165,7 +165,7 @@ function LoginForm() {
               color="white"
               w="20rem"
               h="2.375rem"
-              bg="#3450E2"
+              bg="#173378"
               _hover={{ backgroundColor: 'gray.600' }}
               isLoading={isLoading} // Aquí es donde se muestra el spinner
               loadingText={t('loading')} // Texto mientras carga

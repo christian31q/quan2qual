@@ -2,12 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Flex, HStack } from '@chakra-ui/react';
 import OpenProjectContainer from '../container/OpenProjectContainer';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/logoUMNG.png';
 
 function OpenProjectPage(){
     const backgroundImageStyle = {
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        backgroundSize: '30%',
+        backgroundPosition: 'center bottom',
+        backgroundRepeat: 'no-repeat'
       };
     return(
         <Flex

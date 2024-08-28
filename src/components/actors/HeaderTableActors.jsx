@@ -25,7 +25,7 @@ const HeaderTableActors = () => {
           alignItems='center'
           fontSize="1.2vw"
           h='6.11vh'
-          bg='#272F34'
+          bg='#173378'
           borderBottom='1px'
           fontWeight='400'
           pl='1vw'

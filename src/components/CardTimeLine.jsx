@@ -26,7 +26,7 @@ function CardTimeLine(){
                         <Td bg='black' borderRadius='12px 0 0 12px' borderBottom='none' textAlign='center'>
                             <Icon as={IoListCircle} boxSize={8}/>
                         </Td>
-                        <Td bg='#041D39' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'>
+                        <Td bg='#173378' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'>
                             Elementos
                         </Td>
                     </Tr>
@@ -34,7 +34,7 @@ function CardTimeLine(){
                         <Td bg='black' borderRadius='12px 0 0 12px' borderBottom='none' textAlign='center'>
                             <Icon as={MdOutlinePermMedia} boxSize={8}/>
                         </Td>
-                        <Td bg='#041D39' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'>
+                        <Td bg='#173378' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'>
                             Media
                         </Td>
                     </Tr>
@@ -42,7 +42,7 @@ function CardTimeLine(){
                         <Td bg='black' borderRadius='12px 0 0 12px' borderBottom='none' textAlign='center'>
                             <Icon as={RiUser4Line} boxSize={8}/>
                         </Td>
-                        <Td bg='#041D39' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'> 
+                        <Td bg='#173378' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'> 
                             Actores
                         </Td>
                     </Tr>
@@ -50,7 +50,7 @@ function CardTimeLine(){
                         <Td bg='black' borderRadius='12px 0 0 12px' borderBottom='none' textAlign='center'>
                             <Icon as={TbCirclesRelation} boxSize={8}/>
                         </Td>
-                        <Td bg='#041D39' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'> 
+                        <Td bg='#173378' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'> 
                             Relaciones
                         </Td>
                     </Tr>

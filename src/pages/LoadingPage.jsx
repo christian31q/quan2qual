@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Center, Text, Spinner, keyframes, Container, shouldForwardProp, chakra } from '@chakra-ui/react';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/Fondo.png';
 import { motion, isValidMotionProp } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -22,7 +22,8 @@ function LoadingPage() {
       width="100%"
       height="100%"
       bgImage={loginImage}
-      bgSize="cover"
+      bgSize="45%"
+      bgRepeat='no-repeat'
       bgPosition="center"
       display="flex"
       flexDirection="column"

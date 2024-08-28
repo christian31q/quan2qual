@@ -1,12 +1,13 @@
 import React from 'react';
 import { Center, Flex } from '@chakra-ui/react';
 import CreateProjectContainer from '../container/CreateProjectContainer';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/logoUMNG.png';
 
 function CreateProjectPage() {
     const backgroundImageStyle = {
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        backgroundSize: '30%',
+      backgroundPosition: 'center bottom',
+      backgroundRepeat: 'no-repeat'
       };
   return (
     <Flex 

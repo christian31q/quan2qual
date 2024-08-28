@@ -11,7 +11,7 @@ function LogoutButton() {
     <Button 
       textDecorationLine="underline"
       variant="ghost"
-      color="#3450E2"
+      color="#173378"
       fontWeight="700"
       fontSize="1.5625rem"
       lineHeight="normal"

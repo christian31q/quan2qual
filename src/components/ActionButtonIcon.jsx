@@ -10,7 +10,7 @@ function ActionButton({ text, icon, color, link }) {
           color={color}
           w="30.9375rem"
           h="3rem"
-          bg="#3450E2"
+          bg="#173378"
           _hover={{ backgroundColor: 'gray.600' }}
           borderRadius="2xl"
           fontSize="1.5625rem"

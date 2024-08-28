@@ -69,8 +69,9 @@ function SessionPage({ mainContent, pageTitle }) {
         <GridItem 
             pl='2' 
             color='white' 
-            bg='#041D39'
+            bg='#173378'
             borderLeft='1px' 
+            borderBottom='1px'
             borderColor='white'
             area={'header'} 
             colStart={2}
@@ -81,7 +82,7 @@ function SessionPage({ mainContent, pageTitle }) {
         <GridItem 
             color='white'
             display='flex' 
-            bg='#041D39' 
+            bg='#173378' 
             area={'nav'} 
             rowStart={1} 
             rowEnd={3}
@@ -92,8 +93,9 @@ function SessionPage({ mainContent, pageTitle }) {
         </GridItem>
         <GridItem 
             pl='2' 
+            borderLeft='1px'
             color='white'
-            bg='#272F34' 
+            bg='gray.400' 
             area={'main'} 
             colStart={2}
             shadow='xl'
@@ -109,7 +111,7 @@ function SessionPage({ mainContent, pageTitle }) {
             borderLeft='1px' 
             borderColor='white' 
             color='white' 
-            bg='#566066' 
+            bg='gray.400' 
             area={'navR'} 
             colStart={3} 
             rowStart={1} 
@@ -168,7 +170,7 @@ function SessionPage({ mainContent, pageTitle }) {
             display='flex'
             p='2' 
             color='white' 
-            bg='#566066' 
+            bg='gray.400' 
             area={'footer'} 
             colSpan={3} 
             rowStart={4}

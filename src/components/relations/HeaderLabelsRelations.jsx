@@ -5,7 +5,7 @@ import { FiSettings } from 'react-icons/fi';
 const HeaderLabelsRelations = () =>{
     return(
         <Table size="sm" style={{ position: 'sticky', top: '0', zIndex: '1' }}>
-            <Thead bg="#272F34">
+            <Thead bg="#173378">
                 <Tr>
                     <Th color="white" textAlign="center" borderRight="1px">
                         Source

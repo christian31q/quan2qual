@@ -52,7 +52,7 @@ const Timeline = ({ duration, currentTime, onSeek }) => {
         position="relative"
         height="51px"
         width="100%"
-        bg="#041D39"
+        bg="#173378"
         borderRadius="12px"
         cursor="pointer"
         ref={timelineRef}
@@ -82,15 +82,15 @@ const Timeline = ({ duration, currentTime, onSeek }) => {
       </Box>
 
       {/* Sección de frames */}
-      <Flex height="51px" bg="#041D39" overflowX="auto" borderRadius="12px">
+      <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
         {/* Aquí puedes renderizar tus frames */}
       </Flex>
 
       {/* Secciones extra para keyframes */}
-      <Flex height="51px" bg="#041D39" overflowX="auto" borderRadius="12px">
+      <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
         {/* Aquí puedes renderizar tus keyframes */}
       </Flex>
-      <Flex height="51px" bg="#041D39" overflowX="auto" borderRadius="12px">
+      <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
         {/* Aquí puedes renderizar tus keyframes */}
       </Flex>
     </Flex>

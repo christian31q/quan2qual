@@ -17,7 +17,7 @@ function NavLeftButtons({icon, iconSize, buttonText, onClick}){
         fontWeight='400'
         bg='transparent'
         borderColor='transparent'
-        color='#D25644'
+        color='#fdc600'
         _hover={{ bg: 'transparent', color:'white', fill:'white'}}
         _active={{
         bg: '#dddfe2',

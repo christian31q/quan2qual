@@ -162,7 +162,7 @@ const TableBodyActors = ({ data }) => {
       <Table size="sm" color="white">
         <Tbody>
           {actors.map((actor) => (
-            <Tr key={actor.id_front} bg="#272F34">
+            <Tr key={actor.id_front} bg="#173378">
               <Td width='30.1%' textAlign="center" borderRight="1px">
                 <Icon
                   bg={actor.color}

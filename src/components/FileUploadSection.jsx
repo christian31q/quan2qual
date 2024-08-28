@@ -174,7 +174,7 @@ function FileUploadSection({ videoRef, currentTime, setCurrentTime, setDuration 
         p={4}
         borderWidth='3px'
         borderRadius='lg'
-        borderColor='#041D39'
+        borderColor='#173378'
         align='center'
         mt='2vh'
         ml='2vh'
@@ -194,8 +194,8 @@ function FileUploadSection({ videoRef, currentTime, setCurrentTime, setDuration 
         p={4}
         borderWidth='3px'
         borderRadius='lg'
-        borderColor='#041D39'
-        bg='#041D39'
+        borderColor='#173378'
+        bg='#173378'
         align='center'
         mt='2vh'
         mr='2.5vh'

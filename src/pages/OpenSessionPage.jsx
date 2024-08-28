@@ -2,12 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Flex, HStack } from '@chakra-ui/react';
 import OpenSessionContainer from '../container/OpenSessionContainer';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/logoUMNG.png';
 
 function OpenSessionPage(){
     const backgroundImageStyle = {
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        backgroundSize: '30%',
+        backgroundPosition: 'center bottom',
+        backgroundRepeat: 'no-repeat'
       };
     return(
         <Flex

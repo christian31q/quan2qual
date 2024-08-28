@@ -45,7 +45,7 @@ function NavHeader({pageTitleText}){
               color='white' 
               variant='solid'
               fontSize='1.2vw'
-              _hover={{bg: 'red', color: 'black'}}
+              _hover={{bg: 'red.600', color: 'black'}}
             >
               Salir
             </Button>
