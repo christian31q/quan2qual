@@ -44,46 +44,7 @@ function LoginForm() {
       isClosable: true,
     });
   };
-
-  /*const handleLogin = async (event) => {
-    event.preventDefault(); // Evita el comportamiento predeterminado del formulario
-
-    if (email && password) {
-      setIsLoading(true);
   
-      try {
-        // Buscar al usuario en la base de datos
-        const result = await requestMongo("users", { filter: { email: email } }, "findOne");
-        
-        if (result.document != null) {
-          const user = result.document;
-          
-          // Verificar la contraseña
-          const passwordMatch = await bcrypt.compare(password, user.password);
-          if (passwordMatch) {
-            login();
-            setTimeout(() => {
-              setIsAuthenticated(true);
-              navigateTo('/dashboardNewLoadProject')
-            }, 3000); 
-
-            return navigateTo('/loadingPage');
-          } else {
-            showToast('Contraseña incorrecta', 'error');
-            setIsAuthenticated(false);
-          }
-        } else {
-          showToast('El usuario proporcionado no existe.', 'error');
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        alert('Hubo un error en la autenticación');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };*/
   const handleLogin = async (event) => {
     event.preventDefault();
   
@@ -98,7 +59,10 @@ function LoginForm() {
   
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (passwordMatch) {
+            // Guardar el estado de autenticación y el ID del usuario en sessionStorage
             sessionStorage.setItem('isAuthenticated', 'true');
+            sessionStorage.setItem('userId', user._id);
+  
             login();
             setTimeout(() => {
               setIsAuthenticated(true);

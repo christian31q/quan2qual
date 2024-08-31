@@ -3,7 +3,6 @@ import { Box, VStack, Text, Button, Grid, Center } from '@chakra-ui/react';
 import ProjectCard from '../components/OpenCards';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaVideo, FaImage, FaFileAudio } from 'react-icons/fa'; // Importa los iconos necesarios
 
 function OpenSessionContainer({ projects, onOpen }) {
     const { t } = useTranslation();

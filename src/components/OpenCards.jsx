@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Button } from '@chakra-ui/react';
+import { Box, Text, Button, HStack } from '@chakra-ui/react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -28,22 +28,41 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
         {/*{project.creationDate}*/}
         {creationDate}
       </Text>
-      <Link to="/openSessions">
+      <HStack>
+        {/*Hacer el link dinamico, por si ya se está en sessions
+          que se abra es la sesión, link dinamico también para saber 
+          si se está en proyectos y abrir un proyecto
+        */}
+        <Link to="/openSessions">
+          <Button
+            w="100%"
+            h="1.7rem"
+            bg="#173378"
+            color="white"
+            fontSize="1rem"
+            fontWeight="400"
+            shadow="lg"
+            mt="1rem"
+            _hover={{ backgroundColor: 'gray.600' }}
+            //onClick={onOpen}
+          >
+          {t('openButton')}
+        </Button>
+        </Link>
         <Button
-          w="8rem"
-          h="1.7rem"
-          bg="#173378"
-          color="white"
-          fontSize="1rem"
-          fontWeight="400"
-          shadow="lg"
-          mt="1rem"
-          _hover={{ backgroundColor: 'gray.600' }}
-          //onClick={onOpen}
-        >
-        {t('openButton')}
-      </Button>
-      </Link>
+            w="100%"
+            h="1.7rem"
+            colorScheme="red"
+            color="white"
+            fontSize="1rem"
+            fontWeight="400"
+            shadow="lg"
+            mt="1rem"
+            //onClick={onOpen}
+          >
+          Delete
+        </Button>
+      </HStack>
     </Box>
   );
 }

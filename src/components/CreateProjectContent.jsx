@@ -12,27 +12,77 @@ import {
 } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import requestMongo from '../api/request';
+import { createStandaloneToast } from '@chakra-ui/react';
 
+const { ToastContainer, toast } = createStandaloneToast();
 
 function CreateProjectContent() {
   const {t} = useTranslation();
-
+  
   const [projectName, setProjectName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isProjectNameValid, setIsProjectNameValid] = useState(true); // Nuevo estado para validar el nombre del proyecto
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleNextClick = () => {
-    if (projectName.trim() === '') {
-      // Mostrar un mensaje de error si el campo de nombre del proyecto está vacío
-      setErrorMessage('Please, complete the project name field.');
-      setIsProjectNameValid(false); // Establecer el estado de validación como falso
-    } else {
-      setErrorMessage(''); // Borrar cualquier mensaje de error anterior
-      setIsProjectNameValid(true); // Establecer el estado de validación como verdadero
-      navigate('/addSessionType');
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const createProjectInDB = async (projectName, userId) => {
+    const projectData = {
+      document: {
+        name: projectName,
+        user_id: userId,
+        created_at: new Date(),
+      }
+    };
+  
+    try {
+      const result = await requestMongo("projects", projectData, "insertOne");
+      return result;
+    } catch (error) {
+      console.error('Error al crear el proyecto:', error);
+      throw error;
     }
   };
+
+  const handleNextClick = async () => {
+    if (projectName.trim() === '') {
+      setErrorMessage('Please, complete the project name field.');
+      setIsProjectNameValid(false);
+    } else {
+      setIsLoading(true);
+      setErrorMessage('');
+      setIsProjectNameValid(true);
+  
+      try {
+        const userId = sessionStorage.getItem('userId'); // Obtener el ID del usuario desde sessionStorage
+        
+        console.log('User id: ', userId);
+        // Guarda el proyecto en la base de datos
+        const result = await createProjectInDB(projectName, userId);
+        const projectId = result.insertedId;
+
+        showToast('Proyecto creado con éxito', 'success')
+  
+        // Navega a la siguiente página
+        navigate(`/addSessionType?projectId=${projectId}`);
+      } catch (error) {
+        setErrorMessage('Error creating project. Please try again.');
+        showToast('Hubo un error al crear el proyecto', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };  
 
   return (
     <Stack spacing={4} align="center">
@@ -93,6 +143,8 @@ function CreateProjectContent() {
             fontSize="1.25rem"
             fontWeight="400"
             _hover={{ backgroundColor: 'gray.600' }}
+            isLoading={isLoading}
+            loadingText={t('loading')}
             onClick={handleNextClick}
           >
             {t('next')}

@@ -1,49 +1,96 @@
 import React, { useState } from 'react';
-import { Text, Stack, Box, Button, Center, HStack } from '@chakra-ui/react';
+import { createStandaloneToast, Text, Stack, Box, Button, Center, HStack } from '@chakra-ui/react';
 import SessionTitleInput from '../components/SessionTitleInput';
 import IconButtons from '../components/IconButtons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import requestMongo from '../api/request';
+
+const { ToastContainer, toast } = createStandaloneToast();
 
 function AddSessionTypeContainer() {
   const {t} = useTranslation();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const projectId = queryParams.get('projectId');
 
   const [showAlert, setShowAlert] = useState(false);
   const [sessionTitle, setSessionTitle] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [isSessionTitleValid, setIsSessionTitleValid] = useState(true);
   const [isIconSelected, setIsIconSelected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleCreateSession = () => {
-    let hasError = false;
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
 
+  const createSessionInDB = async (sessionData) => {
+    const result = await requestMongo("sessions", sessionData, "insertOne");
+    return result;
+  };
+
+  const handleCreateSession = async () => {
+    let hasError = false;
+  
     if (!sessionTitle.trim()) {
       setIsSessionTitleValid(false);
       hasError = true;
     } else {
       setIsSessionTitleValid(true);
     }
-
+  
     if (!selectedIcon) {
       setIsIconSelected(true);
       hasError = true;
     } else {
       setIsIconSelected(false);
     }
-
+  
     if (hasError) {
       setShowAlert(true);
     } else {
+      setIsLoading(true);
       setShowAlert(false);
-      // Agregar aquí la lógica para crear la sesión.
-
-      if (selectedIcon === 1) {
-        navigate('/videoWindow');
-      } else if (selectedIcon === 2) {
-        navigate('/imagenWindow');
-      } else if (selectedIcon === 3) {
-        navigate('/audioWindow');
+      
+      try {
+        // Lógica para crear la sesión en la base de datos
+        const mediaType = selectedIcon === 1 ? 'video' : selectedIcon === 2 ? 'image' : 'audio';
+        const mediaUrl = ''; // Aquí poner una URL predeterminada o vacía
+        const unusedRelationshipTypes = []; // Inicialmente vacío, o obtener los tipos no usados
+  
+        const sessionData = {
+          document: {
+            project_id: projectId,
+            media_type: mediaType,
+            media_url: mediaUrl,
+            unused_relationship_types: unusedRelationshipTypes,
+            created_at: new Date(),
+          }
+        };
+  
+        const result = await createSessionInDB(sessionData);
+        showToast('Sesión creada con éxito', 'success');
+  
+        // Redirigir a la ventana correspondiente
+        if (selectedIcon === 1) {
+          //navigate('/videoWindow');
+        } else if (selectedIcon === 2) {
+          //navigate('/imagenWindow');
+        } else if (selectedIcon === 3) {
+          //navigate('/audioWindow');
+        }
+      } catch (error) {
+        showToast('Error al crear la sesión', 'error');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -110,6 +157,8 @@ function AddSessionTypeContainer() {
           fontWeight="400"
           shadow="lg"
           _hover={{ backgroundColor: 'gray.600' }}
+          isLoading={isLoading}
+          loadingText={t('loading')}
           onClick={handleCreateSession}
         >
           {t('create')}
