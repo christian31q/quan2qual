@@ -1,15 +1,25 @@
 import React from 'react';
 import { HStack, Button, Text } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { CiSaveDown1 } from "react-icons/ci";
 import { AiOutlineLogout } from "react-icons/ai";
 import { BsPower} from "react-icons/bs";
 import InputHeader from './InputHeader'
+import { useTranslation } from 'react-i18next';
 
 function NavHeader({pageTitleText}){
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
+
     return(
         <HStack direction='row' spacing={{ base: "10px", md: "20px  ", lg: "2.5vmin" }} justifyContent='right' mt='1vh' mr='3vh'>
             {/*<InputHeader pageTitle={pageTitle}/>*/}
-            <Text fontSize='1.2vw' mr='28vw'>
+            <Text fontSize='1.2vw' mr='25vw'>
               {pageTitleText}
             </Text>
             <Button 
@@ -46,8 +56,9 @@ function NavHeader({pageTitleText}){
               variant='solid'
               fontSize='1.2vw'
               _hover={{bg: 'red.600', color: 'black'}}
+              onClick={handleLogout}
             >
-              Salir
+              {t('logOut')}
             </Button>
           </HStack>
     );
