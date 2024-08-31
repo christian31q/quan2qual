@@ -26,12 +26,11 @@ const { ToastContainer, toast } = createStandaloneToast();
 
 function LoginForm() {
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, setIsAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigateTo = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowClick = () => setShowPassword(!showPassword);
@@ -46,7 +45,7 @@ function LoginForm() {
     });
   };
 
-  const handleLogin = async (event) => {
+  /*const handleLogin = async (event) => {
     event.preventDefault(); // Evita el comportamiento predeterminado del formulario
 
     if (email && password) {
@@ -84,7 +83,45 @@ function LoginForm() {
         setIsLoading(false);
       }
     }
-  };
+  };*/
+  const handleLogin = async (event) => {
+    event.preventDefault();
+  
+    if (email && password) {
+      setIsLoading(true);
+  
+      try {
+        const result = await requestMongo("users", { filter: { email: email } }, "findOne");
+  
+        if (result.document != null) {
+          const user = result.document;
+  
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (passwordMatch) {
+            sessionStorage.setItem('isAuthenticated', 'true');
+            login();
+            setTimeout(() => {
+              setIsAuthenticated(true);
+              navigateTo('/dashboardNewLoadProject');
+            }, 3000); 
+  
+            return navigateTo('/loadingPage');
+          } else {
+            showToast('Contraseña incorrecta', 'error');
+            setIsAuthenticated(false);
+          }
+        } else {
+          showToast('El usuario proporcionado no existe.', 'error');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        alert('Hubo un error en la autenticación');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };  
 
   return (
     <div>
@@ -173,11 +210,11 @@ function LoginForm() {
               {t('buttonLogIn')}
             </Button>
 
-            {isAuthenticated ? (
+            {/*{setIsAuthenticated ? (
               <Text color="green.500" fontWeight="bold" mb={6}>
                 ¡Credenciales correctas! Acceso concedido.
               </Text>
-            ) : null}
+            ) : null}*/}
           </Stack>
         </form>
         <LanguageChanger/>

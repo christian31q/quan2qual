@@ -1,22 +1,27 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 
 function LogoutButton() {
   const { t } = useTranslation();
-  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
 
   return (
     <Button 
       textDecorationLine="underline"
       variant="ghost"
-      color="#173378"
+      color="#041D39"
       fontWeight="700"
       fontSize="1.5625rem"
       lineHeight="normal"
       fontFamily="Optima LT Pro"
-      onClick={logout}
+      onClick={handleLogout}
     >
       {t('logOut')}
     </Button>
