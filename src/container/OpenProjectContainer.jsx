@@ -84,7 +84,7 @@ function OpenProjectContainer() {
                                 mt="1.5rem"
                                 _hover={{ backgroundColor: 'gray.600' }}
                               > 
-                                {t('newSessionText')}
+                                {t('newProject')}
                               </Button>
                             </Link>
                           </Box>
