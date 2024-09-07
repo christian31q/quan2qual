@@ -2,9 +2,50 @@ import React from 'react';
 import { Box, Text, Button, HStack } from '@chakra-ui/react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { createStandaloneToast } from '@chakra-ui/react';
+import { deleteProject, deleteSession } from '../utils/mongoUtils';
 
-function ProjectCard({ icon, title, creationDate, project, onOpen }) {
+const { ToastContainer, toast } = createStandaloneToast();
+
+function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
   const {t} = useTranslation();
+
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(t('deleteConfirmation'));
+
+    if (confirmed) {
+      console.log('Tipo: ', type);
+      try {
+        console.log('Id al eliminar: ', _id);
+        let result;
+        if (type === 'project') {
+          result = await deleteProject(_id);  // Elimina proyecto
+        } else if (type === 'session') {
+          result = await deleteSession(_id);  // Elimina sesión
+        }
+
+        if (result > 0) {
+          onDelete(_id);
+          showToast(type === 'project' ? 'Proyecto eliminado' : 'Sesión eliminada', 'success');
+        } else {
+          showToast(type === 'project' ? 'Error al eliminar el proyecto' : 'Error al eliminar la sesión', 'error');
+        }
+      } catch (error) {
+        console.error(`Error deleting ${type}:`, error);
+        showToast(`Error eliminando el ${type === 'project' ? 'proyecto' : 'sesión'}`, 'error');
+      }
+    }
+  };
 
   return (
     <Box
@@ -26,14 +67,10 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
       </Text>
       <Text color="#173378" fontSize="0.8rem" fontStyle="normal" fontWeight="400">
         {/*{project.creationDate}*/}
-        {creationDate}
+        Fecha de creación: {creationDate}
       </Text>
       <HStack>
-        {/*Hacer el link dinamico, por si ya se está en sessions
-          que se abra es la sesión, link dinamico también para saber 
-          si se está en proyectos y abrir un proyecto
-        */}
-        <Link to="/openSessions">
+        <Link to={type === 'project' ? `/openSessions?projectId=${_id}` : `/sessionDetails?sessionId=${_id}`}>
           <Button
             w="100%"
             h="1.7rem"
@@ -58,9 +95,9 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
             fontWeight="400"
             shadow="lg"
             mt="1rem"
-            //onClick={onOpen}
+            onClick={handleDelete}
           >
-          Delete
+          {t('deleteButton')}
         </Button>
       </HStack>
     </Box>
@@ -68,4 +105,3 @@ function ProjectCard({ icon, title, creationDate, project, onOpen }) {
 }
 
 export default ProjectCard;
-

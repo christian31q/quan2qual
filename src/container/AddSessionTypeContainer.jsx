@@ -69,6 +69,7 @@ function AddSessionTypeContainer() {
         const sessionData = {
           document: {
             project_id: projectId,
+            name: sessionTitle,
             media_type: mediaType,
             media_url: mediaUrl,
             unused_relationship_types: unusedRelationshipTypes,

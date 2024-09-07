@@ -1,12 +1,13 @@
 import React from 'react';
 import { Flex, Box } from '@chakra-ui/react';
 import ResetPasswordContainer from '../container/ResetPasswordContainer';
-import loginImage from '../assets/Trama.png';
+import loginImage from '../assets/logoUMNG.png';
 
 function ResetPasswordPage() {
   const backgroundImageStyle = {
-    backgroundSize: 'cover',
-    backgroundPosition: 'center center',
+    backgroundSize: '30%',
+    backgroundPosition: 'center bottom',
+    backgroundRepeat: 'no-repeat'
   };
 
   return (
