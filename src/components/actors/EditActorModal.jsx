@@ -149,7 +149,7 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
         </ModalBody>
         <ModalFooter>
           <Button colorScheme='red' mr={3} onClick={onClose}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit}>
             Guardar cambios

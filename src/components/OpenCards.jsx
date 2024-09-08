@@ -1,14 +1,16 @@
-import React from 'react';
-import { Box, Text, Button, HStack } from '@chakra-ui/react';
-import { useTranslation, Trans } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Box, Text, Button, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { createStandaloneToast } from '@chakra-ui/react';
 import { deleteProject, deleteSession } from '../utils/mongoUtils';
 
-const { ToastContainer, toast } = createStandaloneToast();
+const { toast } = createStandaloneToast();
 
 function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(false);
 
   const showToast = (message, type) => {
     toast({
@@ -21,29 +23,27 @@ function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(t('deleteConfirmation'));
-
-    if (confirmed) {
-      console.log('Tipo: ', type);
-      try {
-        console.log('Id al eliminar: ', _id);
-        let result;
-        if (type === 'project') {
-          result = await deleteProject(_id);  // Elimina proyecto
-        } else if (type === 'session') {
-          result = await deleteSession(_id);  // Elimina sesión
-        }
-
-        if (result > 0) {
-          onDelete(_id);
-          showToast(type === 'project' ? 'Proyecto eliminado' : 'Sesión eliminada', 'success');
-        } else {
-          showToast(type === 'project' ? 'Error al eliminar el proyecto' : 'Error al eliminar la sesión', 'error');
-        }
-      } catch (error) {
-        console.error(`Error deleting ${type}:`, error);
-        showToast(`Error eliminando el ${type === 'project' ? 'proyecto' : 'sesión'}`, 'error');
+    setLoading(true);
+    try {
+      let result;
+      if (type === 'project') {
+        result = await deleteProject(_id) // Eliminar projecto
+      } else if (type === 'session') {
+        result = await deleteSession(_id); // Eliminar sesión
       }
+
+      if (result > 0) {
+        onDelete(_id);
+        showToast(type === 'project' ? 'Proyecto eliminado' : 'Sesión eliminada', 'success');
+      } else {
+        showToast(type === 'project' ? 'Error al eliminar el proyecto' : 'Error al eliminar la sesión', 'error');
+      }
+    } catch (error) {
+      console.error(`Error deleting ${type}:`, error);
+      showToast(`Error eliminando el ${type === 'project' ? 'proyecto' : 'sesión'}`, 'error');
+    } finally {
+      setLoading(false);
+      onClose();
     }
   };
 
@@ -61,12 +61,10 @@ function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
       alignItems="center"
     >
       {icon}
-      <Text color="#173378" fontSize="1.2rem" fontStyle="normal" fontWeight="700">
-        {/*{project.title}*/}
+      <Text color="#173378" fontSize="1.2rem" fontWeight="700">
         {title}
       </Text>
-      <Text color="#173378" fontSize="0.8rem" fontStyle="normal" fontWeight="400">
-        {/*{project.creationDate}*/}
+      <Text color="#173378" fontSize="0.8rem" fontWeight="400">
         Fecha de creación: {creationDate}
       </Text>
       <HStack>
@@ -81,25 +79,48 @@ function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
             shadow="lg"
             mt="1rem"
             _hover={{ backgroundColor: 'gray.600' }}
-            //onClick={onOpen}
           >
-          {t('openButton')}
-        </Button>
+            {t('openButton')}
+          </Button>
         </Link>
         <Button
-            w="100%"
-            h="1.7rem"
-            colorScheme="red"
-            color="white"
-            fontSize="1rem"
-            fontWeight="400"
-            shadow="lg"
-            mt="1rem"
-            onClick={handleDelete}
-          >
+          w="100%"
+          h="1.7rem"
+          colorScheme="red"
+          color="white"
+          fontSize="1rem"
+          fontWeight="400"
+          shadow="lg"
+          mt="1rem"
+          onClick={onOpen}
+        >
           {t('deleteButton')}
         </Button>
       </HStack>
+
+      {/* Modal para confirmar eliminación */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('deleteConfirmationTitle')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {t('deleteConfirmationMessage')}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              {t('cancel')}
+            </Button>
+            <Button 
+              colorScheme="red" 
+              onClick={handleDelete} 
+              isLoading={loading}
+            >
+              {t('deleteButton')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }

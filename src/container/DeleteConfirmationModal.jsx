@@ -15,7 +15,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, type }) => {
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Confirmar Eliminación</ModalHeader>
+        <ModalHeader>{t('deleteConfirmationTitle')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           ¿Estás seguro de que deseas eliminar {type}?
@@ -23,10 +23,10 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, type }) => {
 
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button colorScheme="red" onClick={onConfirm}>
-            Eliminar
+            {t('deleteButton')}
           </Button>
         </ModalFooter>
       </ModalContent>
