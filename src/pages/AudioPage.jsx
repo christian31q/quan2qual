@@ -1,7 +1,7 @@
 import React from 'react';
 import SessionPage from './SessionPage';
 
-function VideoPage() {
+function AudioPage() {
   return (
     <SessionPage
       mainContent="Main Audio"
@@ -10,4 +10,4 @@ function VideoPage() {
   );
 }
 
-export default VideoPage;
+export default AudioPage;

@@ -1,10 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Grid, GridItem, Box, HStack } from '@chakra-ui/react';
+import { Grid, GridItem, Box, HStack, Button, VStack, Text, Center } from '@chakra-ui/react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
 import VideoControls from '../components/VideoControls';
+//import AudioWaveform from '../components/AudioWaveform'; // Nuevo componente para manejar onda de audio
 
 import HeaderTableActors from '../components/actors/HeaderTableActors';
 import HeaderLabelsActors from '../components/actors/HeaderLabelsActors';
@@ -21,10 +24,48 @@ import CardTimeLine from '../components/CardTimeLine';
 import Timeline from '../components/TimeLine';
 import '../styles/HandleStyles.css'
 
-function SessionPage({ mainContent, pageTitle }) {
+import { getSessionFromDB } from '../utils/mongoUtils';
+import { useParams, useSearchParams } from 'react-router-dom';
+
+function SessionPage({ pageTitle }) {
+  const {t} = useTranslation();
+  const { mediaType: urlMediaType } = useParams(); // Util por si el usuario modifica el URL
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
+  console.log('Media URL type: ', urlMediaType); 
+
+  const [sessionData, setSessionData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [actors, setActors] = useState([]);
   const [types, setTypes] = useState([]);
 
+  useEffect(() => {
+    if (!sessionId) return;
+    
+    const fetchSession = async () => {
+      try {
+        setLoading(true);
+        const session = await getSessionFromDB(sessionId); // Obtiene la sesión desde la DB
+        if (session) {
+          setSessionData(session); // Guarda la sesión
+        } else {
+          setError('No se encontró la sesión');
+        }
+      } catch (err) {
+        setError('Error al obtener la sesión');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSession();
+  }, [sessionId]);
+
+  const mediaType = sessionData ? sessionData.media_type : null;
+  console.log('Media Type: ', mediaType);
+  
   useEffect(() => {
     const actorsData = localStorage.getItem('actors');
     const typesData = localStorage.getItem('types');
@@ -38,34 +79,73 @@ function SessionPage({ mainContent, pageTitle }) {
   }, []);
 
   // Video
-  const videoRef = useRef(null);
+  const mediaRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
   const handleSeek = (time) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = time;
     }
     setCurrentTime(time);
   };
 
   const [activeLiveBox, setActiveLiveBox] = useState('Actors');
 
+  // Lógica para determinar si es audio, imagen o video
+  const isAudio = mediaType === 'audio';
+  const isImage = mediaType === 'image';
+  const isVideo = mediaType === 'video';
+  
+  const isMediaTypeMismatch = mediaType && urlMediaType && mediaType !== urlMediaType;
   return (
-    <Box height="100vh">
-      <Grid
-        templateAreas={`"header header"
-                        "nav main"
-                        "nav navR"
-                        "nav reproductor"
-                        "nav footer"`}
-        gridTemplateRows={'6.2% 59.1% 6% 28.7%'}
-        gridTemplateColumns={'5.99% 70.57% 23.44%'}
-        h='100%'
-        gap='0'
-        color='blackAlpha.700'
-        fontWeight='bold'
-      >
+    <Box 
+      alignItems='center'
+      display='flex'
+      justifyContent='center'
+      height="100vh"
+    >
+      {isMediaTypeMismatch ? (
+          <VStack>
+            <Text
+              fontSize="2.8125rem"
+              fontWeight="700"
+              fontFamily="Optima LT Pro"
+              color="#173378"
+              mt="0.3rem"
+              mb="1.5rem"
+            >
+              {t('errorMessageSessionLoad')}
+            </Text>
+            <Link to="/dashboardNewLoadProject">
+              <Button
+                w="10rem"
+                h="2.375rem"
+                bg="#173378"
+                color="white"
+                fontSize="1.25rem"
+                fontWeight="400"
+                shadow="lg"
+                _hover={{ backgroundColor: 'gray.600' }}
+              >
+                {t('returnButton')}
+              </Button>
+            </Link>
+          </VStack>
+      ) : (
+        <Grid
+          templateAreas={`"header header"
+                          "nav main"
+                          "nav navR"
+                          "nav reproductor"
+                          "nav footer"`}
+          gridTemplateRows={'6.2% 59.1% 6% 28.7%'}
+          gridTemplateColumns={'5.99% 70.57% 23.44%'}
+          h='100%'
+          gap='0'
+          color='blackAlpha.700'
+          fontWeight='bold'
+        >
         <GridItem 
             pl='2' 
             color='white' 
@@ -101,10 +181,11 @@ function SessionPage({ mainContent, pageTitle }) {
             shadow='xl'
         >
           <FileUploadSection 
-            videoRef={videoRef}
+            mediaType={mediaType}
+            mediaRef={mediaRef}
             currentTime={currentTime}
             setCurrentTime={setCurrentTime}
-            setDuration={setDuration} 
+            setDuration={setDuration}
           />
         </GridItem>
         <GridItem 
@@ -163,7 +244,11 @@ function SessionPage({ mainContent, pageTitle }) {
             display='flex'
         >
           {/*Reproductor*/}
-          <VideoControls videoRef={videoRef} />
+          {isAudio ? (
+            {/*<AudioWaveform />*/} // Muestra onda de audio
+          ) : (
+            <VideoControls videoRef={mediaRef} /> // Reproductor de video o imagen
+          )}
         </GridItem>
         <GridItem 
             alignItems='center'
@@ -181,7 +266,8 @@ function SessionPage({ mainContent, pageTitle }) {
             <Timeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />
           </HStack>
         </GridItem> 
-      </Grid>
+        </Grid>
+      )}
     </Box>
   );
 }

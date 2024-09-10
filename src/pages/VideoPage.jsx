@@ -11,4 +11,3 @@ function VideoPage() {
 }
 
 export default VideoPage;
-

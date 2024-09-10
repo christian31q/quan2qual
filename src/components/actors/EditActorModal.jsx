@@ -15,8 +15,10 @@ import {
 
 import ColorPicker from '@radial-color-picker/react-color-picker';
 import '@radial-color-picker/react-color-picker/dist/style.css';
+import { useTranslation, Trans } from 'react-i18next';
 
 const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
+  const {t} = useTranslation();
   const [editedAttributes, setEditedAttributes] = useState([]);
   const [editedActor, setEditedActor] = useState({ name: ''});
   const [actorEditColor, setActorColor] = useState({

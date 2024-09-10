@@ -84,6 +84,7 @@ function OpenSessionContainer() {
                                     creationDate={new Date(session.created_at).toLocaleDateString()}
                                     _id={session._id}
                                     type="session"
+                                    media={session.media_type}
                                     onDelete={handleDeleteSession}
                                 />
                             ))

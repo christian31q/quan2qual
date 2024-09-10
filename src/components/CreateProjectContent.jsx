@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import requestMongo from '../api/request';
+import { createProjectInDB } from '../utils/mongoUtils';
 import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
@@ -34,24 +34,6 @@ function CreateProjectContent() {
       duration: 3000,
       isClosable: true,
     });
-  };
-
-  const createProjectInDB = async (projectName, userId) => {
-    const projectData = {
-      document: {
-        name: projectName,
-        user_id: userId,
-        created_at: new Date(),
-      }
-    };
-  
-    try {
-      const result = await requestMongo("projects", projectData, "insertOne");
-      return result;
-    } catch (error) {
-      console.error('Error al crear el proyecto:', error);
-      throw error;
-    }
   };
 
   const handleNextClick = async () => {

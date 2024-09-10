@@ -1,7 +1,7 @@
 import React from 'react';
 import SessionPage from './SessionPage';
 
-function VideoPage() {
+function ImagePage() {
   return (
     <SessionPage
       mainContent="Main Image"
@@ -10,4 +10,4 @@ function VideoPage() {
   );
 }
 
-export default VideoPage;
+export default ImagePage;

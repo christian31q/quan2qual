@@ -9,8 +9,10 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react';
+import { useTranslation, Trans } from 'react-i18next';
 
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, type }) => {
+  const {t} = useTranslation();
   return (
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <ModalOverlay />

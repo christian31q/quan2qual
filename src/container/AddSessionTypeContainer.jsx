@@ -4,7 +4,7 @@ import SessionTitleInput from '../components/SessionTitleInput';
 import IconButtons from '../components/IconButtons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import requestMongo from '../api/request';
+import { createSessionInDB } from '../utils/mongoUtils';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
@@ -30,11 +30,6 @@ function AddSessionTypeContainer() {
       duration: 3000,
       isClosable: true,
     });
-  };
-
-  const createSessionInDB = async (sessionData) => {
-    const result = await requestMongo("sessions", sessionData, "insertOne");
-    return result;
   };
 
   const handleCreateSession = async () => {
@@ -77,17 +72,11 @@ function AddSessionTypeContainer() {
           }
         };
   
-        const result = await createSessionInDB(sessionData);
-        showToast('Sesión creada con éxito', 'success');
-  
         // Redirigir a la ventana correspondiente
-        if (selectedIcon === 1) {
-          //navigate('/videoWindow');
-        } else if (selectedIcon === 2) {
-          //navigate('/imagenWindow');
-        } else if (selectedIcon === 3) {
-          //navigate('/audioWindow');
-        }
+        const result = await createSessionInDB(sessionData);
+        const sessionId = result.insertedId;;
+        showToast('Sesión creada con éxito', 'success');
+        navigate(`/session/${mediaType}?sessionId=${sessionId}`);
       } catch (error) {
         showToast('Error al crear la sesión', 'error');
       } finally {

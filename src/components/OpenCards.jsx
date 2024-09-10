@@ -7,7 +7,7 @@ import { deleteProject, deleteSession } from '../utils/mongoUtils';
 
 const { toast } = createStandaloneToast();
 
-function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
+function ProjectCard({ icon, title, creationDate, _id, type, media, onDelete }) {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ function ProjectCard({ icon, title, creationDate, _id, type, onDelete }) {
         Fecha de creación: {creationDate}
       </Text>
       <HStack>
-        <Link to={type === 'project' ? `/openSessions?projectId=${_id}` : `/sessionDetails?sessionId=${_id}`}>
+        <Link to={type === 'project' ? `/openSessions?projectId=${_id}` : `/session/${media}?sessionId=${_id}`}>
           <Button
             w="100%"
             h="1.7rem"
