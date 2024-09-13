@@ -6,6 +6,7 @@ import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
+import ImageUploadSection from '../components/ImageUploadSection';
 import VideoControls from '../components/VideoControls';
 //import AudioWaveform from '../components/AudioWaveform'; // Nuevo componente para manejar onda de audio
 
@@ -22,6 +23,7 @@ import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations
 
 import CardTimeLine from '../components/CardTimeLine';
 import Timeline from '../components/TimeLine';
+import ImageTimeline from '../components/ImageTimeLine';
 import '../styles/HandleStyles.css'
 
 import { getSessionFromDB } from '../utils/mongoUtils';
@@ -40,6 +42,14 @@ function SessionPage({ pageTitle }) {
 
   const [actors, setActors] = useState([]);
   const [types, setTypes] = useState([]);
+
+  // Imagenes
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [currentImage, setCurrentImage] = useState(null);
+
+  const handleSetSelectedImages = (images) => {
+    setSelectedImages(images);
+  };
 
   useEffect(() => {
     if (!sessionId) return;
@@ -180,13 +190,27 @@ function SessionPage({ pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-          <FileUploadSection 
-            mediaType={mediaType}
-            mediaRef={mediaRef}
-            currentTime={currentTime}
-            setCurrentTime={setCurrentTime}
-            setDuration={setDuration}
-          />
+          {mediaType === 'image' && (
+            <ImageUploadSection 
+              mediaRef={mediaRef}
+              setSelectedImages={handleSetSelectedImages} // Pasar la función para actualizar imágenes
+              setCurrentTime={setCurrentTime}
+              setDuration={setDuration}
+              currentImage={currentImage} // Pasar la imagen actual
+            />
+          )}
+          {mediaType === 'video' && (
+              <FileUploadSection 
+                mediaType={mediaType}
+                mediaRef={mediaRef}
+                currentTime={currentTime}
+                setCurrentTime={setCurrentTime}
+                setDuration={setDuration}
+              />            
+          )}
+          {mediaType === 'audio' && (
+            {/*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+          )}
         </GridItem>
         <GridItem 
             borderLeft='1px' 
@@ -244,28 +268,39 @@ function SessionPage({ pageTitle }) {
             display='flex'
         >
           {/*Reproductor*/}
-          {isAudio ? (
-            {/*<AudioWaveform />*/} // Muestra onda de audio
-          ) : (
-            <VideoControls videoRef={mediaRef} /> // Reproductor de video o imagen
-          )}
+          {mediaType === 'audio' ? (
+            {/* <AudioWaveform /> */} // Muestra onda de audio
+          ) : mediaType === 'video' ? (
+            <VideoControls videoRef={mediaRef} /> // Reproductor de video
+          ) : null /* No muestra nada si es imagen */}
         </GridItem>
         <GridItem 
             alignItems='center'
-            display='flex'
-            p='2' 
-            color='white' 
-            bg='gray.400' 
-            area={'footer'} 
-            colSpan={3} 
-            rowStart={4}
-            shadow='xl'
+              display='flex'
+              p='2' 
+              color='white' 
+              bg='gray.400' 
+              area={'footer'} 
+              colSpan={3} 
+              rowStart={4}
+              shadow='xl'
         >
-          <HStack width='100%'>
-            <CardTimeLine />
-            <Timeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />
-          </HStack>
-        </GridItem> 
+            <HStack width='100%'>
+              <CardTimeLine />
+              {mediaType === 'image' && (
+                <ImageTimeline 
+                  images={selectedImages}
+                  setSelectedImage={setCurrentImage}
+                />
+              )}
+              {mediaType === 'video' && (
+                {/*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+              )}
+              {mediaType === 'audio' && (
+                {/*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+              )}
+            </HStack>
+        </GridItem>
         </Grid>
       )}
     </Box>

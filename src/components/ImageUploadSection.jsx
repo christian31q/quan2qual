@@ -4,40 +4,20 @@ import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 
-function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, setDuration }) {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [droppedActors, setDroppedActors] = useState([]); 
-  const containerRef = useRef(); 
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurrentTime, setDuration }) {
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [droppedActors, setDroppedActors] = useState([]);
+  const containerRef = useRef();
   const [actors, setActors] = useState([]);
-  const [dragOffset, setDragOffset] = useState({ x: 10, y: 10 });
 
+  // Maneja la selección de archivos
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const files = Array.from(e.target.files);
+    setSelectedFiles(files);
+    setSelectedImages(files.map(file => URL.createObjectURL(file))); // Actualiza las imágenes seleccionadas
   };
 
-  useEffect(() => {
-    if (mediaType === 'video' || mediaType === 'image') {
-      if (mediaRef.current) {
-        const handleTimeUpdate = () => {
-          setCurrentTime(mediaRef.current.currentTime);
-        };
-
-        const handleLoadedMetadata = () => {
-          setDuration(mediaRef.current.duration);
-        };
-
-        mediaRef.current.addEventListener('timeupdate', handleTimeUpdate);
-        mediaRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-        return () => {
-          mediaRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-          mediaRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        };
-      }
-    }
-  }, [mediaRef, setCurrentTime, setDuration, mediaType]);
-
+  // Carga los actores desde el almacenamiento local
   useEffect(() => {
     const storedActors = JSON.parse(localStorage.getItem('actors'));
     if (storedActors) {
@@ -45,9 +25,9 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
     }
   }, []);
 
+  // Maneja el arrastre y caída de actores
   const handleDrop = (e) => {
     e.preventDefault();
-    
     const actorId = e.dataTransfer.getData('actorId');
     if (!actorId) return;
 
@@ -84,61 +64,58 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
 
       setDroppedActors((prev) => [...prev, newActorInstance]);
     }
-  };   
-
-  const handleDragStart = (e, actorId, isExistingActor) => {
-    setDragOffset({ x: e.clientX, y: e.clientY });
-    e.dataTransfer.setData('actorId', actorId.toString()); 
   };
 
-  const renderMediaViewer = () => {
-    if (mediaType === 'video') {
-      return selectedFile ? (
-        <video
-          ref={mediaRef}
-          width='100%'
-          height='100%'
-          controls={false}
-          onLoadedData={() => mediaRef.current.pause()}
-        >
-          <source src={URL.createObjectURL(selectedFile)} type='video/mp4' />
-          Tu navegador no soporta el elemento de video.
-        </video>
-      ) : (
-        <label className='file-upload-label'>
-          <span>Seleccionar archivo de video</span>
-          <Input
-            type='file'
-            accept='video/*'
-            onChange={handleFileChange}
-            className='file-upload-input'
-          />
-        </label>
-      );
-    } else if (mediaType === 'image') {
-      return selectedFile ? (
+  // Maneja el inicio del arrastre de actores
+  const handleDragStart = (e, actorId) => {
+    e.dataTransfer.setData('actorId', actorId.toString());
+  };
+
+  // Renderiza el área de carga de imágenes
+  const renderImages = () => {
+    // Si hay una imagen seleccionada, mostrar solo esa imagen
+    if (currentImage) {
+      return (
         <img
           ref={mediaRef}
-          src={URL.createObjectURL(selectedFile)}
-          alt='Imagen seleccionada'
-          width='100%'
-          height='100%'
+          src={currentImage}
+          alt="Imagen seleccionada"
+          width="100%"
+          height="100%"
+          style={{ objectFit: 'contain' }}
         />
-      ) : (
-        <label className='file-upload-label'>
-          <span>Seleccionar las imágenes</span>
-          <Input
-            type='file'
-            accept='image/*'
-            onChange={handleFileChange}
-            className='file-upload-input'
-          />
-        </label>
       );
-    } else {
-      return <Text>Media type no soportado aún.</Text>;
     }
+  
+    // Si no hay imagen seleccionada pero hay imágenes disponibles, mostrar la primera imagen
+    if (selectedFiles.length > 0) {
+      return (
+        <img
+          ref={mediaRef}
+          src={URL.createObjectURL(selectedFiles[0])}
+          alt="Primera imagen"
+          width="100%"
+          height="100%"
+          style={{ objectFit: 'contain' }}
+        />
+      );
+    }
+  
+    // Mostrar el input para seleccionar imágenes si no hay imágenes ni imagen seleccionada
+    return (
+      <label className='file-upload-label'>
+        <span>Seleccionar las imágenes</span>
+        <Input
+          type='file'
+          accept='image/*'
+          onChange={handleFileChange}
+          className='file-upload-input'
+          multiple
+        />
+      </label>
+    );
   };
+  
 
   return (
     <HStack spacing={4}>
@@ -158,13 +135,12 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
       >
         <GridBodyActors
           actors={actors}
-          handleDragStart={(e, actorId) => handleDragStart(e, actorId, false)}
+          handleDragStart={(e, actorId) => handleDragStart(e, actorId)}
         />
       </Box>
       <Box
         ref={containerRef}
         w='60vw'
-        //h='auto'
         maxHeight='55vh'
         p={4}
         borderWidth='3px'
@@ -181,8 +157,7 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
-        {renderMediaViewer()}
-
+        {renderImages()}
         {droppedActors.map((dropped) => (
           <Box
             key={dropped.id}
@@ -190,7 +165,7 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
             left={`${dropped.position.x}%`}
             top={`${dropped.position.y}%`}
             draggable
-            onDragStart={(e) => handleDragStart(e, dropped.id, true)}
+            onDragStart={(e) => handleDragStart(e, dropped.id)}
             display='flex'
             flexDirection='column'
             justifyContent='center'
@@ -229,12 +204,4 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
   );
 }
 
-export default FileUploadSection;
-
-
-
-  /*
-    al editar color y nombre las instancias no cambian su estado, solo los 
-    actores originales, revisar esa parte y forma de borrar el actor una vez
-    está en la zona 
-  */
+export default ImageUploadSection;
