@@ -16,10 +16,16 @@ import ColorPicker from '@radial-color-picker/react-color-picker';
 import '@radial-color-picker/react-color-picker/dist/style.css';
 import IconPicker from 'react-icons-picker';
 import { createStandaloneToast } from '@chakra-ui/react';
+import { useSearchParams } from 'react-router-dom';
+import useActorStore from '../store/actorStore';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 function LiveBoxActors({ isOpen, onClose }) {
+  const { createActor } = useActorStore();
+
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
   const [actorName, setActorName] = useState('');
   const [actorColor, setActorColor] = useState({
     hue: 90,
@@ -29,71 +35,6 @@ function LiveBoxActors({ isOpen, onClose }) {
   });
   const [actorIcon, setActorIcon] = useState("FaUsers");
   const [attributes, setAttributes] = useState([]);
-  
-  const [actors, setActors] = useState([]);
-  const [nextActorId, setNextActorId] = useState(1); // Para mantener el ID del siguiente actor a crear
-  
-  const saveActorsToLocalStorage = (actors) => {
-    localStorage.setItem('actors', JSON.stringify(actors));
-  };
-
-  const handleAddActor = (newActorC) => {
-    const newActor = {
-      id: nextActorId, // Asignar ID al nuevo actor
-      name: newActorC.name,
-      color: newActorC.color,
-      icon: newActorC.icon,
-      attributes: newActorC.attributes,
-    };
-
-    setActors((prevActors) => [...prevActors, newActor]);
-    saveActorsToLocalStorage([...actors, newActor]);
-    
-    setNextActorId(nextActorId + 1); // Incrementar el siguiente ID
-
-    const event = new CustomEvent('newActor', { detail: newActor });
-    document.dispatchEvent(event);
-  };
-
-  useEffect(() => {
-    const storedActors = JSON.parse(localStorage.getItem('actors'));
-    if (storedActors) {
-      setActors(storedActors);
-      
-      // Obtener el mayor ID existente y ajustar `nextActorId`
-      const maxId = Math.max(...storedActors.map((actor) => actor.id), 0);
-      setNextActorId(maxId + 1); // Establecer el siguiente ID basado en el mayor ID
-    }
-  }, []);
-
-  const handleColorChange = (color) => {
-    setActorColor((prev) => ({...prev, color}));
-  };
-
-  const handleIconChange = (icon) => {
-    setActorIcon(icon);
-  };
-
-  const handleAddAttribute = () => {
-    setAttributes([...attributes, { key: '', value: '' }]);
-  };
-
-  const handleAttributeChange = (index, key, value) => {
-    const updatedAttributes = [...attributes];
-    updatedAttributes[index] = { key, value };
-    setAttributes(updatedAttributes);
-  };
-
-  const handleRemoveAttribute = (index) => {
-    const updatedAttributes = [...attributes];
-    updatedAttributes.splice(index, 1);
-    setAttributes(updatedAttributes);
-  };
-
-  const handleCancel = () => {
-    resetFields();
-    onClose();
-  };
 
   function hslToHex(h, s, l) {
     let r, g, b;
@@ -139,18 +80,49 @@ function LiveBoxActors({ isOpen, onClose }) {
     }
 
     const hexColor = hslToHex(actorColor.color, actorColor.saturation, actorColor.luminosity);
-    const actor = {
-      id: nextActorId,
+    const newActor = {
       name: actorName,
       color: hexColor,
       icon: actorIcon,
       attributes,
+      session_id: sessionId,
     };
 
-    handleAddActor(actor);
+    // Llamar a la función del store de Zustand para crear el actor
+    createActor(newActor);
+
     showToast('Actor creado correctamente', 'success');
-    onClose();
     resetFields();
+    onClose();
+  };
+
+  const handleColorChange = (color) => {
+    setActorColor((prev) => ({...prev, color}));
+  };
+
+  const handleIconChange = (icon) => {
+    setActorIcon(icon);
+  };
+
+  const handleAddAttribute = () => {
+    setAttributes([...attributes, { key: '', value: '' }]);
+  };
+
+  const handleAttributeChange = (index, key, value) => {
+    const updatedAttributes = [...attributes];
+    updatedAttributes[index] = { key, value };
+    setAttributes(updatedAttributes);
+  };
+
+  const handleRemoveAttribute = (index) => {
+    const updatedAttributes = [...attributes];
+    updatedAttributes.splice(index, 1);
+    setAttributes(updatedAttributes);
+  };
+
+  const handleCancel = () => {
+    resetFields();
+    onClose();
   };
 
   const showToast = (message, type) => {

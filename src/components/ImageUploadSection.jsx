@@ -3,6 +3,7 @@ import { Box, Input, HStack, Icon, Text } from '@chakra-ui/react';
 import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
+import useActorStore from '../store/actorStore';
 
 // Función para convertir archivo a Base64
 const getBase64 = (file) => {
@@ -15,10 +16,11 @@ const getBase64 = (file) => {
 };
 
 function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurrentTime, setDuration, sessionId }) {
+  const { actors, fetchActors } = useActorStore();
+
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedActors, setDroppedActors] = useState([]);
   const containerRef = useRef();
-  const [actors, setActors] = useState([]);
 
   // Maneja la selección de archivos
   const handleFileChange = async (e) => {
@@ -53,18 +55,15 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
     }
   }, [sessionId]);
 
-  // Carga los actores desde el almacenamiento local
+  // Cargar actores al montar el componente
   useEffect(() => {
-    const storedActors = JSON.parse(localStorage.getItem('actors'));
-    if (storedActors) {
-      setActors(storedActors);
-    }
-  }, []);
+    fetchActors(sessionId); // Llama a la función de Zustand para obtener actores de MongoDB
+  }, [fetchActors]);
 
   // Maneja el arrastre y caída de actores
   const handleDrop = (e) => {
     e.preventDefault();
-    const actorId = e.dataTransfer.getData('actorId');
+    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID del actor arrastrado
     if (!actorId) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -89,11 +88,12 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
         })
       );
     } else {
-      const originalActor = actors.find((a) => a.id === parseInt(actorId, 10));
+      // Aquí el `actors` debería venir del store o un estado que tenga la lista de actores
+      const originalActor = actors.find((a) => a._id === actorId); // Usamos `_id`
       if (!originalActor) return;
 
       const newActorInstance = {
-        id: uuidv4(),
+        id: originalActor._id,
         actor: originalActor,
         position: { x: percentX, y: percentY },
       };
@@ -104,7 +104,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
 
   // Maneja el inicio del arrastre de actores
   const handleDragStart = (e, actorId) => {
-    e.dataTransfer.setData('actorId', actorId.toString());
+    e.dataTransfer.setData('actorId', actorId.toString()); // Asignar `actorId`
   };
 
   // Renderiza el área de carga de imágenes

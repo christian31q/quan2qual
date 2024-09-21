@@ -58,4 +58,31 @@ export const deleteSession = async (sessionId) => {
     return result.deletedCount;
 };
 
-  
+// Actores en Mongo DB
+
+export const createActorInDB = async (actorData) => {
+    const result = await requestMongo("actors", { document: actorData }, "insertOne");
+    return result;
+};
+
+export const fetchActorsFromDB = async (sessionId) => {
+    const result = await requestMongo('actors', { filter: { 
+        session_id: sessionId
+    } }, 'find');
+    return result.documents;
+};
+
+export const updateActorInDB = async (actorId, updatedData) => {
+    const result = await requestMongo('actors', {
+        filter: { _id: { "$oid": actorId } },
+        update: {
+            "$set": updatedData
+        }
+    }, 'updateOne');
+    return result;
+};
+
+export const deleteActorFromDB = async (actorId) => {
+    const result = await requestMongo('actors', { filter: { _id: { "$oid": actorId } } }, 'deleteOne');
+    return result.deletedCount;
+};

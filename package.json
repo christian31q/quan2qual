@@ -36,7 +36,8 @@
     "react-icons": "^4.11.0",
     "react-icons-picker": "^1.0.9",
     "react-router-dom": "^6.16.0",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

@@ -6,15 +6,19 @@ import { TiDeleteOutline } from "react-icons/ti";
 import EditActorModal from './EditActorModal';
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import { IconPickerItem } from 'react-icons-picker';
-import requestMongo from '../../api/request';
+import { useSearchParams } from 'react-router-dom';
+import useActorStore from '../../store/actorStore';
 
 import { createStandaloneToast } from '@chakra-ui/react';
-import { color } from 'framer-motion';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const TableBodyActors = ({ data }) => {
-  const [actors, setActors] = useState([]);
+  const { actors, fetchActors, deleteActor, updateActor } = useActorStore();
+
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
+
   const [isOpen, setIsOpen] = useState(false);
 
   //Editar actores
@@ -33,85 +37,37 @@ const TableBodyActors = ({ data }) => {
   };
 
   // Editar actores
-  const handleEdit = async (editedName, editedColor, editedAttributes) => {
-    try{
-      // Emitir evento para indicar que un actor ha sido editado
-      const event = new CustomEvent('editActor', {
-        detail: {
-          id: actorIdToEdit,
-          editedName,
-          editedColor,
-          editedAttributes,
-        },
-      });
-      document.dispatchEvent(event); // Emitir el evento
-      
-      // Actualizar la lista de actores y el almacenamiento local
-      const updatedActors = actors.map((actor) => {
-        if (actor.id === actorIdToEdit) {
-          return {
-            ...actor,
-            name: editedName,
-            color: editedColor,
-            attributes: editedAttributes,
-          };
-        }
-        return actor;
-      });
-
-      setActors(updatedActors);
-
-      // Filtro y cuerpo
-      const filter = {_id: { $oid: actorIdToEdit} };
-      const update = {
-        $set: {
-          name: editedName,
-          color: editedColor,
-          attributes: editedAttributes,
-        }
+  const handleEdit = (editedName, editedColor, editedAttributes) => {
+    if (actorIdToEdit) {
+      const updatedData = {
+        name: editedName,
+        color: editedColor,
+        attributes: editedAttributes,
       };
 
-      const result = await requestMongo("actors", { filter, update }, "updateOne");
-      console.log('Result: ', result);
+      // Llamamos a la función de Zustand para actualizar el actor
+      updateActor(actorIdToEdit, updatedData);
 
-      if (result && result.modifiedCount > 0){
-        showToast('Actor editado correctamente', 'success');
-      } else{
-        setIsEditModalOpen(false); // Cerrar el modal
-      }
-    } catch (error){
-      console.error('Error al editar el actor: ', error);
-      showToast('Error al editar el actor', 'error');
+      showToast('Actor editado correctamente', 'success');
+      handleCloseEditModal();
     }
   };
-
-  /*
-    Actualizar el estado del actor cuando se edita 
-  
-  */   
-
+   
   //Borrar actores
   const [actorIdToDelete, setActorIdToDelete] = useState(null);
   const [actorNameToDelete, setActorNameToDelete] = useState(null);
 
   const handleConfirmDelete = () => {
-    // Emitir evento para indicar que un actor ha sido eliminado
-    const event = new CustomEvent('deleteActor', {
-      detail: actorIdToDelete,
-    });
-    document.dispatchEvent(event); // Emitir el evento
-  
-    // Actualizar la lista de actores y el almacenamiento local
-    const updatedActors = actors.filter((actor) => actor.id !== actorIdToDelete);
-    setActors(updatedActors);
-    localStorage.setItem('actors', JSON.stringify(updatedActors));
-    setIsOpen(false); // Cerrar modal
-    showToast('Actor eliminado correctamente', 'success');
+    if (actorIdToDelete) {
+      // Llamamos a la función de Zustand para eliminar el actor
+      deleteActor(actorIdToDelete);
+      showToast('Actor eliminado correctamente', 'success');
+      setIsOpen(false); // Cerrar modal
+    }
   };
-  
 
   const handleOpenModal = (actor) => {
-    setActorIdToDelete(actor.id); // Usa el ID del actor para eliminar
+    setActorIdToDelete(actor._id); // Usa el ID del actor para eliminar
     setActorNameToDelete(actor.name); // Guarda el nombre para mostrarlo
     setIsOpen(true);
   };
@@ -129,40 +85,19 @@ const TableBodyActors = ({ data }) => {
       isClosable: true,
     });
   };
+
+  // Cargar actores al montar el componente
   useEffect(() => {
-    async function getActors() {
-      try{
-        const storedActors = await requestMongo("actors", "", "find");
-        console.log('Actores DB: ', storedActors.documents);
-        setActors(storedActors.documents);
-  
-      } catch (error){
-        console.log("Error al obtener los actores: ", error);
-      }
-      
-    }
-    getActors();
-  }, []);
+    fetchActors(sessionId); // Llama a la función de Zustand para obtener actores de MongoDB
+  }, [fetchActors]);
 
-  useEffect(() => {
-    const handleNewActor = (event) => {
-      const { detail } = event;
-      setActors((prevActors) => [...prevActors, detail]);
-    };
-
-    document.addEventListener('newActor', handleNewActor);
-
-    return () => {
-      document.removeEventListener('newActor', handleNewActor);
-    };
-  }, []);
 
   return (
     <>
       <Table size="sm" color="white">
         <Tbody>
           {actors.map((actor) => (
-            <Tr key={actor.id_front} bg="#173378">
+            <Tr key={actor._id} bg="#173378">
               <Td width='30.1%' textAlign="center" borderRight="1px">
                 <Icon
                   bg={actor.color}
@@ -176,7 +111,7 @@ const TableBodyActors = ({ data }) => {
                 </Icon>
               </Td>
               <Td width='29%' textAlign="center" borderRight="1px">{actor.name}</Td>
-              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.id_front}</Td>
+              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.name}</Td>
               <Td width='0%' className="hover-element" textAlign="center">
                 <Icon as={FiMoreVertical} fontSize="1.5vw" />
                 <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(actor)} />
