@@ -27,7 +27,7 @@ function CardTimeLine(){
                             <Icon as={IoListCircle} boxSize={8}/>
                         </Td>
                         <Td bg='#173378' borderRadius='0 12px 12px 0' borderBottom='none' fontSize='20px' fontWeight='400'>
-                            Elementos
+                            Seguimiento
                         </Td>
                     </Tr>
                     <Tr>

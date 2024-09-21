@@ -47,8 +47,10 @@ function SessionPage({ pageTitle }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [currentImage, setCurrentImage] = useState(null);
 
+  // Manejo de imágenes seleccionadas
   const handleSetSelectedImages = (images) => {
     setSelectedImages(images);
+    setCurrentImage(images[0]);  // Si es necesario, seleccionar la primera imagen por defecto
   };
 
   useEffect(() => {
@@ -74,7 +76,7 @@ function SessionPage({ pageTitle }) {
   }, [sessionId]);
 
   const mediaType = sessionData ? sessionData.media_type : null;
-  console.log('Media Type: ', mediaType);
+  //console.log('Media Type: ', mediaType);
   
   useEffect(() => {
     const actorsData = localStorage.getItem('actors');
@@ -179,7 +181,7 @@ function SessionPage({ pageTitle }) {
             shadow='xl'
             alignItems='center'
         >
-            <NavLeftTools setActiveLiveBox={setActiveLiveBox} />
+            <NavLeftTools setActiveLiveBox={setActiveLiveBox} mediaType={mediaType} />
         </GridItem>
         <GridItem 
             pl='2' 
@@ -197,6 +199,7 @@ function SessionPage({ pageTitle }) {
               setCurrentTime={setCurrentTime}
               setDuration={setDuration}
               currentImage={currentImage} // Pasar la imagen actual
+              sessionId={sessionId}
             />
           )}
           {mediaType === 'video' && (
@@ -285,7 +288,7 @@ function SessionPage({ pageTitle }) {
               rowStart={4}
               shadow='xl'
         >
-            <HStack width='100%'>
+            <HStack width='100%' overflowX='auto'>
               <CardTimeLine />
               {mediaType === 'image' && (
                 <ImageTimeline 

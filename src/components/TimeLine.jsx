@@ -96,7 +96,5 @@ const Timeline = ({ duration, currentTime, onSeek }) => {
     </Flex>
   );
 };
-/*
-    Continuar con la funcionalidad del timeline, separar por frame y añadir marcas de tiempo 
-*/
+
 export default Timeline;

@@ -114,3 +114,26 @@ img {
 /*scrollbar-width: thin;
 scrollbar-color: #4CAF50 #f1f1f1;
 */
+
+/* Estilos para el contenedor de la barra de desplazamiento */
+/*.scrollable-container {
+  overflow-x: auto;
+  scrollbar-width: thin; 
+  scrollbar-color: #fdc600 #173378;
+}
+*/
+/* Estilos para WebKit (Chrome, Safari) */
+/*.scrollable-container::-webkit-scrollbar {
+  height: 8px; 
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: #fdc600; 
+  border-radius: 20px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background-color: #173378;
+  border-radius: 20px; 
+}
+*/

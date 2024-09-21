@@ -4,18 +4,54 @@ import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 
-function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurrentTime, setDuration }) {
+// Función para convertir archivo a Base64
+const getBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file); // Convertir el archivo a Base64
+  });
+};
+
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurrentTime, setDuration, sessionId }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedActors, setDroppedActors] = useState([]);
   const containerRef = useRef();
   const [actors, setActors] = useState([]);
 
   // Maneja la selección de archivos
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setSelectedFiles(files);
-    setSelectedImages(files.map(file => URL.createObjectURL(file))); // Actualiza las imágenes seleccionadas
+  const handleFileChange = async (e) => {
+    const newFiles = Array.from(e.target.files);
+    const updatedFiles = [...selectedFiles, ...newFiles];
+
+    // Convertir archivos a Base64 y crear URLs temporales
+    const imageUrls = await Promise.all(
+      updatedFiles.map(async (file) => ({
+        id: uuidv4(),  // Generamos un ID único para cada archivo
+        fileName: file.name,  // Guardar el nombre del archivo
+        base64: await getBase64(file),  // Convertir a Base64
+        sessionId,  // Asignamos la imagen a la sesión actual
+      }))
+    );
+
+    setSelectedFiles(updatedFiles);
+    setSelectedImages(imageUrls.map(img => img.base64));  // Actualizamos las imágenes en el componente padre
+
+    // Guardamos en localStorage en Base64
+    const savedImages = JSON.parse(localStorage.getItem(`images-${sessionId}`)) || [];
+    const combinedImages = [...savedImages, ...imageUrls];
+    localStorage.setItem(`images-${sessionId}`, JSON.stringify(combinedImages));
   };
+
+  // Carga las imágenes almacenadas en localStorage cuando se monta el componente
+  useEffect(() => {
+    const storedImages = JSON.parse(localStorage.getItem(`images-${sessionId}`));
+    if (storedImages) {
+      setSelectedFiles(storedImages.map(img => ({ fileName: img.fileName, base64: img.base64 })));
+      setSelectedImages(storedImages.map(img => img.base64));
+    }
+  }, [sessionId]);
 
   // Carga los actores desde el almacenamiento local
   useEffect(() => {
@@ -73,49 +109,55 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
 
   // Renderiza el área de carga de imágenes
   const renderImages = () => {
-    // Si hay una imagen seleccionada, mostrar solo esa imagen
-    if (currentImage) {
-      return (
-        <img
-          ref={mediaRef}
-          src={currentImage}
-          alt="Imagen seleccionada"
-          width="100%"
-          height="100%"
-          style={{ objectFit: 'contain' }}
-        />
-      );
-    }
-  
-    // Si no hay imagen seleccionada pero hay imágenes disponibles, mostrar la primera imagen
-    if (selectedFiles.length > 0) {
-      return (
-        <img
-          ref={mediaRef}
-          src={URL.createObjectURL(selectedFiles[0])}
-          alt="Primera imagen"
-          width="100%"
-          height="100%"
-          style={{ objectFit: 'contain' }}
-        />
-      );
-    }
-  
-    // Mostrar el input para seleccionar imágenes si no hay imágenes ni imagen seleccionada
     return (
-      <label className='file-upload-label'>
-        <span>Seleccionar las imágenes</span>
+      <>
+        {/* Si hay una imagen seleccionada, mostrar solo esa imagen */}
+        {currentImage ? (
+          <img
+            ref={mediaRef}
+            src={currentImage}
+            alt="Imagen seleccionada"
+            width="100%"
+            height="100%"
+            style={{ objectFit: 'contain' }}
+          />
+        ) : selectedFiles.length > 0 ? (
+          <img
+            ref={mediaRef}
+            src={selectedFiles[0].base64}
+            alt="Primera imagen"
+            width="100%"
+            height="100%"
+            style={{ objectFit: 'contain' }}
+          />
+        ) : (
+          // Mostrar el input grande cuando no haya imágenes
+          <label className='file-upload-label'>
+            <span>Seleccionar las imágenes</span>
+            <Input
+              type='file'
+              id='file-upload-input-large'
+              accept='image/*'
+              onChange={handleFileChange}
+              className='file-upload-input'
+              multiple
+            />
+          </label>
+        )}
+  
+        {/* Input de subida de archivos oculto para el botón "Subir más" */}
         <Input
           type='file'
+          id='file-upload-input-hidden'
           accept='image/*'
           onChange={handleFileChange}
           className='file-upload-input'
           multiple
+          style={{ display: 'none' }}  // Oculto para ser clickeado por el botón extra
         />
-      </label>
+      </>
     );
-  };
-  
+  };  
 
   return (
     <HStack spacing={4}>

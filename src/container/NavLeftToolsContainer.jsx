@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Button, Text, Icon} from '@chakra-ui/react';
+import { VStack, Icon} from '@chakra-ui/react';
 import NavLeftButtons from '../components/NavLeftButtons';
 import LiveBoxActors from '../components/LiveBoxActors';
 import LiveBoxTypes from '../components/LiveBoxTypes';
@@ -44,18 +44,21 @@ const EditIcon = (props) => (
   </Icon>
 )
 
-const DeleteIcon = (props) => (
+const UploadIcon = (props) => (
   <Icon viewBox='0 0 200 200' {...props}>
-      <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67 67" fill="none">
-          <path  fill="currentColor" stroke="currentColor" d="M35.1957 32.6933L34.842 33.0469L35.1957 33.4005L42.4867 40.6901L42.4866 40.6901L42.4923 40.6956C42.576 40.7766 42.6427 40.8735 42.6885 40.9806C42.7343 41.0876 42.7583 41.2027 42.7591 41.3191C42.76 41.4356 42.7376 41.551 42.6934 41.6587C42.6491 41.7664 42.5839 41.8642 42.5014 41.9464C42.4189 42.0286 42.3209 42.0936 42.213 42.1376C42.1051 42.1815 41.9896 42.2036 41.8731 42.2024C41.7566 42.2012 41.6415 42.1769 41.5346 42.1308L41.3366 42.5899L41.5346 42.1307C41.4276 42.0846 41.3309 42.0177 41.2501 41.9338L41.2502 41.9338L41.2436 41.9271L33.9554 34.6403L33.6018 34.2868L33.2482 34.6404L25.9604 41.9296C25.9603 41.9297 25.9603 41.9297 25.9603 41.9297C25.7956 42.0942 25.5722 42.1865 25.3393 42.1863C25.1064 42.1861 24.8832 42.0935 24.7186 41.9288C24.5541 41.764 24.4618 41.5407 24.462 41.308C24.4621 41.0752 24.5548 40.852 24.7195 40.6875L24.7198 40.6873L32.008 33.4005L32.3616 33.0469L32.008 32.6934L24.7232 25.4071C24.5651 25.242 24.4777 25.0217 24.4797 24.7931C24.4817 24.5632 24.5739 24.3432 24.7365 24.1806C24.8992 24.018 25.1192 23.9258 25.3492 23.9238C25.578 23.9218 25.7984 24.0092 25.9635 24.1673L33.2482 31.4534L33.6018 31.807L33.9554 31.4534L41.2421 24.1681C41.2422 24.1679 41.2424 24.1678 41.2425 24.1677C41.4078 24.004 41.631 23.9121 41.8637 23.9121C42.0959 23.9121 42.3187 24.0036 42.4839 24.1666C42.6469 24.3317 42.7384 24.5545 42.7384 24.7865C42.7384 25.019 42.6466 25.242 42.4831 25.4073C42.4829 25.4075 42.4827 25.4077 42.4824 25.4079L35.1957 32.6933ZM9.31201 33.0469C9.31201 19.6582 20.2077 8.76172 33.6018 8.76172C46.996 8.76172 57.8917 19.6582 57.8917 33.0469C57.8917 46.4356 46.996 57.332 33.6018 57.332C20.2077 57.332 9.31201 46.4356 9.31201 33.0469ZM13.8209 33.0469C13.8209 43.9532 22.6965 52.8242 33.6018 52.8242C44.5072 52.8242 53.3828 43.9532 53.3828 33.0469C53.3828 22.1405 44.5072 13.2695 33.6018 13.2695C22.6965 13.2695 13.8209 22.1405 13.8209 33.0469Z"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61 61" fill="none">
+        <path d="M5.5 30.0916C5.5 16.2419 16.6925 5.01526 30.5 5.01526C44.3075 5.01526 55.5 16.2419 55.5 30.0916C55.5 43.9413 44.3075 55.1679 30.5 55.1679C16.6925 55.1679 5.5 43.9413 5.5 30.0916ZM30.5 10.0305C25.1957 10.0305 20.1086 12.1441 16.3579 15.9063C12.6071 19.6685 10.5 24.7711 10.5 30.0916C10.5 35.4121 12.6071 40.5147 16.3579 44.2769C20.1086 48.0391 25.1957 50.1527 30.5 50.1527C35.8043 50.1527 40.8914 48.0391 44.6421 44.2769C48.3929 40.5147 50.5 35.4121 50.5 30.0916C50.5 24.7711 48.3929 19.6685 44.6421 15.9063C40.8914 12.1441 35.8043 10.0305 30.5 10.0305Z" fill="currentColor"/>
+        <path d="M33 17.5534C33 16.8883 32.7366 16.2505 32.2678 15.7802C31.7989 15.31 31.163 15.0458 30.5 15.0458C29.837 15.0458 29.2011 15.31 28.7322 15.7802C28.2634 16.2505 28 16.8883 28 17.5534V27.5839H18C17.337 27.5839 16.7011 27.8481 16.2322 28.3184C15.7634 28.7887 15.5 29.4265 15.5 30.0916C15.5 30.7566 15.7634 31.3945 16.2322 31.8647C16.7011 32.335 17.337 32.5992 18 32.5992H28V42.6297C28 43.2948 28.2634 43.9326 28.7322 44.4029C29.2011 44.8732 29.837 45.1374 30.5 45.1374C31.163 45.1374 31.7989 44.8732 32.2678 44.4029C32.7366 43.9326 33 43.2948 33 42.6297V32.5992H43C43.663 32.5992 44.2989 32.335 44.7678 31.8647C45.2366 31.3945 45.5 30.7566 45.5 30.0916C45.5 29.4265 45.2366 28.7887 44.7678 28.3184C44.2989 27.8481 43.663 27.5839 43 27.5839H33V17.5534Z" fill="currentColor"/>
       </svg>
   </Icon>
 )
 
-function NavLeftTools({ setActiveLiveBox }) {
+function NavLeftTools({ setActiveLiveBox, mediaType }) {
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
   const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
   const [isLiveBoxAttach, setLiveBoxAttach] = useState(false);
+
+  console.log('Media type:', mediaType);
 
   const handleActorsIconClick = () => {
     setLiveBoxAttach(false); // Cerrar LiveBoxAttach si está abierto
@@ -78,9 +81,20 @@ function NavLeftTools({ setActiveLiveBox }) {
     setActiveLiveBox('Attach'); // Establecer Relations como el LiveBox activo
   };
   
+  const handleUploadMoreClick = () => {
+    document.getElementById('file-upload-input-hidden').click();
+  };  
 
   return (
     <VStack spacing={{ base: '10px', md: '20px', lg: '2.5vmin' }} justifyContent='center'>
+      {mediaType === 'image' && (
+        <NavLeftButtons
+          icon={UploadIcon}
+          iconSize='3.5vw'
+          buttonText='Subir'
+          onClick={handleUploadMoreClick}
+        />
+      )}
       <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' onClick={handleAttachIconClick}/>
       <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
       <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Relaciones' onClick={handleTypesIconClick} />
