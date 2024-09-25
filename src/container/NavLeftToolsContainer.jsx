@@ -58,7 +58,7 @@ function NavLeftTools({ setActiveLiveBox, mediaType }) {
   const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
   const [isLiveBoxAttach, setLiveBoxAttach] = useState(false);
 
-  console.log('Media type:', mediaType);
+  //console.log('Media type:', mediaType);
 
   const handleActorsIconClick = () => {
     setLiveBoxAttach(false); // Cerrar LiveBoxAttach si está abierto

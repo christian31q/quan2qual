@@ -34,7 +34,7 @@ function SessionPage({ pageTitle }) {
   const { mediaType: urlMediaType } = useParams(); // Util por si el usuario modifica el URL
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('sessionId');
-  console.log('Media URL type: ', urlMediaType); 
+  //console.log('Media URL type: ', urlMediaType); 
 
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,15 +43,25 @@ function SessionPage({ pageTitle }) {
   const [actors, setActors] = useState([]);
   const [types, setTypes] = useState([]);
 
-  // Imagenes
+  // Estado para las imágenes
   const [selectedImages, setSelectedImages] = useState([]);
   const [currentImage, setCurrentImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [actorsPerImage, setActorsPerImage] = useState({});
 
   // Manejo de imágenes seleccionadas
-  const handleSetSelectedImages = (images) => {
+  /*const handleSetSelectedImages = (images) => {
     setSelectedImages(images);
     setCurrentImage(images[0]);  // Si es necesario, seleccionar la primera imagen por defecto
+  };*/
+
+  // Manejo del cambio de imagen activa desde el timeline
+  const handleImageChange = (index) => {
+    console.log(`Imagen activa cambiada a índice: ${index}`);
+    setCurrentImageIndex(index);
+    setCurrentImage(selectedImages[index]);
   };
+
 
   useEffect(() => {
     if (!sessionId) return;
@@ -195,11 +205,12 @@ function SessionPage({ pageTitle }) {
           {mediaType === 'image' && (
             <ImageUploadSection 
               mediaRef={mediaRef}
-              setSelectedImages={handleSetSelectedImages} // Pasar la función para actualizar imágenes
-              setCurrentTime={setCurrentTime}
-              setDuration={setDuration}
+              setSelectedImages={setSelectedImages} // Pasar la función para actualizar imágenes
               currentImage={currentImage} // Pasar la imagen actual
               sessionId={sessionId}
+              currentImageIndex={currentImageIndex}
+              actorsPerImage={actorsPerImage}
+              setActorsPerImage={setActorsPerImage}
             />
           )}
           {mediaType === 'video' && (
@@ -293,7 +304,10 @@ function SessionPage({ pageTitle }) {
               {mediaType === 'image' && (
                 <ImageTimeline 
                   images={selectedImages}
-                  setSelectedImage={setCurrentImage}
+                  setSelectedImage={handleImageChange}
+                  currentImageIndex={currentImageIndex}
+                  actorsPerImage={actorsPerImage}
+                  //droppedActors={droppedActors}
                 />
               )}
               {mediaType === 'video' && (

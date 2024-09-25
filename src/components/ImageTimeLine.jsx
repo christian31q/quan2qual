@@ -1,16 +1,24 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Flex, Image } from '@chakra-ui/react';
 
-const ImageTimeline = ({ images, setSelectedImage }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerImage }) => {
   const [isDragging, setIsDragging] = useState(false);
   const timelineRef = useRef(null);
   const indicatorRef = useRef(null);
   const timelineContainerRef = useRef(null);
 
+  useEffect(() => {
+    console.log(`Índice de la imagen activa en ImageTimeline: ${currentImageIndex}`);
+  }, [currentImageIndex]);
+
+  // Contar los actores por imagen
+  const getActorCountForImage = (index) => {
+    // Verificamos si existe la propiedad para el index, si no, devolvemos 0
+    return (actorsPerImage && actorsPerImage[index]) ? actorsPerImage[index].length : 0;
+  };
+
   const handleImageClick = (index) => {
-    setCurrentImageIndex(index);
-    setSelectedImage(images[index]);
+    setSelectedImage(index);
   };
 
   const handleMouseDown = (e) => {
@@ -61,8 +69,8 @@ const ImageTimeline = ({ images, setSelectedImage }) => {
 
     // Evitamos que la aguja se salga del rango
     if (index >= 0 && index < images.length) {
-      setCurrentImageIndex(index);
-      setSelectedImage(images[index]);
+      //setCurrentImageIndex(index);
+      setSelectedImage(index);
 
       // Alineamos la aguja al centro de la imagen activa de manera precisa
       if (indicatorRef.current) {
@@ -162,13 +170,32 @@ const ImageTimeline = ({ images, setSelectedImage }) => {
                 alt={`Thumbnail ${index + 1}`}
                 className='img-timeline'
               />
+                {/* Mostrar el contador de actores */}
+                {getActorCountForImage(index) > 0 && (
+                  <Box
+                    position="absolute"
+                    top="5px"
+                    right="5px"
+                    bg="red"
+                    color="white"
+                    borderRadius="50%"
+                    width="20px"
+                    height="20px"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    fontSize="12px"
+                  >
+                    {getActorCountForImage(index)}
+                  </Box>
+                )}
             </Box>
           ))
         )}
       </Flex>
-      {/* Secciones extra para keyframes */}
+      {/* Secciones extra para contador de actores */}
       <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
-        {/* Aquí puedes renderizar tus keyframes */}
+        {/* Aquí puedes renderizar contador de actores */}
       </Flex>
       <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
         {/* Aquí puedes renderizar tus keyframes */}

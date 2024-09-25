@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Input, HStack, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Input, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Icon, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,11 +16,23 @@ const getBase64 = (file) => {
   });
 };
 
-function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurrentTime, setDuration, sessionId }) {
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex, actorsPerImage, setActorsPerImage  }) {
+  const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedActors, setDroppedActors] = useState([]);
+  const [actorToDelete, setActorToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    console.log(`Índice de la imagen activa en ImageUploadSection: ${currentImageIndex}`);
+  }, [currentImageIndex]);
+
+  // Obtener los actores de la imagen activa
+  const actorsForCurrentImage = actorsPerImage[currentImageIndex] || [];
+
   const containerRef = useRef();
 
   // Maneja la selección de archivos
@@ -63,21 +76,24 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
   // Maneja el arrastre y caída de actores
   const handleDrop = (e) => {
     e.preventDefault();
-    const actorId = e.dataTransfer.getData('actorId'); // Obtener el ID del actor arrastrado
+    const actorId = e.dataTransfer.getData('actorId');
+    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));  // Leer el desplazamiento en X
+    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));  // Leer el desplazamiento en Y
+  
     if (!actorId) return;
-
+  
     const containerRect = containerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left;
-    const dropY = e.clientY - containerRect.top;
-
+    const dropX = e.clientX - containerRect.left - offsetX;  // Ajustar posición en X
+    const dropY = e.clientY - containerRect.top - offsetY;   // Ajustar posición en Y
+  
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
-
+  
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
-
+  
     const existingActor = droppedActors.find((a) => a.id === actorId);
-
+  
     if (existingActor) {
       setDroppedActors((prev) =>
         prev.map((actorInstance) => {
@@ -88,24 +104,77 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
         })
       );
     } else {
-      // Aquí el `actors` debería venir del store o un estado que tenga la lista de actores
-      const originalActor = actors.find((a) => a._id === actorId); // Usamos `_id`
+      const originalActor = actors.find((a) => a._id === actorId);
       if (!originalActor) return;
-
+  
       const newActorInstance = {
-        id: originalActor._id,
+        id: uuidv4(),
+        actorId: originalActor._id,
         actor: originalActor,
         position: { x: percentX, y: percentY },
+        imageIndex: currentImageIndex,
       };
 
+      console.log('Actor dropped: ', newActorInstance);
+  
       setDroppedActors((prev) => [...prev, newActorInstance]);
+
+      // Actualizar `actorsPerImage` para la imagen actual
+      setActorsPerImage((prev) => {
+        const updated = { ...prev };
+        const currentActors = updated[currentImageIndex] || [];  // Obtener actores de la imagen actual
+        updated[currentImageIndex] = [...currentActors, newActorInstance];  // Agregar nuevo actor
+        return updated;  // Actualizar el estado global
+      });
     }
-  };
+  };   
 
   // Maneja el inicio del arrastre de actores
   const handleDragStart = (e, actorId) => {
-    e.dataTransfer.setData('actorId', actorId.toString()); // Asignar `actorId`
+    const rect = e.currentTarget.getBoundingClientRect(); // Obtener el tamaño y posición del actor
+    const offsetX = e.clientX - rect.left;  // Posición relativa del cursor dentro del actor (X)
+    const offsetY = e.clientY - rect.top;
+
+    // Almacenar el ID del actor y la posición relativa en `dataTransfer`
+    e.dataTransfer.setData('actorId', actorId.toString());
+    e.dataTransfer.setData('offsetX', offsetX.toString());
+    e.dataTransfer.setData('offsetY', offsetY.toString());
   };
+
+  // Escuchar cambios en los actores originales
+  useEffect(() => {
+    const updateActorInstances = () => {
+      setDroppedActors((prevDroppedActors) =>
+        prevDroppedActors.map((instance) => {
+          const originalActor = actors.find((actor) => actor._id === instance.actorId);
+          if (originalActor) {
+            // Actualizar propiedades como el color, nombre, etc.
+            return {
+              ...instance,
+              actor: { ...instance.actor, ...originalActor },  // Actualizar instancia con los datos originales
+            };
+          }
+          return instance;
+        })
+      );
+    };
+  
+    // Cada vez que cambian los actores, actualizamos las instancias
+    updateActorInstances();
+  }, [actors]);  // Ejecuta el efecto cada vez que los actores cambian
+  
+  const handleOpenDeleteModal = (actorId) => {
+    onOpen();
+    setActorToDelete(actorId); // Guardar la instancia seleccionada para eliminar
+    setIsDeleteModalOpen(true);
+  };
+
+// Confirmar la eliminación de una instancia
+const handleConfirmDelete = () => {
+  // Eliminar la instancia de droppedActors
+  setDroppedActors((prev) => prev.filter((instance) => instance.id !== actorToDelete));
+  setIsDeleteModalOpen(false); // Cerrar el modal
+};
 
   // Renderiza el área de carga de imágenes
   const renderImages = () => {
@@ -144,7 +213,12 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
             />
           </label>
         )}
-  
+        {actorsForCurrentImage.map((instance) => (
+          <Box key={instance.id} left={`${instance.position.x}%`} top={`${instance.position.y}%`} position="absolute">
+            {/* Renderización del actor */}
+            <Icon>{instance.actor.icon}</Icon>
+          </Box>
+        ))}
         {/* Input de subida de archivos oculto para el botón "Subir más" */}
         <Input
           type='file'
@@ -200,14 +274,15 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
         onDrop={handleDrop}
       >
         {renderImages()}
-        {droppedActors.map((dropped) => (
+        {droppedActors.map((instance) => (
           <Box
-            key={dropped.id}
+            key={instance.id}
             position='absolute'
-            left={`${dropped.position.x}%`}
-            top={`${dropped.position.y}%`}
+            cursor='move'
+            left={`${instance.position.x}%`}
+            top={`${instance.position.y}%`}
             draggable
-            onDragStart={(e) => handleDragStart(e, dropped.id)}
+            onDragStart={(e) => handleDragStart(e, instance.id)}
             display='flex'
             flexDirection='column'
             justifyContent='center'
@@ -215,17 +290,19 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
             borderRadius='lg'
             padding='12px'
             backgroundColor='transparent'
+            onMouseEnter={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 1}
+            onMouseLeave={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 0}
           >
-            {dropped.actor && (
+            {instance.actor && (
               <>
                 <Icon
                   width='50px'
                   height='50px'
                   fontSize='60px'
-                  bg={dropped.actor.color}
+                  bg={instance.actor.color}
                   borderRadius='100%'
                 >
-                  <IconPickerItem value={dropped.actor.icon} size={24} />
+                  <IconPickerItem value={instance.actor.icon} size={24} />
                 </Icon>
                 <Box
                   bg='black'
@@ -235,13 +312,59 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage, setCurr
                   fontWeight='600'
                   width='max-content'
                 >
-                  {dropped.actor.name}
+                  {instance.actor.name}
+                </Box>
+                {/* Botón "X" para eliminar la instancia */}
+                <Box
+                  className="delete-btn"
+                  position="absolute"
+                  top="0px"
+                  right="0px"
+                  width="20px"
+                  height="20px"
+                  bg="red"
+                  borderRadius="50%"
+                  color="white"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  fontSize="14px"
+                  cursor="pointer"
+                  opacity={0}  // Invisible al inicio
+                  transition="opacity 0.2s ease"
+                  onClick={() => handleOpenDeleteModal(instance.id)}
+                >
+                  X
                 </Box>
               </>
             )}
           </Box>
         ))}
       </Box>
+      {/* Modal de confirmación */}
+      {isDeleteModalOpen && (
+        <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('deleteConfirmationTitle')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {t('deleteConfirmationMessage')}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              {t('cancel')}
+            </Button>
+            <Button 
+              colorScheme="red" 
+              onClick={handleConfirmDelete} 
+            >
+              {t('deleteButton')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+        </Modal>
+      )}
     </HStack>
   );
 }
