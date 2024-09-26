@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Box, Flex, Image } from '@chakra-ui/react';
+import { Box, Flex, Image, Icon } from '@chakra-ui/react';
+import { RiUser4Line } from 'react-icons/ri';
+import '../styles/HandleStyles.css'
 
 const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerImage }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -130,7 +132,6 @@ const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerI
           />
         </Box>
       </Flex>
-
       {/* Timeline de imágenes */}
       <Flex
         alignItems="center"
@@ -170,32 +171,56 @@ const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerI
                 alt={`Thumbnail ${index + 1}`}
                 className='img-timeline'
               />
-                {/* Mostrar el contador de actores */}
-                {getActorCountForImage(index) > 0 && (
-                  <Box
-                    position="absolute"
-                    top="5px"
-                    right="5px"
-                    bg="red"
-                    color="white"
-                    borderRadius="50%"
-                    width="20px"
-                    height="20px"
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    fontSize="12px"
-                  >
-                    {getActorCountForImage(index)}
-                  </Box>
-                )}
             </Box>
           ))
         )}
       </Flex>
-      {/* Secciones extra para contador de actores */}
-      <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
-        {/* Aquí puedes renderizar contador de actores */}
+      {/* Flex adicional para contador de actores */}
+      <Flex
+        alignItems="center"
+        height="51px"  // Más pequeño porque es solo para el contador
+        bg="#173378"
+        borderRadius="12px"
+        paddingX="5px"
+        whiteSpace="nowrap"
+        width="100%"
+        overflowX="auto"
+      >
+        {images.length === 0 ? (
+          <Box width="100%" textAlign="center" color="#ccc">No images available</Box>
+        ) : (
+          images.map((image, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              width="80px"
+              height="100%"
+              mx="5px"
+              flexShrink="0"
+              color="black"
+            >
+              <Box
+               background="#fdc600"
+               borderRadius="100%"
+               width={41}
+               height={41}
+               display="flex"
+               justifyContent="center"
+               alignItems="center"
+              >
+                <Icon as={RiUser4Line} fontSize='1.5vw'/>
+              </Box>
+              {/* Mostrar el contador de actores */}
+              {getActorCountForImage(index) > 0 ? (
+                <span className='actors-counter'>{getActorCountForImage(index)}</span>
+              ) : (
+                <span className='actors-counter'>0</span>
+              )}
+            </Box>
+          ))
+        )}
       </Flex>
       <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
         {/* Aquí puedes renderizar tus keyframes */}

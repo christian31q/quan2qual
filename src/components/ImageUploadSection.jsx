@@ -73,6 +73,11 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     fetchActors(sessionId); // Llama a la función de Zustand para obtener actores de MongoDB
   }, [fetchActors]);
 
+  // Mostrar solo los actores de la imagen activa
+  useEffect(() => {
+    setDroppedActors(actorsForCurrentImage); // Establecer actores para la imagen activa
+  }, [actorsForCurrentImage]);
+
   // Maneja el arrastre y caída de actores
   const handleDrop = (e) => {
     e.preventDefault();
@@ -173,6 +178,16 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 const handleConfirmDelete = () => {
   // Eliminar la instancia de droppedActors
   setDroppedActors((prev) => prev.filter((instance) => instance.id !== actorToDelete));
+
+  // Eliminar la instancia del actor de la imagen actual en actorsPerImage
+  setActorsPerImage((prev) => {
+    const updated = { ...prev };
+    const currentActors = updated[currentImageIndex] || [];  // Obtener actores de la imagen actual
+    // Filtrar los actores, eliminando el que tiene el actorId a borrar
+    updated[currentImageIndex] = currentActors.filter((actorInstance) => actorInstance.id !== actorToDelete);
+    return updated;  // Actualizar el estado global
+  });
+
   setIsDeleteModalOpen(false); // Cerrar el modal
 };
 

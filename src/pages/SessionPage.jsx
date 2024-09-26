@@ -49,12 +49,6 @@ function SessionPage({ pageTitle }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [actorsPerImage, setActorsPerImage] = useState({});
 
-  // Manejo de imágenes seleccionadas
-  /*const handleSetSelectedImages = (images) => {
-    setSelectedImages(images);
-    setCurrentImage(images[0]);  // Si es necesario, seleccionar la primera imagen por defecto
-  };*/
-
   // Manejo del cambio de imagen activa desde el timeline
   const handleImageChange = (index) => {
     console.log(`Imagen activa cambiada a índice: ${index}`);

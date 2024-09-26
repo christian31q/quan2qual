@@ -110,6 +110,18 @@ img {
   background: #f1f1f1;
 }
 
+.actors-counter {
+  background-color: #ffffff;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: -10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 /* Para navegadores que no admiten la personalización de la barra de desplazamiento */
 /*scrollbar-width: thin;
 scrollbar-color: #4CAF50 #f1f1f1;
