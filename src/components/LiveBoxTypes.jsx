@@ -15,10 +15,14 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import { createStandaloneToast } from '@chakra-ui/react';
 import SliderWeight from './SliderWeight';
+import { useSearchParams } from 'react-router-dom';
+import useRelationTypeStore from '../store/relationTypesStore';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const LiveBoxTypes = ({ isOpen, onClose }) => {
+  const { createRelationType, loading, error } = useRelationTypeStore();
+
   // Estado para el nombre del tipo de relación
   const [relationTypeName, setRelationTypeName] = useState('');
   // Estado para los atributos del tipo de relación
@@ -31,6 +35,8 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
   const [customFields, setCustomFields] = useState([]);
   // Estado par almacenar en el local storage
   const [types, setTypes] = useState([]);
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
 
   const optionsData = {
     option1: {
@@ -90,13 +96,6 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    const storedTypes = localStorage.getItem('types');
-    if (storedTypes) {
-      setTypes(JSON.parse(storedTypes));
-    }
-  }, []);
-
   //Inputs personalizados en relación personalizada 
   const handleAddField = () => {
     setCustomFields([...customFields, { name: '', value: '' }]);
@@ -132,53 +131,43 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
   const handleCancel = () => {
     // Lógica para cancelar y cerrar el LiveBox
     onClose();
-  };
+  }; 
 
-  const handleCreateRelationType = () => {
-
+  // Función para crear el tipo de relación
+  const handleCreateRelationType = async () => {
     if (!selectedOption) {
-      // Mostrar toast si no se ha seleccionado una opción
       showToast('Por favor seleccione una opción', 'warning');
       return;
     }
 
-    let requiredFields = [];
-    // Obtener los campos requeridos para la opción seleccionada
-    if (selectedOption && optionsData[selectedOption]) {
-      requiredFields = optionsData[selectedOption].fields.map(field => field.name);
-    }
-  
-    // Verificar si todos los campos requeridos están llenos
-    const areAllFieldsFilled = requiredFields.every(fieldName => inputValues[fieldName] !== '' && inputValues[fieldName] !== undefined);
-    const areAllCustomFieldsFilled = customFields.every(field => field.name !== '' && field.value !== '');
-  
-    if (!areAllFieldsFilled || !areAllCustomFieldsFilled) {
-      // Mostrar toast si algún campo requerido está vacío
+    // Verificación de campos requeridos
+    const requiredFields = optionsData[selectedOption].fields.map((field) => field.name);
+    const areFieldsFilled = requiredFields.every(field => inputValues[field]);
+
+    if (!areFieldsFilled || customFields.some(field => !field.name || !field.value)) {
       showToast('Por favor llene todos los campos', 'warning');
       return;
     }
 
+    // Crear el objeto de tipo de relación a guardar en la base de datos
     const newType = {
+      session_id: sessionId,  // Asegurarse de asociarlo con la sesión
       label: optionsData[selectedOption].label,
-      selectedOption,
       inputValues,
       customFields,
     };
 
-    const updatedTypes = [...types, newType];
-    setTypes(updatedTypes);
-    localStorage.setItem('types', JSON.stringify(updatedTypes));
+    try {
+      // Usar la store para crear el tipo de relación
+      await createRelationType(newType);
 
-    // Disparar un evento personalizado para notificar la creación de un nuevo tipo
-    const event = new CustomEvent('newType', {detail: newType});
-    document.dispatchEvent(event);
-  
-    // Ejemplo de función para mostrar un mensaje de éxito
-    showToast('Tipo de relación creado correctamente', 'success');
-  
-    // Cerrar el LiveBox
-    onClose();
-  };  
+      showToast('Tipo de relación creado correctamente', 'success');
+      onClose(); // Cerrar el modal o el LiveBox después de crear
+    } catch (error) {
+      console.error('Error al crear el tipo de relación:', error);
+      showToast('Error al crear el tipo de relación', 'error');
+    }
+  };
   
   const showToast = (message, type) => {
     // Función para mostrar un mensaje de toast

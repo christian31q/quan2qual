@@ -75,8 +75,13 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   // Mostrar solo los actores de la imagen activa
   useEffect(() => {
-    setDroppedActors(actorsForCurrentImage); // Establecer actores para la imagen activa
-  }, [actorsForCurrentImage]);
+    const currentActors = actorsPerImage[currentImageIndex] || [];
+  
+    // Usamos JSON.stringify para comparar objetos por valor, no por referencia
+    if (JSON.stringify(currentActors) !== JSON.stringify(droppedActors)) {
+      setDroppedActors(currentActors);
+    }
+  }, [actorsPerImage, currentImageIndex]); // Eliminamos `droppedActors` de las dependencias    
 
   // Maneja el arrastre y caída de actores
   const handleDrop = (e) => {

@@ -86,3 +86,34 @@ export const deleteActorFromDB = async (actorId) => {
     const result = await requestMongo('actors', { filter: { _id: { "$oid": actorId } } }, 'deleteOne');
     return result.deletedCount;
 };
+
+// Tipos de relaciones en Mongo DB
+
+export const createRelationTypeInDB = async (relationTypeData) => {
+    const result = await requestMongo("types", { document: relationTypeData }, "insertOne");
+    return result;
+};
+
+export const getRelationTypesFromDB = async (sessionId) => {
+    const result = await requestMongo("types", { filter: { 
+        session_id: sessionId
+    } }, "find");
+    return result;
+};
+
+export const updateRelationTypeInDB = async (relationTypeId, updatedData) => {
+    console.log('Type ID: ', relationTypeId);
+    console.log('Update data: ', updatedData);
+    const result = await requestMongo('types', {
+        filter: { _id: { "$oid": relationTypeId } },
+        update: {
+            "$set": updatedData
+        }
+    }, 'updateOne');
+    return result;
+};
+
+export const deleteRelationTypeInDB = async (relationTypeId) => {
+    const result = await requestMongo("types", { filter: { _id: { "$oid": relationTypeId } } }, "deleteOne");
+    return result;
+};

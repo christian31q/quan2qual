@@ -8,6 +8,7 @@ import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import { IconPickerItem } from 'react-icons-picker';
 import { useSearchParams } from 'react-router-dom';
 import useActorStore from '../../store/actorStore';
+import { motion } from 'framer-motion';
 
 import { createStandaloneToast } from '@chakra-ui/react';
 
@@ -25,6 +26,11 @@ const TableBodyActors = ({ data }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [actorIdToEdit, setActorIdToEdit] = useState(null);
   const [actorToEdit, setActorToEdit] = useState(null);
+
+  const rowVariants = {
+    hidden: { opacity: 0, scale: 0.95, background: "#173378" },
+    visible: { opacity: 1, scale: 1 },
+  };
 
   const handleOpenEditModal = (actor) => {
     setActorIdToEdit(actor._id); // Usa el ID del actor
@@ -97,7 +103,14 @@ const TableBodyActors = ({ data }) => {
       <Table size="sm" color="white">
         <Tbody>
           {actors.map((actor) => (
-            <Tr key={actor._id} bg="#173378">
+            <motion.tr 
+              key={actor._id} 
+              bg="#173378"
+              variants={rowVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.3 }}
+            >
               <Td width='30.1%' textAlign="center" borderRight="1px">
                 <Icon
                   bg={actor.color}
@@ -117,7 +130,7 @@ const TableBodyActors = ({ data }) => {
                 <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(actor)} />
                 <TiDeleteOutline className="delete-icon" onClick={() => handleOpenModal(actor)} />
               </Td>
-            </Tr>
+            </motion.tr>
           ))}
         </Tbody>
       </Table>
