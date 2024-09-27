@@ -89,44 +89,6 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   }, [currentImageIndex, actorsInstances]);
 
   // Maneja el arrastre y caída de actores
-  /*const handleDrop = (e) => {
-    e.preventDefault();
-    const actorId = e.dataTransfer.getData('actorId');
-    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));  // Leer el desplazamiento en X
-    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));  // Leer el desplazamiento en Y
-  
-    if (!actorId) return;
-  
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left - offsetX;  // Ajustar posición en X
-    const dropY = e.clientY - containerRect.top - offsetY;   // Ajustar posición en Y
-  
-    const posX = Math.max(0, Math.min(dropX, containerRect.width));
-    const posY = Math.max(0, Math.min(dropY, containerRect.height));
-  
-    const percentX = (posX / containerRect.width) * 100;
-    const percentY = (posY / containerRect.height) * 100;
-  
-    // Generar un nuevo ID único para cada instancia dropeada
-    const instanceId = uuidv4();
-  
-    const originalActor = actors.find((a) => a._id === actorId);
-    if (!originalActor) return;
-  
-    const newActorInstance = {
-      id: instanceId,  // Usamos un ID único para la nueva instancia
-      actorId,         // Esto sigue siendo el ID del actor original
-      actor: originalActor,
-      position: { x: percentX, y: percentY },
-      imageIndex: currentImageIndex,
-    };
-  
-    console.log('New Actor instance: ', newActorInstance);
-  
-    // Añadir la nueva instancia al store de Zustand
-    addActor(instanceId, newActorInstance);  // Usamos `instanceId` como clave
-  };*/  
-
   const handleDrop = (e) => {
     e.preventDefault();
     const actorId = e.dataTransfer.getData('actorId');
@@ -152,7 +114,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     if (!originalActor) return;
   
     const newActorInstance = {
-      id: instanceId,  // Usamos un ID único para la nueva instancia
+      id: instanceId,  // Usa un ID único para la nueva instancia
       actorId,         // Esto sigue siendo el ID del actor original
       actor: originalActor,
       position: { x: percentX, y: percentY },
@@ -162,7 +124,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     console.log('New Actor instance: ', newActorInstance);
   
     // Añadir la nueva instancia al store de Zustand
-    addActor(instanceId, newActorInstance);  // Usamos `instanceId` como clave
+    addActor(instanceId, newActorInstance);  // Usa `instanceId` como clave
   };
   
 
@@ -178,25 +140,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     e.dataTransfer.setData('offsetY', offsetY.toString());  // Guardamos el offset en Y
   };  
 
-  // Actualizar la posición del actor cuando se mueve (handleDragEnd)
-  /*const handleDragEnd = (e, actorId) => {
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left;
-    const dropY = e.clientY - containerRect.top;
-  
-    const posX = Math.max(0, Math.min(dropX, containerRect.width));
-    const posY = Math.max(0, Math.min(dropY, containerRect.height));
-  
-    const percentX = (posX / containerRect.width) * 100;
-    const percentY = (posY / containerRect.height) * 100;
-  
-    const actorInstance = actorsInstances[actorId];
-    if (actorInstance && (actorInstance.position.x !== percentX || actorInstance.position.y !== percentY)) {
-      // Solo actualizar si la posición ha cambiado
-      updateActorPosition(actorId, { x: percentX, y: percentY });
-    }
-  }; */  
-
+  // Actualizar la posición del actor cuando se mueve (handleDragEnd) 
   const handleDragEnd = (e, actorId) => {
     const containerRect = containerRef.current.getBoundingClientRect();
     const dropX = e.clientX - containerRect.left;
@@ -238,7 +182,7 @@ useEffect(() => {
 const handleConfirmDelete = () => {
   // Eliminar el actor de Zustand
   removeActor(actorToDelete);
-  setIsDeleteModalOpen(false); // Cerrar el modal de confirmación
+  setIsDeleteModalOpen(false);
 };
 
   // Renderiza el área de carga de imágenes
