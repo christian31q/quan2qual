@@ -82,17 +82,6 @@ function SessionPage({ pageTitle }) {
   const mediaType = sessionData ? sessionData.media_type : null;
   //console.log('Media Type: ', mediaType);
   
-  useEffect(() => {
-    const actorsData = localStorage.getItem('actors');
-    const typesData = localStorage.getItem('types');
-
-    if (actorsData) {
-      setActors(JSON.parse(actorsData));
-    }
-    if(typesData){
-      setTypes(JSON.parse(typesData));
-    }
-  }, []);
 
   // Video
   const mediaRef = useRef(null);
@@ -301,7 +290,6 @@ function SessionPage({ pageTitle }) {
                   setSelectedImage={handleImageChange}
                   currentImageIndex={currentImageIndex}
                   actorsPerImage={actorsPerImage}
-                  //droppedActors={droppedActors}
                 />
               )}
               {mediaType === 'video' && (

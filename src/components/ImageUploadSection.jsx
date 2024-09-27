@@ -5,6 +5,8 @@ import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 import useActorStore from '../store/actorStore';
+import useActorDragStore from '../store/actorDragStore';
+import { motion } from 'framer-motion';
 
 // Función para convertir archivo a Base64
 const getBase64 = (file) => {
@@ -16,9 +18,12 @@ const getBase64 = (file) => {
   });
 };
 
-function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex, actorsPerImage, setActorsPerImage  }) {
+const MotionBox = motion(Box);
+
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex  }) {
   const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
+  const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedActors, setDroppedActors] = useState([]);
@@ -31,8 +36,12 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   }, [currentImageIndex]);
 
   // Obtener los actores de la imagen activa
-  const actorsForCurrentImage = actorsPerImage[currentImageIndex] || [];
+  const actorsForCurrentImage = Object.values(actorsInstances).filter(
+    (actor) => actor.imageIndex === currentImageIndex
+  );
 
+  console.log('actorsForCurrentImage: ', actorsForCurrentImage);
+  
   const containerRef = useRef();
 
   // Maneja la selección de archivos
@@ -75,16 +84,12 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   // Mostrar solo los actores de la imagen activa
   useEffect(() => {
-    const currentActors = actorsPerImage[currentImageIndex] || [];
-  
-    // Usamos JSON.stringify para comparar objetos por valor, no por referencia
-    if (JSON.stringify(currentActors) !== JSON.stringify(droppedActors)) {
-      setDroppedActors(currentActors);
-    }
-  }, [actorsPerImage, currentImageIndex]); // Eliminamos `droppedActors` de las dependencias    
+    // Cuando la imagen cambia, actualizamos los actores que se muestran en la zona
+    setDroppedActors(actorsForCurrentImage);
+  }, [currentImageIndex, actorsInstances]);
 
   // Maneja el arrastre y caída de actores
-  const handleDrop = (e) => {
+  /*const handleDrop = (e) => {
     e.preventDefault();
     const actorId = e.dataTransfer.getData('actorId');
     const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));  // Leer el desplazamiento en X
@@ -102,76 +107,126 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
   
-    const existingActor = droppedActors.find((a) => a.id === actorId);
+    // Generar un nuevo ID único para cada instancia dropeada
+    const instanceId = uuidv4();
   
-    if (existingActor) {
-      setDroppedActors((prev) =>
-        prev.map((actorInstance) => {
-          if (actorInstance.id === actorId) {
-            return { ...actorInstance, position: { x: percentX, y: percentY } };
-          }
-          return actorInstance;
-        })
-      );
-    } else {
-      const originalActor = actors.find((a) => a._id === actorId);
-      if (!originalActor) return;
+    const originalActor = actors.find((a) => a._id === actorId);
+    if (!originalActor) return;
   
-      const newActorInstance = {
-        id: uuidv4(),
-        actorId: originalActor._id,
-        actor: originalActor,
-        position: { x: percentX, y: percentY },
-        imageIndex: currentImageIndex,
-      };
+    const newActorInstance = {
+      id: instanceId,  // Usamos un ID único para la nueva instancia
+      actorId,         // Esto sigue siendo el ID del actor original
+      actor: originalActor,
+      position: { x: percentX, y: percentY },
+      imageIndex: currentImageIndex,
+    };
+  
+    console.log('New Actor instance: ', newActorInstance);
+  
+    // Añadir la nueva instancia al store de Zustand
+    addActor(instanceId, newActorInstance);  // Usamos `instanceId` como clave
+  };*/  
 
-      console.log('Actor dropped: ', newActorInstance);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const actorId = e.dataTransfer.getData('actorId');
+    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));  // Leer el desplazamiento en X
+    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));  // Leer el desplazamiento en Y
   
-      setDroppedActors((prev) => [...prev, newActorInstance]);
-
-      // Actualizar `actorsPerImage` para la imagen actual
-      setActorsPerImage((prev) => {
-        const updated = { ...prev };
-        const currentActors = updated[currentImageIndex] || [];  // Obtener actores de la imagen actual
-        updated[currentImageIndex] = [...currentActors, newActorInstance];  // Agregar nuevo actor
-        return updated;  // Actualizar el estado global
-      });
-    }
-  };   
+    if (!actorId) return;
+  
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const dropX = e.clientX - containerRect.left - offsetX;  // Ajustar posición en X considerando el offset
+    const dropY = e.clientY - containerRect.top - offsetY;   // Ajustar posición en Y considerando el offset
+  
+    const posX = Math.max(0, Math.min(dropX, containerRect.width));
+    const posY = Math.max(0, Math.min(dropY, containerRect.height));
+  
+    const percentX = (posX / containerRect.width) * 100;
+    const percentY = (posY / containerRect.height) * 100;
+  
+    // Generar un nuevo ID único para cada instancia dropeada
+    const instanceId = uuidv4();
+  
+    const originalActor = actors.find((a) => a._id === actorId);
+    if (!originalActor) return;
+  
+    const newActorInstance = {
+      id: instanceId,  // Usamos un ID único para la nueva instancia
+      actorId,         // Esto sigue siendo el ID del actor original
+      actor: originalActor,
+      position: { x: percentX, y: percentY },
+      imageIndex: currentImageIndex,
+    };
+  
+    console.log('New Actor instance: ', newActorInstance);
+  
+    // Añadir la nueva instancia al store de Zustand
+    addActor(instanceId, newActorInstance);  // Usamos `instanceId` como clave
+  };
+  
 
   // Maneja el inicio del arrastre de actores
   const handleDragStart = (e, actorId) => {
     const rect = e.currentTarget.getBoundingClientRect(); // Obtener el tamaño y posición del actor
     const offsetX = e.clientX - rect.left;  // Posición relativa del cursor dentro del actor (X)
-    const offsetY = e.clientY - rect.top;
-
+    const offsetY = e.clientY - rect.top;   // Posición relativa del cursor dentro del actor (Y)
+  
     // Almacenar el ID del actor y la posición relativa en `dataTransfer`
     e.dataTransfer.setData('actorId', actorId.toString());
-    e.dataTransfer.setData('offsetX', offsetX.toString());
-    e.dataTransfer.setData('offsetY', offsetY.toString());
-  };
+    e.dataTransfer.setData('offsetX', offsetX.toString());  // Guardamos el offset en X
+    e.dataTransfer.setData('offsetY', offsetY.toString());  // Guardamos el offset en Y
+  };  
 
-  // Escuchar cambios en los actores originales
-  useEffect(() => {
-    const updateActorInstances = () => {
-      setDroppedActors((prevDroppedActors) =>
-        prevDroppedActors.map((instance) => {
-          const originalActor = actors.find((actor) => actor._id === instance.actorId);
-          if (originalActor) {
-            // Actualizar propiedades como el color, nombre, etc.
-            return {
-              ...instance,
-              actor: { ...instance.actor, ...originalActor },  // Actualizar instancia con los datos originales
-            };
-          }
-          return instance;
-        })
-      );
-    };
+  // Actualizar la posición del actor cuando se mueve (handleDragEnd)
+  /*const handleDragEnd = (e, actorId) => {
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const dropX = e.clientX - containerRect.left;
+    const dropY = e.clientY - containerRect.top;
   
-    // Cada vez que cambian los actores, actualizamos las instancias
-    updateActorInstances();
-  }, [actors]);  // Ejecuta el efecto cada vez que los actores cambian
+    const posX = Math.max(0, Math.min(dropX, containerRect.width));
+    const posY = Math.max(0, Math.min(dropY, containerRect.height));
+  
+    const percentX = (posX / containerRect.width) * 100;
+    const percentY = (posY / containerRect.height) * 100;
+  
+    const actorInstance = actorsInstances[actorId];
+    if (actorInstance && (actorInstance.position.x !== percentX || actorInstance.position.y !== percentY)) {
+      // Solo actualizar si la posición ha cambiado
+      updateActorPosition(actorId, { x: percentX, y: percentY });
+    }
+  }; */  
+
+  const handleDragEnd = (e, actorId) => {
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const dropX = e.clientX - containerRect.left;
+    const dropY = e.clientY - containerRect.top;
+  
+    const posX = Math.max(0, Math.min(dropX, containerRect.width));
+    const posY = Math.max(0, Math.min(dropY, containerRect.height));
+  
+    const percentX = (posX / containerRect.width) * 100;
+    const percentY = (posY / containerRect.height) * 100;
+  
+    // Actualizamos la posición del actor en Zustand
+    updateActorPosition(actorId, { x: percentX, y: percentY });
+  };
+  
+
+// Escuchar cambios en los actores originales y actualizar las instancias
+useEffect(() => {
+  Object.keys(actorsInstances).forEach((actorId) => {
+    const instance = actorsInstances[actorId];
+    const originalActor = actors.find((oActor) => oActor._id === instance.actor._id);
+
+    if (originalActor) {
+      // Evitar actualizar si las propiedades no han cambiado
+      if (JSON.stringify(instance.actor) !== JSON.stringify(originalActor)) {
+        updateActorAttributes(actorId, originalActor);  // Actualiza las propiedades usando Zustand
+      }
+    }
+  });
+}, [actors, actorsInstances, updateActorAttributes]);
   
   const handleOpenDeleteModal = (actorId) => {
     onOpen();
@@ -181,19 +236,9 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
 // Confirmar la eliminación de una instancia
 const handleConfirmDelete = () => {
-  // Eliminar la instancia de droppedActors
-  setDroppedActors((prev) => prev.filter((instance) => instance.id !== actorToDelete));
-
-  // Eliminar la instancia del actor de la imagen actual en actorsPerImage
-  setActorsPerImage((prev) => {
-    const updated = { ...prev };
-    const currentActors = updated[currentImageIndex] || [];  // Obtener actores de la imagen actual
-    // Filtrar los actores, eliminando el que tiene el actorId a borrar
-    updated[currentImageIndex] = currentActors.filter((actorInstance) => actorInstance.id !== actorToDelete);
-    return updated;  // Actualizar el estado global
-  });
-
-  setIsDeleteModalOpen(false); // Cerrar el modal
+  // Eliminar el actor de Zustand
+  removeActor(actorToDelete);
+  setIsDeleteModalOpen(false); // Cerrar el modal de confirmación
 };
 
   // Renderiza el área de carga de imágenes
@@ -294,8 +339,8 @@ const handleConfirmDelete = () => {
         onDrop={handleDrop}
       >
         {renderImages()}
-        {droppedActors.map((instance) => (
-          <Box
+        {actorsForCurrentImage.map((instance) => (
+          <MotionBox
             key={instance.id}
             position='absolute'
             cursor='move'
@@ -303,6 +348,7 @@ const handleConfirmDelete = () => {
             top={`${instance.position.y}%`}
             draggable
             onDragStart={(e) => handleDragStart(e, instance.id)}
+            onDragEnd={(e) => handleDragEnd(e, instance.id)}
             display='flex'
             flexDirection='column'
             justifyContent='center'
@@ -310,6 +356,13 @@ const handleConfirmDelete = () => {
             borderRadius='lg'
             padding='12px'
             backgroundColor='transparent'
+            layout
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.1 }}
+            dragElastic={0.2}
             onMouseEnter={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 1}
             onMouseLeave={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 0}
           >
@@ -358,7 +411,7 @@ const handleConfirmDelete = () => {
                 </Box>
               </>
             )}
-          </Box>
+          </MotionBox>
         ))}
       </Box>
       {/* Modal de confirmación */}

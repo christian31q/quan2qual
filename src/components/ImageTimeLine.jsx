@@ -1,9 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Flex, Image, Icon } from '@chakra-ui/react';
 import { RiUser4Line } from 'react-icons/ri';
+import useActorDragStore from '../store/actorDragStore';
 import '../styles/HandleStyles.css'
 
-const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerImage }) => {
+const ImageTimeline = ({ images, setSelectedImage, currentImageIndex }) => {
+  const { actorsInstances } = useActorDragStore();
+
   const [isDragging, setIsDragging] = useState(false);
   const timelineRef = useRef(null);
   const indicatorRef = useRef(null);
@@ -13,10 +16,12 @@ const ImageTimeline = ({ images, setSelectedImage, currentImageIndex, actorsPerI
     console.log(`Índice de la imagen activa en ImageTimeline: ${currentImageIndex}`);
   }, [currentImageIndex]);
 
-  // Contar los actores por imagen
+  // Contar los actores por imagen basado en Zustand
   const getActorCountForImage = (index) => {
-    // Verificamos si existe la propiedad para el index, si no, devolvemos 0
-    return (actorsPerImage && actorsPerImage[index]) ? actorsPerImage[index].length : 0;
+    // Filtrar los actores que pertenecen a la imagen con el índice dado
+    return Object.values(actorsInstances).filter(
+      (actor) => actor.imageIndex === index
+    ).length;
   };
 
   const handleImageClick = (index) => {
