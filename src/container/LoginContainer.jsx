@@ -3,6 +3,7 @@ import { Flex, Image, Box } from '@chakra-ui/react';
 import loginImage from '../assets/Fondo.png';
 import LoginForm from '../components/LoginForm';
 //import LanguageChanger from '../components/LanguageChanger';
+const loginImageUrl = "https://raw.githubusercontent.com/christian31q/quan2qual/refs/heads/main/src/assets/Fondo.png?token=GHSAT0AAAAAACYFWMRLRMQ4QJD6RVBT3LGWZXYIX2Q";
 
 function LoginPage() {
   return (
@@ -31,7 +32,7 @@ function LoginPage() {
         justifyContent='space-between'
       >
         <Image
-          src={loginImage}
+          src={loginImageUrl}
           alt="Imagen de inicio de sesión"
           maxW={{ base: '100%', md: 'auto' }}
           maxH={{ base: 'auto', md: 'auto' }}

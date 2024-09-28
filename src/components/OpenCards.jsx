@@ -32,6 +32,8 @@ function ProjectCard({ icon, title, creationDate, _id, type, media, onDelete }) 
         result = await deleteSession(_id); // Eliminar sesión
       }
 
+
+
       if (result > 0) {
         onDelete(_id);
         showToast(type === 'project' ? 'Proyecto eliminado' : 'Sesión eliminada', 'success');
@@ -105,7 +107,7 @@ function ProjectCard({ icon, title, creationDate, _id, type, media, onDelete }) 
           <ModalHeader>{t('deleteConfirmationTitle')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {t('deleteConfirmationMessage')}
+            {t('deleteConfirmationMessage')} {t('deleteConfirmationWarning')}
           </ModalBody>
           <ModalFooter>
             <Button colorScheme='blue' mr={3} onClick={onClose}>

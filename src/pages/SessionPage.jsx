@@ -206,7 +206,13 @@ function SessionPage({ pageTitle }) {
               />            
           )}
           {mediaType === 'audio' && (
-            {/*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+            <FileUploadSection 
+            mediaType={mediaType}
+            mediaRef={mediaRef}
+            currentTime={currentTime}
+            setCurrentTime={setCurrentTime}
+            setDuration={setDuration}
+            />  
           )}
         </GridItem>
         <GridItem 
@@ -266,7 +272,8 @@ function SessionPage({ pageTitle }) {
         >
           {/*Reproductor*/}
           {mediaType === 'audio' ? (
-            {/* <AudioWaveform /> */} // Muestra onda de audio
+            /* <AudioWaveform /> */ // Muestra onda de audio
+            null
           ) : mediaType === 'video' ? (
             <VideoControls videoRef={mediaRef} /> // Reproductor de video
           ) : null /* No muestra nada si es imagen */}
@@ -288,15 +295,18 @@ function SessionPage({ pageTitle }) {
                 <ImageTimeline 
                   images={selectedImages}
                   setSelectedImage={handleImageChange}
+                  sessionId={sessionId}
                   currentImageIndex={currentImageIndex}
                   actorsPerImage={actorsPerImage}
                 />
               )}
               {mediaType === 'video' && (
-                {/*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+                /*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
+                <Timeline />
               )}
               {mediaType === 'audio' && (
-                {/*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/}
+                /*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
+                <Timeline />
               )}
             </HStack>
         </GridItem>

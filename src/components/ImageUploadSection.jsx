@@ -6,6 +6,7 @@ import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 import useActorStore from '../store/actorStore';
 import useActorDragStore from '../store/actorDragStore';
+import { getActorInstancesFromDB } from '../utils/mongoUtils';
 import { motion } from 'framer-motion';
 
 // Función para convertir archivo a Base64
@@ -37,7 +38,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   // Obtener los actores de la imagen activa
   const actorsForCurrentImage = Object.values(actorsInstances).filter(
-    (actor) => actor.imageIndex === currentImageIndex
+    (actor) => (actor.imageIndex === currentImageIndex && actor.sessionId === sessionId)
   );
 
   console.log('actorsForCurrentImage: ', actorsForCurrentImage);
@@ -82,80 +83,124 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     fetchActors(sessionId); // Llama a la función de Zustand para obtener actores de MongoDB
   }, [fetchActors]);
 
-  // Mostrar solo los actores de la imagen activa
+  // Lógica para cargar los actores según la imagen actual
   useEffect(() => {
-    // Cuando la imagen cambia, actualizamos los actores que se muestran en la zona
-    setDroppedActors(actorsForCurrentImage);
-  }, [currentImageIndex, actorsInstances]);
+    const fetchActorsForCurrentImage = async () => {
+      try {
+        // Llamamos a la base de datos para obtener los actores que coincidan con `currentImageIndex` y `sessionId`
+        const fetchedActors = await getActorInstancesFromDB(sessionId, currentImageIndex);
+        
+        console.log('Instances DB: ', fetchedActors);
+
+        // Actualizar los actores en Zustand
+        updateActorsInZustand(fetchedActors);
+        
+      } catch (error) {
+        console.error('Error al obtener actores de la base de datos:', error);
+      }
+    };
+
+    // Ejecutamos la función si el índice de imagen es válido
+    if (currentImageIndex !== null) {
+      fetchActorsForCurrentImage();
+    }
+  }, [currentImageIndex, sessionId]);
+
+  // Función para actualizar Zustand con los actores obtenidos de la base de datos
+const updateActorsInZustand = (fetchedActors) => {
+  const { setActorsInstances } = useActorDragStore.getState();  // Obtener la acción de Zustand
+
+  const actorsMap = {};  // Convertir actores a un objeto
+  fetchedActors.forEach(actor => {
+    actorsMap[actor._id] = actor;
+  });
+
+  // Actualizar Zustand con los actores de la base de datos
+  setActorsInstances(actorsMap);
+};
 
   // Maneja el arrastre y caída de actores
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
+    
     const actorId = e.dataTransfer.getData('actorId');
-    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));  // Leer el desplazamiento en X
-    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));  // Leer el desplazamiento en Y
+    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));
+    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));
   
     if (!actorId) return;
   
     const containerRect = containerRef.current.getBoundingClientRect();
-    const dropX = e.clientX - containerRect.left - offsetX;  // Ajustar posición en X considerando el offset
-    const dropY = e.clientY - containerRect.top - offsetY;   // Ajustar posición en Y considerando el offset
+    const dropX = e.clientX - containerRect.left - offsetX;
+    const dropY = e.clientY - containerRect.top - offsetY;
   
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
   
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
-  
-    // Generar un nuevo ID único para cada instancia dropeada
-    const instanceId = uuidv4();
-  
+    
     const originalActor = actors.find((a) => a._id === actorId);
     if (!originalActor) return;
   
     const newActorInstance = {
-      id: instanceId,  // Usa un ID único para la nueva instancia
-      actorId,         // Esto sigue siendo el ID del actor original
+      actorId,          // ID del actor original
       actor: originalActor,
       position: { x: percentX, y: percentY },
       imageIndex: currentImageIndex,
+      sessionId,  // Asegúrate de pasar el sessionId
     };
   
-    console.log('New Actor instance: ', newActorInstance);
-  
-    // Añadir la nueva instancia al store de Zustand
-    addActor(instanceId, newActorInstance);  // Usa `instanceId` como clave
+    // Añadir la nueva instancia al store de Zustand y la base de datos
+    await addActor(newActorInstance);
   };
   
-
   // Maneja el inicio del arrastre de actores
-  const handleDragStart = (e, actorId) => {
-    const rect = e.currentTarget.getBoundingClientRect(); // Obtener el tamaño y posición del actor
+  const handleDragStart = (e, instanceId) => {
+    console.log(instanceId);
+    // Asegurarnos de que actorId exista
+    if (!instanceId) {
+      console.error('El actor no tiene un ID válido');
+      return;
+    }
+
+    // Obtener la posición relativa del cursor dentro del actor
+    const rect = e.currentTarget.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;  // Posición relativa del cursor dentro del actor (X)
     const offsetY = e.clientY - rect.top;   // Posición relativa del cursor dentro del actor (Y)
-  
-    // Almacenar el ID del actor y la posición relativa en `dataTransfer`
-    e.dataTransfer.setData('actorId', actorId.toString());
-    e.dataTransfer.setData('offsetX', offsetX.toString());  // Guardamos el offset en X
-    e.dataTransfer.setData('offsetY', offsetY.toString());  // Guardamos el offset en Y
-  };  
 
-  // Actualizar la posición del actor cuando se mueve (handleDragEnd) 
-  const handleDragEnd = (e, actorId) => {
+    // Guardar el offset en dataTransfer
+    e.dataTransfer.setData('actorId', instanceId);  // Aquí usamos el instanceId que es el _id de MongoDB
+    e.dataTransfer.setData('offsetX', offsetX);  // Guardar el offset en X
+    e.dataTransfer.setData('offsetY', offsetY);  // Guardar el offset en Y
+  };
+
+  // Actualizar la posición del actor cuando se mueve (handleDragEnd)
+  const handleDragEnd = async (e, instanceId) => {
+    console.log(instanceId);
+    // Asegurarnos de que actorId exista
+    if (!instanceId) {
+      console.error('El actor no tiene un ID válido');
+      return;
+    }
+
     const containerRect = containerRef.current.getBoundingClientRect();
     const dropX = e.clientX - containerRect.left;
     const dropY = e.clientY - containerRect.top;
-  
+
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
-  
+
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
-  
-    // Actualizamos la posición del actor en Zustand
-    updateActorPosition(actorId, { x: percentX, y: percentY });
+
+    // Actualizar la posición del actor en Zustand y la base de datos
+    try {
+      await updateActorPosition(instanceId, { x: percentX, y: percentY });  // Actualiza Zustand y la base de datos
+      console.log(`Posición actualizada en DB para el actor ${instanceId}: { x: ${percentX}, y: ${percentY} }`);
+    } catch (error) {
+      console.error('Error al actualizar la posición en la base de datos:', error);
+    }
   };
-  
 
 // Escuchar cambios en los actores originales y actualizar las instancias
 useEffect(() => {
@@ -164,8 +209,12 @@ useEffect(() => {
     const originalActor = actors.find((oActor) => oActor._id === instance.actor._id);
 
     if (originalActor) {
-      // Evitar actualizar si las propiedades no han cambiado
-      if (JSON.stringify(instance.actor) !== JSON.stringify(originalActor)) {
+      // Evitar actualizar si las propiedades clave no han cambiado
+      const { name: instanceName, color: instanceColor } = instance.actor;
+      const { name: originalName, color: originalColor } = originalActor;
+
+      // Solo actualiza si las propiedades clave son diferentes
+      if (instanceName !== originalName || instanceColor !== originalColor) {
         updateActorAttributes(actorId, originalActor);  // Actualiza las propiedades usando Zustand
       }
     }
@@ -223,7 +272,7 @@ const handleConfirmDelete = () => {
           </label>
         )}
         {actorsForCurrentImage.map((instance) => (
-          <Box key={instance.id} left={`${instance.position.x}%`} top={`${instance.position.y}%`} position="absolute">
+          <Box key={instance._id} left={`${instance.position.x}%`} top={`${instance.position.y}%`} position="absolute">
             {/* Renderización del actor */}
             <Icon>{instance.actor.icon}</Icon>
           </Box>
@@ -285,14 +334,14 @@ const handleConfirmDelete = () => {
         {renderImages()}
         {actorsForCurrentImage.map((instance) => (
           <MotionBox
-            key={instance.id}
+            key={instance._id}
             position='absolute'
             cursor='move'
             left={`${instance.position.x}%`}
             top={`${instance.position.y}%`}
             draggable
-            onDragStart={(e) => handleDragStart(e, instance.id)}
-            onDragEnd={(e) => handleDragEnd(e, instance.id)}
+            onDragStart={(e) => handleDragStart(e, instance._id)}
+            onDragEnd={(e) => handleDragEnd(e, instance._id)}
             display='flex'
             flexDirection='column'
             justifyContent='center'
@@ -349,7 +398,7 @@ const handleConfirmDelete = () => {
                   cursor="pointer"
                   opacity={0}  // Invisible al inicio
                   transition="opacity 0.2s ease"
-                  onClick={() => handleOpenDeleteModal(instance.id)}
+                  onClick={() => handleOpenDeleteModal(instance._id)}
                 >
                   X
                 </Box>

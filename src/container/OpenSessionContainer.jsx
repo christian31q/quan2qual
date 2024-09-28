@@ -92,7 +92,7 @@ function OpenSessionContainer() {
                             <Box
                                 gridColumn={2}
                             >
-                                <Link to={`/addSessionType?projectId=${projectId}`}>
+                                {/* <Link to={`/addSessionType?projectId=${projectId}`}>
                                     <Button
                                         w="10rem"
                                         h="2.375rem"
@@ -106,12 +106,31 @@ function OpenSessionContainer() {
                                     > 
                                         {t('newSessionText')}
                                     </Button>
-                                </Link>
+                                </Link> */}
                             </Box>
                         )}
                     </Grid>
                 </Box>
             </Center>
+            <Box
+                gridColumn={2}
+            >
+                <Link to={`/addSessionType?projectId=${projectId}`}>
+                    <Button
+                        w="10rem"
+                        h="2.375rem"
+                        bg="#173378"
+                        color="white"
+                        fontSize="1.25rem"
+                        fontWeight="400"
+                        shadow="lg"
+                        mt="1.5rem"
+                        _hover={{ backgroundColor: 'gray.600' }}
+                    > 
+                        {t('newSessionText')}
+                    </Button>
+                </Link>
+            </Box>
             <Link to="/openProjects">
                 <Button
                     w="10rem"

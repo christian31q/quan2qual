@@ -15,7 +15,7 @@ const GridBodyActors = ({ actors, handleDragStart }) => {
     >
       {actors.map((actor) => (
         <ActorCard
-          key={actor._id}
+          key={actor._id || actor.id}
           actor={actor}
           draggable
           onDragStart={(e) => {

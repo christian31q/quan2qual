@@ -4,7 +4,7 @@ import { RiUser4Line } from 'react-icons/ri';
 import useActorDragStore from '../store/actorDragStore';
 import '../styles/HandleStyles.css'
 
-const ImageTimeline = ({ images, setSelectedImage, currentImageIndex }) => {
+const ImageTimeline = ({ images, setSelectedImage, sessionId, currentImageIndex }) => {
   const { actorsInstances } = useActorDragStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -20,7 +20,7 @@ const ImageTimeline = ({ images, setSelectedImage, currentImageIndex }) => {
   const getActorCountForImage = (index) => {
     // Filtrar los actores que pertenecen a la imagen con el índice dado
     return Object.values(actorsInstances).filter(
-      (actor) => actor.imageIndex === index
+      (actor) => (actor.imageIndex === index && actor.sessionId === sessionId)
     ).length;
   };
 
