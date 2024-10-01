@@ -49,13 +49,29 @@ function SessionPage({ pageTitle }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [actorsPerImage, setActorsPerImage] = useState({});
 
+  // Estado para el Video
+  const mediaRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // Estado para que herramienta está abierta 
+  const [activeLiveBox, setActiveLiveBox] = useState('Actors');
+
+  // Estado para el modo relacionar activo 
+  const [isCreatingRelation, setIsCreatingRelation] = useState(false);
+
+  console.log('Relation mode: ', isCreatingRelation);
+
+  const activateRelationMode = () => {
+    setIsCreatingRelation(true);
+  };
+
   // Manejo del cambio de imagen activa desde el timeline
   const handleImageChange = (index) => {
     console.log(`Imagen activa cambiada a índice: ${index}`);
     setCurrentImageIndex(index);
     setCurrentImage(selectedImages[index]);
   };
-
 
   useEffect(() => {
     if (!sessionId) return;
@@ -81,12 +97,6 @@ function SessionPage({ pageTitle }) {
 
   const mediaType = sessionData ? sessionData.media_type : null;
   //console.log('Media Type: ', mediaType);
-  
-
-  // Video
-  const mediaRef = useRef(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
 
   const handleSeek = (time) => {
     if (mediaRef.current) {
@@ -94,8 +104,6 @@ function SessionPage({ pageTitle }) {
     }
     setCurrentTime(time);
   };
-
-  const [activeLiveBox, setActiveLiveBox] = useState('Actors');
 
   // Lógica para determinar si es audio, imagen o video
   const isAudio = mediaType === 'audio';
@@ -194,16 +202,18 @@ function SessionPage({ pageTitle }) {
               currentImageIndex={currentImageIndex}
               actorsPerImage={actorsPerImage}
               setActorsPerImage={setActorsPerImage}
+              isCreatingRelation={isCreatingRelation} 
+              setIsCreatingRelation={setIsCreatingRelation}
             />
           )}
           {mediaType === 'video' && (
-              <FileUploadSection 
-                mediaType={mediaType}
-                mediaRef={mediaRef}
-                currentTime={currentTime}
-                setCurrentTime={setCurrentTime}
-                setDuration={setDuration}
-              />            
+            <FileUploadSection 
+              mediaType={mediaType}
+              mediaRef={mediaRef}
+              currentTime={currentTime}
+              setCurrentTime={setCurrentTime}
+              setDuration={setDuration}
+            />            
           )}
           {mediaType === 'audio' && (
             <FileUploadSection 
@@ -250,7 +260,7 @@ function SessionPage({ pageTitle }) {
 
           {activeLiveBox === 'Attach' && (
             <>
-              <HeaderTableRelations />
+              <HeaderTableRelations activateRelationMode={activateRelationMode} />
               <HeaderLabelsRelations />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
                 {/* <TableBodyRelations /> */}

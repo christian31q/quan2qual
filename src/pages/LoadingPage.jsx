@@ -30,7 +30,7 @@ function LoadingPage() {
       justifyContent="center"
       alignItems="center"
     >
-        <Container h="100vh" display="flex" alignItems="center" justifyContent="center">
+    <Container h="100vh" display="flex" alignItems="center" justifyContent="center">
       <ChakraBox
         animate={{
           scale: [1, 2, 2, 1, 1],

@@ -32,7 +32,7 @@ function LoginPage() {
         justifyContent='space-between'
       >
         <Image
-          src={loginImageUrl}
+          src={loginImage}
           alt="Imagen de inicio de sesión"
           maxW={{ base: '100%', md: 'auto' }}
           maxH={{ base: 'auto', md: 'auto' }}

@@ -4,7 +4,7 @@ import { TbCirclesRelation } from "react-icons/tb";
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 
-const HeaderTableRelations = () => {
+const HeaderTableRelations = ({ activateRelationMode }) => {
     return (
       <>
         <Text
@@ -26,6 +26,7 @@ const HeaderTableRelations = () => {
             aria-label='create actor'
             fontSize='35px'
             icon={<IoMdAddCircleOutline />}
+            onClick={activateRelationMode}  // Disparar el modo relación
           />
           <Icon as={TbCirclesRelation} fontSize='1.5vw' />
         </Text>

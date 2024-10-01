@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Button, Input, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Input, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Icon, Text, Image } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
@@ -8,6 +8,10 @@ import useActorStore from '../store/actorStore';
 import useActorDragStore from '../store/actorDragStore';
 import { getActorInstancesFromDB } from '../utils/mongoUtils';
 import { motion } from 'framer-motion';
+
+import { createStandaloneToast } from '@chakra-ui/react';
+
+const { ToastContainer, toast } = createStandaloneToast();
 
 // Función para convertir archivo a Base64
 const getBase64 = (file) => {
@@ -21,7 +25,7 @@ const getBase64 = (file) => {
 
 const MotionBox = motion(Box);
 
-function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex  }) {
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex, isCreatingRelation, setIsCreatingRelation  }) {
   const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
@@ -31,10 +35,8 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const [actorToDelete, setActorToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    console.log(`Índice de la imagen activa en ImageUploadSection: ${currentImageIndex}`);
-  }, [currentImageIndex]);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [tutorialShown, setTutorialShown] = useState(false);
 
   // Obtener los actores de la imagen activa
   const actorsForCurrentImage = Object.values(actorsInstances).filter(
@@ -43,6 +45,62 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   console.log('actorsForCurrentImage: ', actorsForCurrentImage);
   
+  const checkActorsForRelation = () => {
+    if (actorsForCurrentImage.length < 2) {
+      // Mostrar toast si no hay suficientes actores
+      setIsCreatingRelation(false); // Desactivar el modo de relación si no hay suficientes actores
+      showToast('Debe haber al menos dos actores en la zona para crear una relación.', 'error');
+      return false;
+    }
+    return true;
+  };
+
+  // Activar el modo de creación de relaciones y mostrar tutorial solo si es la primera vez
+  useEffect(() => {
+    if (isCreatingRelation && !tutorialShown) {
+      // Si se activa el trigger, revisar si hay suficientes actores en la imagen actual
+      if (checkActorsForRelation()) {
+        setIsTutorialOpen(true); 
+      }
+    }
+  }, [isCreatingRelation, actorsForCurrentImage, currentImageIndex, tutorialShown]);
+
+  // Cerrar el modal del tutorial y desactivar el trigger
+  const handleCloseTutorial = () => {
+    setIsTutorialOpen(false);
+    setTutorialShown(true);
+  };
+
+  const TutorialModal = ({ isOpen, onClose }) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'xl'}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>Cómo crear una relación entre actores</ModalHeader>
+                <ModalBody>
+                  <Box marginBottom='16px'>
+                    <Text>Para relacionar los actores:</Text>
+                    <Text>1. Haz clic en el primer actor (source). Una flecha pequeña aparecerá. </Text>
+                    <Text> 2. Luego, haz clic en el segundo actor (target). 
+                           Una flecha se dibujará desde la fuente (source) al destino (target).
+                    </Text>
+                    <Text>3. Asigna el tipo de relación que corresponda</Text>
+                  </Box>
+                    <Image 
+                      boxSize='100%'
+                      objectFit='cover'
+                      src='../../src/assets/Tuto_Relation.gif' 
+                      alt='tuto_relation'
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <Button colorScheme="blue" onClick={onClose}>Entendido</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+  };
+
   const containerRef = useRef();
 
   // Maneja la selección de archivos
@@ -87,10 +145,8 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   useEffect(() => {
     const fetchActorsForCurrentImage = async () => {
       try {
-        // Llamamos a la base de datos para obtener los actores que coincidan con `currentImageIndex` y `sessionId`
+        // Llamar a la base de datos para obtener los actores que coincidan con `currentImageIndex` y `sessionId`
         const fetchedActors = await getActorInstancesFromDB(sessionId, currentImageIndex);
-        
-        console.log('Instances DB: ', fetchedActors);
 
         // Actualizar los actores en Zustand
         updateActorsInZustand(fetchedActors);
@@ -234,6 +290,16 @@ const handleConfirmDelete = () => {
   setIsDeleteModalOpen(false);
 };
 
+const showToast = (message, type) => {
+  toast({
+    title: `${type}`,
+    description: message,
+    status: `${type}`,
+    duration: 3000,
+    isClosable: true,
+  });
+};
+
   // Renderiza el área de carga de imágenes
   const renderImages = () => {
     return (
@@ -320,6 +386,7 @@ const handleConfirmDelete = () => {
         borderWidth='3px'
         borderRadius='lg'
         borderColor='#173378'
+        outline={isCreatingRelation ? '5px solid #5dff5d' : 'none'}
         bg='#173378'
         align='center'
         mt='2vh'
@@ -431,6 +498,9 @@ const handleConfirmDelete = () => {
         </ModalContent>
         </Modal>
       )}
+      {/* Modal de tutorial */}
+      <TutorialModal isOpen={isTutorialOpen} onClose={handleCloseTutorial} />
+      <ToastContainer/>
     </HStack>
   );
 }
