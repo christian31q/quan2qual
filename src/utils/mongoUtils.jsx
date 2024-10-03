@@ -255,3 +255,28 @@ export const deleteActorInstanceInDB = async (actorId) => {
     const result = await requestMongo("actors_instances", { filter: { _id: { "$oid": actorId } } }, "deleteOne");
     return result;
 };
+
+// Relaciones en Mongo DB
+
+export const createRelationshipInDB = async (relationshipData) => {
+  const result = await requestMongo("relationships", { document: relationshipData }, "insertOne");
+  return result;
+};
+
+export const getRelationshipsFromDB = async (sessionId) => {
+  const result = await requestMongo("relationships", { filter: { session_id: sessionId } }, "find");
+  return result;
+};
+
+export const updateRelationshipInDB = async (relationshipId, updatedData) => {
+  const result = await requestMongo("relationships", {
+    filter: { _id: { "$oid": relationshipId } },
+    update: { "$set": updatedData }
+  }, "updateOne");
+  return result;
+}
+
+export const deleteRelationshipFromDB = async (relationshipId) => {
+  const result = await requestMongo("relationships", { filter: { _id: { "$oid": relationshipId } } }, "deleteOne");
+  return result;
+};

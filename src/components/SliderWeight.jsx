@@ -12,7 +12,7 @@ const SliderWeight = ({ value , onChange }) => {
       onChange={onChange}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
-      min={0}
+      min={-1}
       max={1}
       step={0.1}
     >

@@ -71,6 +71,7 @@ function SessionPage({ pageTitle }) {
     console.log(`Imagen activa cambiada a índice: ${index}`);
     setCurrentImageIndex(index);
     setCurrentImage(selectedImages[index]);
+    setIsCreatingRelation(false);
   };
 
   useEffect(() => {

@@ -6,8 +6,11 @@ import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
 import useActorStore from '../store/actorStore';
 import useActorDragStore from '../store/actorDragStore';
+import useRelationStore from '../store/relationStore';
 import { getActorInstancesFromDB } from '../utils/mongoUtils';
 import { motion } from 'framer-motion';
+import Xarrow from "react-xarrows";
+import RelationPopup from './relations/RelationPopup';
 
 import { createStandaloneToast } from '@chakra-ui/react';
 
@@ -30,6 +33,8 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const { actors, fetchActors } = useActorStore();
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
 
+  const { relations, setTemporaryRelation, loadRelations, addRelation } = useRelationStore();
+
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedActors, setDroppedActors] = useState([]);
   const [actorToDelete, setActorToDelete] = useState(null);
@@ -38,12 +43,84 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [tutorialShown, setTutorialShown] = useState(false);
 
+  // Estados para los actores a relacionar
+  const [selectedActor, setSelectedActor] = useState(null); // El actor source
+  //const [relations, setRelations] = useState([]); // Relación (source -> target)
+  const actorRefs = useRef({});
+
+  // Estados al crear una relación entre actores
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para el popup
+  const [existingRelations, setExistingRelations] = useState([]); // Relaciones existentes
+  const [newRelation, setNewRelation] = useState(null); // La relación asignada
+
+  // Cargar las relaciones cuando el componente se monta
+  useEffect(() => {
+    if (sessionId) {
+      loadRelations(sessionId);
+    }
+  }, [sessionId, loadRelations]);
+
+  // Crear la relación
+  const handleCreateRelation = (source, target, type, direction, relationClass) => {
+    addRelation({
+      source,
+      target,
+      type,
+      direction,
+      class: relationClass,
+      session_id: sessionId,
+    });
+  };
+
+  // Este método se ejecuta al conectar dos actores
+  const handleActorConnection = (sourceId, targetId) => {
+    // Si se conectan dos actores, abrir el modal
+    setIsPopupOpen(true);
+    //console.log('Source Actor ID: ', sourceId);
+    //console.log('Target Actor ID: ', targetId);
+  };
+
+  console.log('Relations: ', relations);
+
+  const handleActorClick = (actorId) => {
+    console.log('Actor ref ID: ', actorId);
+    if(isCreatingRelation) {
+      if (!selectedActor) {
+        // Seleccionamos el primer actor (source)
+        setSelectedActor(actorId);
+      } else {
+        // Si ya hay un actor seleccionado, abrimos el pop-up
+        const newRelation = {
+          source: selectedActor,   // Actor de origen
+          target: actorId,         // Actor de destino
+          session_id: sessionId,   // Agregar el session_id a la relación
+        };
+    
+        // Almacenar la relación temporalmente en Zustand
+        setTemporaryRelation(newRelation);  // Esto se guarda en el estado, pero no se envía a MongoDB aún
+    
+        // Llamar a la función para abrir el pop-up y asignar la relación
+        handleActorConnection(selectedActor, actorId);
+    
+        // Reiniciar el actor seleccionado
+        setSelectedActor(null);
+      }
+    }
+  };
+
+  const getActorStyle = (actorId) => {
+    if (selectedActor === actorId) {
+      return { outline: '5px solid #5dff5d' }; // El actor seleccionado tiene un borde verde
+    }
+    return {}; // Sin estilo especial si no está seleccionado
+  };
+
   // Obtener los actores de la imagen activa
   const actorsForCurrentImage = Object.values(actorsInstances).filter(
     (actor) => (actor.imageIndex === currentImageIndex && actor.sessionId === sessionId)
   );
 
-  console.log('actorsForCurrentImage: ', actorsForCurrentImage);
+  console.log('actorsForCurrentImage: ', actorsForCurrentImage.length);
   
   const checkActorsForRelation = () => {
     if (actorsForCurrentImage.length < 2) {
@@ -57,48 +134,19 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   // Activar el modo de creación de relaciones y mostrar tutorial solo si es la primera vez
   useEffect(() => {
-    if (isCreatingRelation && !tutorialShown) {
-      // Si se activa el trigger, revisar si hay suficientes actores en la imagen actual
-      if (checkActorsForRelation()) {
-        setIsTutorialOpen(true); 
+    if (isCreatingRelation) {
+      const hasEnoughActors = checkActorsForRelation();
+
+      if (!tutorialShown && hasEnoughActors) {
+        setIsTutorialOpen(true);
       }
     }
-  }, [isCreatingRelation, actorsForCurrentImage, currentImageIndex, tutorialShown]);
+  }, [isCreatingRelation, actorsForCurrentImage, currentImageIndex, tutorialShown]);  
 
   // Cerrar el modal del tutorial y desactivar el trigger
   const handleCloseTutorial = () => {
     setIsTutorialOpen(false);
     setTutorialShown(true);
-  };
-
-  const TutorialModal = ({ isOpen, onClose }) => {
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'xl'}>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Cómo crear una relación entre actores</ModalHeader>
-                <ModalBody>
-                  <Box marginBottom='16px'>
-                    <Text>Para relacionar los actores:</Text>
-                    <Text>1. Haz clic en el primer actor (source). Una flecha pequeña aparecerá. </Text>
-                    <Text> 2. Luego, haz clic en el segundo actor (target). 
-                           Una flecha se dibujará desde la fuente (source) al destino (target).
-                    </Text>
-                    <Text>3. Asigna el tipo de relación que corresponda</Text>
-                  </Box>
-                    <Image 
-                      boxSize='100%'
-                      objectFit='cover'
-                      src='../../src/assets/Tuto_Relation.gif' 
-                      alt='tuto_relation'
-                    />
-                </ModalBody>
-                <ModalFooter>
-                    <Button colorScheme="blue" onClick={onClose}>Entendido</Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
-    );
   };
 
   const containerRef = useRef();
@@ -300,6 +348,38 @@ const showToast = (message, type) => {
   });
 };
 
+  // Componentes extras
+
+  const TutorialModal = ({ isOpen, onClose }) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'xl'}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>Cómo crear una relación entre actores</ModalHeader>
+                <ModalBody>
+                  <Box marginBottom='16px'>
+                    <Text>Para relacionar los actores:</Text>
+                    <Text>1. Haz clic en el primer actor (source). Una flecha pequeña aparecerá. </Text>
+                    <Text> 2. Luego, haz clic en el segundo actor (target). 
+                           Una flecha se dibujará desde la fuente (source) al destino (target).
+                    </Text>
+                    <Text>3. Asigna el tipo de relación que corresponda</Text>
+                  </Box>
+                    <Image 
+                      boxSize='100%'
+                      objectFit='cover'
+                      src='../../src/assets/Tuto_Relation.gif' 
+                      alt='tuto_relation'
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <Button colorScheme="blue" onClick={onClose}>Entendido</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+  };
+
   // Renderiza el área de carga de imágenes
   const renderImages = () => {
     return (
@@ -337,12 +417,6 @@ const showToast = (message, type) => {
             />
           </label>
         )}
-        {actorsForCurrentImage.map((instance) => (
-          <Box key={instance._id} left={`${instance.position.x}%`} top={`${instance.position.y}%`} position="absolute">
-            {/* Renderización del actor */}
-            <Icon>{instance.actor.icon}</Icon>
-          </Box>
-        ))}
         {/* Input de subida de archivos oculto para el botón "Subir más" */}
         <Input
           type='file'
@@ -401,39 +475,54 @@ const showToast = (message, type) => {
         {renderImages()}
         {actorsForCurrentImage.map((instance) => (
           <MotionBox
-            key={instance._id}
-            position='absolute'
-            cursor='move'
-            left={`${instance.position.x}%`}
-            top={`${instance.position.y}%`}
-            draggable
-            onDragStart={(e) => handleDragStart(e, instance._id)}
-            onDragEnd={(e) => handleDragEnd(e, instance._id)}
-            display='flex'
-            flexDirection='column'
-            justifyContent='center'
-            alignItems='center'
-            borderRadius='lg'
-            padding='12px'
-            backgroundColor='transparent'
-            layout
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-            whileHover={{ scale: 1.1 }}
-            dragElastic={0.2}
-            onMouseEnter={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 1}
-            onMouseLeave={(e) => e.currentTarget.querySelector('.delete-btn').style.opacity = 0}
-          >
+          key={instance._id}
+          id={instance._id}
+          position="absolute"
+          className="Motionbox"
+          cursor={isCreatingRelation ? 'default' : 'move'}  // Desactivar el cursor de mover si isCreatingRelation es true
+          left={`${instance.position.x}%`}
+          top={`${instance.position.y}%`}
+          draggable={!isCreatingRelation}  // Bloquear el drag si isCreatingRelation es true
+          onDragStart={isCreatingRelation ? undefined : (e) => handleDragStart(e, instance._id)}  // Desactivar el drag start
+          onDragEnd={isCreatingRelation ? undefined : (e) => handleDragEnd(e, instance._id)}  // Desactivar el drag end
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          borderRadius="lg"
+          padding="12px"
+          backgroundColor="transparent"
+          layout
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.3 }}
+          whileHover={isCreatingRelation ? {cursor: "pointer"} : { scale: 1.1 }}  // Desactivar el hover si isCreatingRelation es true
+          dragElastic={0.2}
+          onMouseEnter={(e) => {
+            if (!isCreatingRelation) {
+              e.currentTarget.querySelector('.delete-btn').style.opacity = 1;  // Mostrar el botón de eliminar si no estamos creando relación
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isCreatingRelation) {
+              e.currentTarget.querySelector('.delete-btn').style.opacity = 0;  // Ocultar el botón de eliminar si no estamos creando relación
+            }
+          }}
+        >
             {instance.actor && (
               <>
                 <Icon
+                  key={instance._id}
+                  id={`actor-${instance._id}`}
+                  className='Instance'
                   width='50px'
                   height='50px'
                   fontSize='60px'
                   bg={instance.actor.color}
                   borderRadius='100%'
+                  onClick={() => handleActorClick(instance._id)}
+                  style={getActorStyle(instance._id)}
                 >
                   <IconPickerItem value={instance.actor.icon} size={24} />
                 </Icon>
@@ -466,11 +555,24 @@ const showToast = (message, type) => {
                   opacity={0}  // Invisible al inicio
                   transition="opacity 0.2s ease"
                   onClick={() => handleOpenDeleteModal(instance._id)}
+                  style={{ display: isCreatingRelation ? 'none' : 'flex' }}
                 >
                   X
                 </Box>
               </>
             )}
+            {relations.map((relation) => (
+              <Xarrow
+                key={relation._id}
+                start={relation.source}
+                end={relation.target}   
+                color="#5dff5d"
+                strokeWidth={2}
+                path="smooth"
+                headSize={6}
+                labels={{ middle:<div style={{ background: "black", color: "white", fontSize: "0.8em", fontStyle: "normal" }}>{relation.type}</div> }}
+              />
+            ))}
           </MotionBox>
         ))}
       </Box>
@@ -501,6 +603,12 @@ const showToast = (message, type) => {
       {/* Modal de tutorial */}
       <TutorialModal isOpen={isTutorialOpen} onClose={handleCloseTutorial} />
       <ToastContainer/>
+      <RelationPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        existingRelations={existingRelations}  // Relación existente en el proyecto
+        onCreateRelation={handleCreateRelation} // Lógica para crear la relación
+      />
     </HStack>
   );
 }
