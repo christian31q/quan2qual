@@ -13,7 +13,7 @@ export default async function requestMongo(collection, body, action) {
           "dataSource": "Quan2Qual",
           ...body
         });
-        console.log('Raw: ', raw);
+        //console.log('Raw: ', raw);
     } else{
         raw = JSON.stringify({
             "collection": `${collection}`,

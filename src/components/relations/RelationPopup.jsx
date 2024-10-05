@@ -29,7 +29,7 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
     }
   }, [fetchRelationTypes, sessionId]);
 
-  console.log(relationTypes);
+  //console.log(relationTypes);
 
   // Mostrar el LiveBox de creación de tipos de relación
   const handleTypesIconClick = () => {

@@ -9,7 +9,8 @@ import useActorDragStore from '../store/actorDragStore';
 import useRelationStore from '../store/relationStore';
 import { getActorInstancesFromDB } from '../utils/mongoUtils';
 import { motion } from 'framer-motion';
-import Xarrow from "react-xarrows";
+import Xarrow, { useXarrow, Xwrapper } from 'react-xarrows';
+import Draggable from 'react-draggable';
 import RelationPopup from './relations/RelationPopup';
 
 import { createStandaloneToast } from '@chakra-ui/react';
@@ -36,7 +37,6 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const { relations, setTemporaryRelation, loadRelations, addRelation } = useRelationStore();
 
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [droppedActors, setDroppedActors] = useState([]);
   const [actorToDelete, setActorToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,13 +45,10 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
 
   // Estados para los actores a relacionar
   const [selectedActor, setSelectedActor] = useState(null); // El actor source
-  //const [relations, setRelations] = useState([]); // Relación (source -> target)
-  const actorRefs = useRef({});
 
   // Estados al crear una relación entre actores
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para el popup
   const [existingRelations, setExistingRelations] = useState([]); // Relaciones existentes
-  const [newRelation, setNewRelation] = useState(null); // La relación asignada
 
   // Cargar las relaciones cuando el componente se monta
   useEffect(() => {
@@ -80,7 +77,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     //console.log('Target Actor ID: ', targetId);
   };
 
-  console.log('Relations: ', relations);
+  //console.log('Relations: ', relations);
 
   const handleActorClick = (actorId) => {
     console.log('Actor ref ID: ', actorId);
@@ -120,7 +117,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     (actor) => (actor.imageIndex === currentImageIndex && actor.sessionId === sessionId)
   );
 
-  console.log('actorsForCurrentImage: ', actorsForCurrentImage.length);
+  //console.log('actorsForCurrentImage: ', actorsForCurrentImage.length);
   
   const checkActorsForRelation = () => {
     if (actorsForCurrentImage.length < 2) {
@@ -150,6 +147,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   };
 
   const containerRef = useRef();
+  const updateXarrow = useXarrow();
 
   // Maneja la selección de archivos
   const handleFileChange = async (e) => {
@@ -240,6 +238,9 @@ const updateActorsInZustand = (fetchedActors) => {
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
   
+    console.log('Posición ajustada (posX, posY):', { posX, posY });
+  
+    // Convertir a porcentaje relativo al contenedor
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
     
@@ -247,16 +248,16 @@ const updateActorsInZustand = (fetchedActors) => {
     if (!originalActor) return;
   
     const newActorInstance = {
-      actorId,          // ID del actor original
+      actorId,
       actor: originalActor,
-      position: { x: percentX, y: percentY },
+      position: { x: percentX, y: percentY },  // Guardar la posición en porcentaje
       imageIndex: currentImageIndex,
-      sessionId,  // Asegúrate de pasar el sessionId
+      sessionId,
     };
   
     // Añadir la nueva instancia al store de Zustand y la base de datos
     await addActor(newActorInstance);
-  };
+  };   
   
   // Maneja el inicio del arrastre de actores
   const handleDragStart = (e, instanceId) => {
@@ -460,6 +461,7 @@ const showToast = (message, type) => {
         borderWidth='3px'
         borderRadius='lg'
         borderColor='#173378'
+        boxSizing='border-box'
         outline={isCreatingRelation ? '5px solid #5dff5d' : 'none'}
         bg='#173378'
         align='center'

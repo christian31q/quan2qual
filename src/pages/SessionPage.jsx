@@ -60,7 +60,7 @@ function SessionPage({ pageTitle }) {
   // Estado para el modo relacionar activo 
   const [isCreatingRelation, setIsCreatingRelation] = useState(false);
 
-  console.log('Relation mode: ', isCreatingRelation);
+  //console.log('Relation mode: ', isCreatingRelation);
 
   const activateRelationMode = () => {
     setIsCreatingRelation(true);
