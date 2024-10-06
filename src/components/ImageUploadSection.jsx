@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Button, Input, HStack, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Icon, Text, Image } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import GridBodyActors from './actors/GridBodyActors';
@@ -29,7 +29,7 @@ const getBase64 = (file) => {
 
 const MotionBox = motion(Box);
 
-function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex, isCreatingRelation, setIsCreatingRelation  }) {
+function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessionId, currentImageIndex, isCreatingRelation, setIsCreatingRelation }) {
   const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
@@ -42,6 +42,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [tutorialShown, setTutorialShown] = useState(false);
+  const containerRef = useRef();
 
   // Estados para los actores a relacionar
   const [selectedActor, setSelectedActor] = useState(null); // El actor source
@@ -76,8 +77,6 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     //console.log('Source Actor ID: ', sourceId);
     //console.log('Target Actor ID: ', targetId);
   };
-
-  //console.log('Relations: ', relations);
 
   const handleActorClick = (actorId) => {
     console.log('Actor ref ID: ', actorId);
@@ -146,9 +145,6 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     setTutorialShown(true);
   };
 
-  const containerRef = useRef();
-  const updateXarrow = useXarrow();
-
   // Maneja la selección de archivos
   const handleFileChange = async (e) => {
     const newFiles = Array.from(e.target.files);
@@ -209,17 +205,17 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   }, [currentImageIndex, sessionId]);
 
   // Función para actualizar Zustand con los actores obtenidos de la base de datos
-const updateActorsInZustand = (fetchedActors) => {
-  const { setActorsInstances } = useActorDragStore.getState();  // Obtener la acción de Zustand
+  const updateActorsInZustand = (fetchedActors) => {
+    const { setActorsInstances } = useActorDragStore.getState();  // Obtener la acción de Zustand
 
-  const actorsMap = {};  // Convertir actores a un objeto
-  fetchedActors.forEach(actor => {
-    actorsMap[actor._id] = actor;
-  });
+    const actorsMap = {};  // Convertir actores a un objeto
+    fetchedActors.forEach(actor => {
+      actorsMap[actor._id] = actor;
+    });
 
-  // Actualizar Zustand con los actores de la base de datos
-  setActorsInstances(actorsMap);
-};
+    // Actualizar Zustand con los actores de la base de datos
+    setActorsInstances(actorsMap);
+  };
 
   // Maneja el arrastre y caída de actores
   const handleDrop = async (e) => {
@@ -307,24 +303,24 @@ const updateActorsInZustand = (fetchedActors) => {
     }
   };
 
-// Escuchar cambios en los actores originales y actualizar las instancias
-useEffect(() => {
-  Object.keys(actorsInstances).forEach((actorId) => {
-    const instance = actorsInstances[actorId];
-    const originalActor = actors.find((oActor) => oActor._id === instance.actor._id);
+  // Escuchar cambios en los actores originales y actualizar las instancias
+  useEffect(() => {
+    Object.keys(actorsInstances).forEach((actorId) => {
+      const instance = actorsInstances[actorId];
+      const originalActor = actors.find((oActor) => oActor._id === instance.actor._id);
 
-    if (originalActor) {
-      // Evitar actualizar si las propiedades clave no han cambiado
-      const { name: instanceName, color: instanceColor } = instance.actor;
-      const { name: originalName, color: originalColor } = originalActor;
+      if (originalActor) {
+        // Evitar actualizar si las propiedades clave no han cambiado
+        const { name: instanceName, color: instanceColor } = instance.actor;
+        const { name: originalName, color: originalColor } = originalActor;
 
-      // Solo actualiza si las propiedades clave son diferentes
-      if (instanceName !== originalName || instanceColor !== originalColor) {
-        updateActorAttributes(actorId, originalActor);  // Actualiza las propiedades usando Zustand
+        // Solo actualiza si las propiedades clave son diferentes
+        if (instanceName !== originalName || instanceColor !== originalColor) {
+          updateActorAttributes(actorId, originalActor);  // Actualiza las propiedades usando Zustand
+        }
       }
-    }
-  });
-}, [actors, actorsInstances, updateActorAttributes]);
+    });
+  }, [actors, actorsInstances, updateActorAttributes]);
   
   const handleOpenDeleteModal = (actorId) => {
     onOpen();
@@ -332,28 +328,28 @@ useEffect(() => {
     setIsDeleteModalOpen(true);
   };
 
-// Confirmar la eliminación de una instancia
-const handleConfirmDelete = () => {
-  // Eliminar el actor de Zustand
-  removeActor(actorToDelete);
-  setIsDeleteModalOpen(false);
-};
+  // Confirmar la eliminación de una instancia
+  const handleConfirmDelete = () => {
+    // Eliminar el actor de Zustand
+    removeActor(actorToDelete);
+    setIsDeleteModalOpen(false);
+  };
 
-const showToast = (message, type) => {
-  toast({
-    title: `${type}`,
-    description: message,
-    status: `${type}`,
-    duration: 3000,
-    isClosable: true,
-  });
-};
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
 
   // Componentes extras
 
   const TutorialModal = ({ isOpen, onClose }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'xl'}>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'3xl'}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Cómo crear una relación entre actores</ModalHeader>
@@ -366,12 +362,9 @@ const showToast = (message, type) => {
                     </Text>
                     <Text>3. Asigna el tipo de relación que corresponda</Text>
                   </Box>
-                    <Image 
-                      boxSize='100%'
-                      objectFit='cover'
-                      src='../../src/assets/Tuto_Relation.gif' 
-                      alt='tuto_relation'
-                    />
+                    <video width="100%" height="auto" autoPlay loop>
+                      <source src='../../src/assets/Quan2Qual_Tuto.mp4' type='video/mp4'/>
+                    </video>
                 </ModalBody>
                 <ModalFooter>
                     <Button colorScheme="blue" onClick={onClose}>Entendido</Button>
@@ -432,6 +425,43 @@ const showToast = (message, type) => {
     );
   };  
 
+  // Componente para renderizar las flechas
+  const RelationsArrows = ({ relations, currentImageIndex }) => {
+    return (
+      <>
+        {relations.map((relation) => {
+          // Filtrar relaciones que no pertenecen a la imagen activa
+          if (relation.imageIndex !== currentImageIndex) return null;
+          return (
+            <Xarrow
+              key={relation._id}
+              start={`actor-${relation.source}`} // ID de inicio debe coincidir con el actor
+              end={`actor-${relation.target}`} // ID de destino debe coincidir con el actor
+              color="#5dff5d"
+              strokeWidth={3}
+              path="smooth"
+              headSize={6}
+              labels={{
+                middle: (
+                  <div
+                    style={{
+                      background: "black",
+                      color: "white",
+                      fontSize: "0.8em",
+                      fontStyle: "normal",
+                    }}
+                  >
+                    {relation.type_label}
+                  </div>
+                ),
+              }}
+            />
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <HStack spacing={4}>
       <Box
@@ -455,128 +485,126 @@ const showToast = (message, type) => {
       </Box>
       <Box
         ref={containerRef}
-        w='60vw'
-        maxHeight='55vh'
+        w="60vw"
+        maxHeight="55vh"
         p={4}
-        borderWidth='3px'
-        borderRadius='lg'
-        borderColor='#173378'
-        boxSizing='border-box'
+        borderWidth="3px"
+        borderRadius="lg"
+        borderColor="#173378"
+        boxSizing="border-box"
         outline={isCreatingRelation ? '5px solid #5dff5d' : 'none'}
-        bg='#173378'
-        align='center'
-        mt='2vh'
-        mr='2.5vh'
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        position='relative'
+        bg="#173378"
+        align="center"
+        mt="2vh"
+        mr="2.5vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        position="relative"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
         {renderImages()}
-        {actorsForCurrentImage.map((instance) => (
-          <MotionBox
-          key={instance._id}
-          id={instance._id}
-          position="absolute"
-          className="Motionbox"
-          cursor={isCreatingRelation ? 'default' : 'move'}  // Desactivar el cursor de mover si isCreatingRelation es true
-          left={`${instance.position.x}%`}
-          top={`${instance.position.y}%`}
-          draggable={!isCreatingRelation}  // Bloquear el drag si isCreatingRelation es true
-          onDragStart={isCreatingRelation ? undefined : (e) => handleDragStart(e, instance._id)}  // Desactivar el drag start
-          onDragEnd={isCreatingRelation ? undefined : (e) => handleDragEnd(e, instance._id)}  // Desactivar el drag end
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          borderRadius="lg"
-          padding="12px"
-          backgroundColor="transparent"
-          layout
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3 }}
-          whileHover={isCreatingRelation ? {cursor: "pointer"} : { scale: 1.1 }}  // Desactivar el hover si isCreatingRelation es true
-          dragElastic={0.2}
-          onMouseEnter={(e) => {
-            if (!isCreatingRelation) {
-              e.currentTarget.querySelector('.delete-btn').style.opacity = 1;  // Mostrar el botón de eliminar si no estamos creando relación
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isCreatingRelation) {
-              e.currentTarget.querySelector('.delete-btn').style.opacity = 0;  // Ocultar el botón de eliminar si no estamos creando relación
-            }
-          }}
-        >
-            {instance.actor && (
-              <>
-                <Icon
-                  key={instance._id}
-                  id={`actor-${instance._id}`}
-                  className='Instance'
-                  width='50px'
-                  height='50px'
-                  fontSize='60px'
-                  bg={instance.actor.color}
-                  borderRadius='100%'
-                  onClick={() => handleActorClick(instance._id)}
-                  style={getActorStyle(instance._id)}
-                >
-                  <IconPickerItem value={instance.actor.icon} size={24} />
-                </Icon>
-                <Box
-                  bg='black'
-                  color='white'
-                  borderRadius='4px'
-                  fontSize='14px'
-                  fontWeight='600'
-                  width='max-content'
-                >
-                  {instance.actor.name}
-                </Box>
-                {/* Botón "X" para eliminar la instancia */}
-                <Box
-                  className="delete-btn"
-                  position="absolute"
-                  top="0px"
-                  right="0px"
-                  width="20px"
-                  height="20px"
-                  bg="red"
-                  borderRadius="50%"
-                  color="white"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  fontSize="14px"
-                  cursor="pointer"
-                  opacity={0}  // Invisible al inicio
-                  transition="opacity 0.2s ease"
-                  onClick={() => handleOpenDeleteModal(instance._id)}
-                  style={{ display: isCreatingRelation ? 'none' : 'flex' }}
-                >
-                  X
-                </Box>
-              </>
-            )}
-            {relations.map((relation) => (
-              <Xarrow
-                key={relation._id}
-                start={relation.source}
-                end={relation.target}   
-                color="#5dff5d"
-                strokeWidth={2}
-                path="smooth"
-                headSize={6}
-                labels={{ middle:<div style={{ background: "black", color: "white", fontSize: "0.8em", fontStyle: "normal" }}>{relation.type}</div> }}
-              />
-            ))}
-          </MotionBox>
-        ))}
+        <Xwrapper>
+          {/* Renderizar los actores */}
+          {actorsForCurrentImage.map((instance) => {
+            const isRelated = relations.some(
+              (relation) => relation.source === instance._id || relation.target === instance._id
+            );
+
+            return (
+              <MotionBox
+                key={instance._id}
+                id={`actor-${instance._id}`}
+                position="absolute"
+                className="Motionbox"
+                cursor={isCreatingRelation || isRelated ? "default" : "move"}
+                left={`${instance.position.x}%`}
+                top={`${instance.position.y}%`}
+                draggable={!isCreatingRelation && !isRelated}
+                onDragStart={!isCreatingRelation && !isRelated ? (e) => handleDragStart(e, instance._id) : undefined}
+                onDragEnd={!isCreatingRelation && !isRelated ? (e) => handleDragEnd(e, instance._id) : undefined}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                borderRadius="lg"
+                padding="12px"
+                backgroundColor="transparent"
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                whileHover={!isCreatingRelation && !isRelated ? { scale: 1.1 } : { cursor: "default" }}
+                dragElastic={0.2}
+                onMouseEnter={(e) => {
+                  if (!isCreatingRelation && !isRelated) {
+                    e.currentTarget.querySelector(".delete-btn").style.opacity = 1;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isCreatingRelation && !isRelated) {
+                    e.currentTarget.querySelector(".delete-btn").style.opacity = 0;
+                  }
+                }}
+              >
+                {instance.actor && (
+                  <>
+                    <Icon
+                      className="Instance"
+                      width="50px"
+                      height="50px"
+                      fontSize="60px"
+                      bg={instance.actor.color}
+                      borderRadius="100%"
+                      onClick={() => !isRelated && handleActorClick(instance._id)}
+                      style={getActorStyle(instance._id)}
+                    >
+                      <IconPickerItem value={instance.actor.icon} size={24} />
+                    </Icon>
+                    <Box
+                      bg="black"
+                      color="white"
+                      borderRadius="4px"
+                      fontSize="14px"
+                      fontWeight="600"
+                      width="max-content"
+                    >
+                      {instance.actor.name}
+                    </Box>
+                    {/* Botón "X" para eliminar la instancia */}
+                    <Box
+                      className="delete-btn"
+                      position="absolute"
+                      top="0px"
+                      right="0px"
+                      width="20px"
+                      height="20px"
+                      bg="red"
+                      borderRadius="50%"
+                      color="white"
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      fontSize="14px"
+                      cursor="pointer"
+                      opacity={0}
+                      transition="opacity 0.2s ease"
+                      onClick={() => handleOpenDeleteModal(instance._id)}
+                      style={{ display: isCreatingRelation || isRelated ? "none" : "flex" }}
+                    >
+                      X
+                    </Box>
+                  </>
+                )}
+              </MotionBox>
+            );
+          })}
+
+          {/* Renderizar las flechas fuera del bucle de actores */}
+          <RelationsArrows relations={relations} currentImageIndex={currentImageIndex} />
+        </Xwrapper>
       </Box>
       {/* Modal de confirmación */}
       {isDeleteModalOpen && (
@@ -610,6 +638,7 @@ const showToast = (message, type) => {
         onClose={() => setIsPopupOpen(false)}
         existingRelations={existingRelations}  // Relación existente en el proyecto
         onCreateRelation={handleCreateRelation} // Lógica para crear la relación
+        imageIndex={currentImageIndex}
       />
     </HStack>
   );

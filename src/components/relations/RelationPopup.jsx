@@ -12,7 +12,7 @@ import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
-const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation }) => {
+const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, imageIndex }) => {
   const { relationTypes, fetchRelationTypes } = useRelationTypeStore();
   const { temporaryRelation, addRelation } = useRelationStore();
   const [searchParams] = useSearchParams();
@@ -29,8 +29,6 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
     }
   }, [fetchRelationTypes, sessionId]);
 
-  //console.log(relationTypes);
-
   // Mostrar el LiveBox de creación de tipos de relación
   const handleTypesIconClick = () => {
     onClose(); // Cerrar el popup actual
@@ -42,16 +40,18 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
   };
 
   // Validar los campos antes de asignar la relación
-  const handleAssignRelation = () => {
-    console.log(temporaryRelation);
+  const handleAssignRelation = () => {;
     // Validar que los campos estén completos
     if (selectedRelationType && relationDirection && relationClass && temporaryRelation) {
       // Fusionar la relación temporal con los nuevos datos (tipo de relación, dirección, clase)
       const completedRelation = {
         ...temporaryRelation,   // Aquí se incluyen source, target, session_id
-        type: selectedRelationType,
+        type_id: selectedRelationType._id,
+        type_label: selectedRelationType.label,
+        weight: selectedRelationType.inputValues.peso_relacion,
         direction: relationDirection,
         class: relationClass,
+        imageIndex,
       };
   
       // Enviar la relación completa a MongoDB
@@ -86,11 +86,11 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
             {relationTypes.length > 0 ? (
               <Select
                 placeholder="Seleccione el tipo de relación"
-                value={selectedRelationType}
-                onChange={(e) => setSelectedRelationType(e.target.value)}
+                value={selectedRelationType ? JSON.stringify(selectedRelationType) : ''}  // Serializar el objeto para el valor seleccionado
+                onChange={(e) => setSelectedRelationType(JSON.parse(e.target.value))}  // Deserializar al cambiar la selección
               >
                 {relationTypes.map((relation) => (
-                  <option key={relation._id} value={relation.label}>
+                  <option key={relation._id} value={JSON.stringify(relation)}>  {/* Serializar el objeto */}
                     {relation.label} | weight: {relation.inputValues.peso_relacion}
                   </option>
                 ))}
@@ -98,7 +98,6 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
             ) : (
               <Text>No hay tipos de relación creados.</Text>
             )}
-
             {/* Ocultar el botón de "Crear nuevo tipo de relación" si ya hay tipos */}
             {relationTypes.length === 0 && (
               <Button mt={4} colorScheme="green" onClick={handleTypesIconClick}>
@@ -107,7 +106,7 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation })
             )}
 
             {/* Dropdown para tipo de relación (dirigida o no dirigida) */}
-            <Text mt={4}>Tipo de Relación:</Text>
+            <Text mt={4}>Dirección de Relación:</Text>
             <Select
               value={relationDirection}
               onChange={(e) => setRelationDirection(e.target.value)}

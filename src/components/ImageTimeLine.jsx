@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Flex, Image, Icon } from '@chakra-ui/react';
 import { RiUser4Line } from 'react-icons/ri';
+import { TbCirclesRelation } from "react-icons/tb";
 import useActorDragStore from '../store/actorDragStore';
+import useRelationStore from '../store/relationStore';
 import '../styles/HandleStyles.css'
 
 const ImageTimeline = ({ images, setSelectedImage, sessionId, currentImageIndex }) => {
   const { actorsInstances } = useActorDragStore();
+  const { relations } = useRelationStore();
 
   const [isDragging, setIsDragging] = useState(false);
   const timelineRef = useRef(null);
@@ -23,6 +26,14 @@ const ImageTimeline = ({ images, setSelectedImage, sessionId, currentImageIndex 
       (actor) => (actor.imageIndex === index && actor.sessionId === sessionId)
     ).length;
   };
+
+  // Contar las relaciones por imagen basado en Zustand
+  const getRelationsCounterForImage = (index) => {
+    // Filtrar las relaciones que pertenecen a la imagen con el índice activo
+    const filteredRelations = relations.filter(relation => relation.imageIndex === index);
+    
+    return filteredRelations.length;
+  }
 
   const handleImageClick = (index) => {
     setSelectedImage(index);
@@ -227,8 +238,52 @@ const ImageTimeline = ({ images, setSelectedImage, sessionId, currentImageIndex 
           ))
         )}
       </Flex>
-      <Flex height="51px" bg="#173378" overflowX="auto" borderRadius="12px">
-        {/* Aquí puedes renderizar tus keyframes */}
+      {/* Flex adicional para contador de relaciones */}
+      <Flex
+        alignItems="center"
+        height="51px"  // Más pequeño porque es solo para el contador
+        bg="#173378"
+        borderRadius="12px"
+        paddingX="5px"
+        whiteSpace="nowrap"
+        width="100%"
+        overflowX="auto"
+      >
+        {images.length === 0 ? (
+          <Box width="100%" textAlign="center" color="#ccc">No images available</Box>
+        ) : (
+          images.map((image, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="center"
+              width="80px"
+              height="100%"
+              mx="5px"
+              flexShrink="0"
+              color="black"
+            >
+              <Box
+               background="#fdc600"
+               borderRadius="100%"
+               width={41}
+               height={41}
+               display="flex"
+               justifyContent="center"
+               alignItems="center"
+              >
+                <Icon as={TbCirclesRelation} fontSize='1.5vw'/>
+              </Box>
+              {/* Mostrar el contador de actores */}
+              {relations.length > 0 ? (
+                <span className='actors-counter'>{getRelationsCounterForImage(index)}</span>
+              ) : (
+                <span className='actors-counter'>0</span>
+              )}
+            </Box>
+          ))
+        )}
       </Flex>
     </Flex>
   );

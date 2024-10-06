@@ -20,6 +20,7 @@ import TableBodyTypes from '../components/types relations/TableBodyTypes';
 
 import HeaderTableRelations from '../components/relations/HeaderTableRelations';
 import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations';
+import TableBodyRelations from '../components/relations/TableBodyRelations';
 
 import CardTimeLine from '../components/CardTimeLine';
 import Timeline from '../components/TimeLine';
@@ -264,7 +265,7 @@ function SessionPage({ pageTitle }) {
               <HeaderTableRelations activateRelationMode={activateRelationMode} />
               <HeaderLabelsRelations />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
-                {/* <TableBodyRelations /> */}
+                <TableBodyRelations />
               </div>
             </>
           )}

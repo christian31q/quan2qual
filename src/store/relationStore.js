@@ -38,10 +38,12 @@ const useRelationStore = create((set) => ({
   // Actualizar una relación existente (local + DB)
   updateRelation: async (relationId, updatedRelationData) => {
     try {
-      await updateRelationshipInDB(relationId, updatedRelationData); // Actualizar en la DB
+      const { _id, ...dataToUpdate } = updatedRelationData;
+
+      await updateRelationshipInDB(relationId, dataToUpdate); // Actualizar en la DB
       set((state) => ({
         relations: state.relations.map((relation) =>
-          relation._id === relationId ? { ...relation, ...updatedRelationData } : relation
+          relation._id === relationId ? { ...relation, ...dataToUpdate } : relation
         ),
       }));
     } catch (error) {
