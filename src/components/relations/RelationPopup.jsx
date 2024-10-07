@@ -47,7 +47,9 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
       const completedRelation = {
         ...temporaryRelation,   // Aquí se incluyen source, target, session_id
         type_id: selectedRelationType._id,
-        type_label: selectedRelationType.label,
+        type_label: selectedRelationType.selectedOption === 'custom'
+        ? selectedRelationType.inputValues.nombre_personalizada  // Mostrar nombre personalizado si es "custom"
+        : selectedRelationType.label,  
         weight: selectedRelationType.inputValues.peso_relacion,
         direction: relationDirection,
         class: relationClass,
@@ -58,10 +60,17 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
       addRelation(completedRelation);  // Aquí guardar la relación en la DB
   
       // Cerrar modal
-      onClose();
+      resetPopUp();
     } else {
       showToast('Por favor, completa todos los campos.', 'error');
     }
+  };
+
+  const resetPopUp = () => {
+    setSelectedRelationType('');
+    setRelationDirection('dirigida');
+    setRelationClass('');
+    onClose();
   };
 
   const showToast = (message, type) => {
@@ -91,7 +100,10 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
               >
                 {relationTypes.map((relation) => (
                   <option key={relation._id} value={JSON.stringify(relation)}>  {/* Serializar el objeto */}
-                    {relation.label} | weight: {relation.inputValues.peso_relacion}
+                    {relation.selectedOption === 'custom'
+                      ? relation.inputValues.nombre_personalizada  // Mostrar nombre personalizado si selectedOption es "custom"
+                      : relation.label}  {/* Mostrar el label por defecto */}
+                    {" | Weight: " + relation.inputValues.peso_relacion}  {/* Mostrar el peso */}
                   </option>
                 ))}
               </Select>
@@ -124,7 +136,7 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
             />
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={onClose}>
+            <Button colorScheme="red" mr={3} onClick={resetPopUp}>
               Cancelar
             </Button>
             <Button colorScheme="blue" onClick={handleAssignRelation}>

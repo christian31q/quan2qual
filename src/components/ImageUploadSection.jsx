@@ -493,6 +493,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         borderColor="#173378"
         boxSizing="border-box"
         outline={isCreatingRelation ? '5px solid #5dff5d' : 'none'}
+        outlineOffset={isCreatingRelation ? '0px' : '0px'}  // Para una transición más suave
         bg="#173378"
         align="center"
         mt="2vh"
@@ -503,6 +504,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         position="relative"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
+        transition="outline 0.3s ease-in-out, outline-offset 0.3s ease-in-out" 
       >
         {renderImages()}
         <Xwrapper>

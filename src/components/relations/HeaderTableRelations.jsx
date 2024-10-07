@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, Icon, IconButton } from '@chakra-ui/react';
 import { TbCirclesRelation } from "react-icons/tb";
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 
-const HeaderTableRelations = ({ activateRelationMode }) => {
+const HeaderTableRelations = ({ activateRelationMode, isCreatingRelation }) => {
+  const [isRelationModeActive, setIsRelationModeActive] = useState(false);
+  
+  // Función para alternar el estado del modo de relación
+  const toggleRelationMode = () => {
+    activateRelationMode(!isCreatingRelation);  // Cambia el estado global al alternar
+  };
+
     return (
       <>
         <Text
@@ -22,11 +29,18 @@ const HeaderTableRelations = ({ activateRelationMode }) => {
         >
           Relaciones
           <IconButton
-            colorScheme='green'
-            aria-label='create actor'
+            colorScheme={isCreatingRelation ? 'red' : 'green'}  // Cambiar el color del botón según el estado global
+            aria-label='toggle relation mode'
             fontSize='35px'
-            icon={<IoMdAddCircleOutline />}
-            onClick={activateRelationMode}  // Disparar el modo relación
+            icon={
+              <IoMdAddCircleOutline
+                style={{
+                  transform: isCreatingRelation ? 'rotate(45deg)' : 'rotate(0deg)',  // Girar el ícono cuando esté activo
+                  transition: 'transform 0.3s ease-in-out',  
+                }}
+              />
+            }
+            onClick={toggleRelationMode}  // Alternar el modo relación
           />
           <Icon as={TbCirclesRelation} fontSize='1.5vw' />
         </Text>

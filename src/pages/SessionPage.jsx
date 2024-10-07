@@ -63,16 +63,16 @@ function SessionPage({ pageTitle }) {
 
   //console.log('Relation mode: ', isCreatingRelation);
 
-  const activateRelationMode = () => {
-    setIsCreatingRelation(true);
+  const activateRelationMode = (isActive) => {
+    setIsCreatingRelation(isActive);
   };
 
   // Manejo del cambio de imagen activa desde el timeline
-  const handleImageChange = (index) => {
+  const handleImageChange = (index, isActive) => {
     console.log(`Imagen activa cambiada a índice: ${index}`);
     setCurrentImageIndex(index);
     setCurrentImage(selectedImages[index]);
-    setIsCreatingRelation(false);
+    setIsCreatingRelation(isActive);
   };
 
   useEffect(() => {
@@ -262,7 +262,10 @@ function SessionPage({ pageTitle }) {
 
           {activeLiveBox === 'Attach' && (
             <>
-              <HeaderTableRelations activateRelationMode={activateRelationMode} />
+              <HeaderTableRelations
+                activateRelationMode={activateRelationMode}
+                isCreatingRelation={isCreatingRelation} 
+              />
               <HeaderLabelsRelations />
               <div style={{ overflowY: 'auto', maxHeight: '56.2vh' }}>
                 <TableBodyRelations />

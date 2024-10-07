@@ -5,7 +5,9 @@ import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
 import EditRelationModal from './EditRelationModal'; 
+import { IconPickerItem } from 'react-icons-picker';
 import { useSearchParams } from 'react-router-dom';
+import useActorDragStore from '../../store/actorDragStore';
 import useRelationStore from '../../store/relationStore';
 import useRelationTypeStore from '../../store/relationTypesStore';
 import { motion } from 'framer-motion';
@@ -14,8 +16,10 @@ import { createStandaloneToast } from '@chakra-ui/react';
 const { ToastContainer, toast } = createStandaloneToast();
 
 const TableBodyRelations = () => {
+  const { actorsInstances } = useActorDragStore();
   const { relations, removeRelation, loadRelations, updateRelation } = useRelationStore();  // Añadimos updateRelation para la edición
   const { relationTypes } = useRelationTypeStore();
+
   const [isOpen, setIsOpen] = useState(false);  // Modal para eliminar
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);  // Modal para editar
   const [relationIdToDelete, setRelationIdToDelete] = useState(null);
@@ -41,12 +45,17 @@ const TableBodyRelations = () => {
       isClosable: true,
     });
   };
+  
+  // Función para obtener detalles de un actor desde el objeto actorsInstances
+  const getActorDetails = (actorId) => {
+    return actorsInstances[actorId]?.actor || null;  // Acceder directamente usando actorId como clave
+  };
 
   // Abrir el modal para confirmar la eliminación
   const handleOpenDeleteModal = (relation) => {
     setRelationIdToDelete(relation._id); // Guardar el ID de la relación a eliminar
     setRelationLabelToDelete(relation.type_label);
-    setIsOpen(true); // Abrimos el modal
+    setIsOpen(true);
   };
 
   // Confirmar la eliminación de la relación
@@ -74,7 +83,6 @@ const TableBodyRelations = () => {
 
   // Función para editar la relación
   const handleEditRelation = (updatedRelation) => {
-    console.log(updatedRelation);
     updateRelation(updatedRelation._id, updatedRelation);  // Llama al store para actualizar la relación
     showToast('Relación editada correctamente', 'success');
     handleCloseEditModal();
@@ -90,34 +98,72 @@ const TableBodyRelations = () => {
     <>
       <Table size="sm" color="white">
         <Tbody>
-          {relations.map((relation) => (
-            <motion.tr
-              key={relation._id}
-              bg="#173378"
-              variants={rowVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 0.3 }}
-            >
-              <Td width="25%" textAlign="center" borderRight="1px solid white">
-                {relation.source}
-              </Td>
-              <Td width="25%" textAlign="center" borderRight="1px solid white">
-                {relation.target}
-              </Td>
-              <Td width="25%" textAlign="center" borderRight="1px solid white">
-                {relation.type_label}
-              </Td>
-              <Td width="10%" textAlign="center" borderRight="1px solid white">
-                {relation.weight}
-              </Td>
-              <Td width='0%' className="hover-element" textAlign="center">
-                <Icon as={FiMoreVertical} fontSize="1.5vw" />
-                <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(relation)} />
-                <TiDeleteOutline className="delete-icon" onClick={() => handleOpenDeleteModal(relation)} />
-              </Td>
-            </motion.tr>
-          ))}
+        {relations.map((relation) => {
+            // Obtener los detalles del actor para el source y el target
+            const sourceActor = getActorDetails(relation.source);
+            const targetActor = getActorDetails(relation.target);
+
+            return (
+              <motion.tr
+                key={relation._id}
+                bg="#173378"
+                variants={rowVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ duration: 0.3 }}
+              >
+                <Td width="35%" textAlign="center" borderRight="1px solid white">
+                  {sourceActor ? (
+                    <>
+                    <Icon
+                      bg={sourceActor.color}
+                      borderRadius="100%"
+                      fontSize="1.9vw"
+                    >
+                      <IconPickerItem
+                        value={sourceActor.icon}
+                        size={24}
+                      />
+                    </Icon>
+                      <Text>{sourceActor.name}</Text>
+                    </>
+                  ) : (
+                    <Text>No se encontró el actor</Text>
+                  )}
+                </Td>
+                <Td width="35%" textAlign="center" borderRight="1px solid white">
+                  {targetActor ? (
+                    <>
+                    <Icon
+                      bg={targetActor.color}
+                      borderRadius="100%"
+                      fontSize="1.9vw"
+                    >
+                      <IconPickerItem
+                        value={targetActor.icon}
+                        size={24}
+                      />
+                    </Icon>
+                      <Text>{targetActor.name}</Text>
+                    </>
+                  ) : (
+                    <Text>No se encontró el actor</Text>
+                  )}
+                </Td>
+                <Td minWidth="15%" textAlign="center" borderRight="1px solid white">
+                  {relation.weight}
+                </Td>
+                <Td minWidth="20%" textAlign="center" borderRight="1px solid white" fontSize={12}>
+                  {relation.type_label}
+                </Td>
+                <Td minWidth='0%' className="hover-element" textAlign="center">
+                  <Icon as={FiMoreVertical} fontSize="1.5vw" />
+                  <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(relation)} />
+                  <TiDeleteOutline className="delete-icon" onClick={() => handleOpenDeleteModal(relation)} />
+                </Td>
+              </motion.tr>
+            );
+        })}
         </Tbody>
       </Table>
       <DeleteConfirmationModal
@@ -142,5 +188,6 @@ export default TableBodyRelations;
 
 /*
     Ya se editan relaciones y eliminan
+    Revisar con más calma
 
 */

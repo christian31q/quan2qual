@@ -229,8 +229,7 @@ export const getActorInstancesFromDB = async (sessionId, imageIndex) => {
     try {
       const result = await requestMongo('actors_instances', {
         filter: {
-          sessionId: sessionId,  
-          imageIndex: imageIndex     // Filtramos por la imagen actual
+          sessionId: sessionId,     // Filtramos por la imagen actual
         }
       }, 'find');
       

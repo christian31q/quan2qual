@@ -7,17 +7,20 @@ const HeaderLabelsRelations = () =>{
         <Table size="sm" style={{ position: 'sticky', top: '0', zIndex: '1' }}>
             <Thead bg="#173378">
                 <Tr>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="21%" color="white" textAlign="center" borderRight="1px">
                         Source
                     </Th>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="21%" color="white" textAlign="center" borderRight="1px">
                         Target
                     </Th>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="1%" color="white" textAlign="center" borderRight="1px">
                         Peso
                     </Th>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="10%" color="white" textAlign="center" borderRight="1px">
                         Tipo
+                    </Th>
+                    <Th width="7%" color="white" textAlign="center" alignItems='center'>
+                        <Icon as={FiSettings} fontSize="0.9vw" />
                     </Th>
                 </Tr>
             </Thead>

@@ -7,18 +7,18 @@ const HeaderLabelsActors = () =>{
         <Table size="sm" style={{ position: 'sticky', top: '0', zIndex: '1' }}>
             <Thead bg="#173378">
                 <Tr>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="20%" color="white" textAlign="center" borderRight="1px">
                         Icono
                     </Th>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="20%" color="white" textAlign="center" borderRight="1px">
                         LABEL
                     </Th>
-                    <Th color="white" textAlign="center" borderRight="1px">
+                    <Th width="11%" color="white" textAlign="center" borderRight="1px">
                         ID
                     </Th>
-                    {/*<Th color="white" textAlign="center" alignItems='center'>
-                        <Icon as={FiSettings} fontSize="1.1vw" />
-    </Th>*/}
+                    <Th width="3%" color="white" textAlign="center" alignItems='center'>
+                        <Icon as={FiSettings} fontSize="0.9vw" />
+                    </Th>
                 </Tr>
             </Thead>
         </Table>
