@@ -137,16 +137,6 @@ i18n
           relationPopupDirected: 'Directed',
           relationPopupNoDirected: 'Not directed',
           relationPopupButtonAssing: 'Assing',
-        
-
-
-
-
-
-
-
-
-
           toastDeleteProject:'Deleted project',
           toastDeleteProjectError: 'Error deleting project',
           toastDeleteSession:'Session deleted',
@@ -178,7 +168,6 @@ i18n
           toastUpdatedPassword: 'Password successfully updated',
           toastUpdatedPasswordError: 'Could not update password',
           toastRelationCreated: 'Relationship created successfully',
-
         }
       },
       es: {
@@ -300,22 +289,6 @@ i18n
             relationPopupDirected: 'Dirigida',
             relationPopupNoDirected: 'No dirigida',
             relationPopupButtonAssing: 'Asignar',
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             toastDeleteProject:'Proyecto eliminado',
             toastDeleteProjectError: 'Error al eliminar el proyecto',
             toastDeleteSession:'Sesión eliminada',
@@ -347,10 +320,6 @@ i18n
             toastUpdatedPassword: 'Contraseña actualizada exitosamente',
             toastUpdatedPasswordError: 'No se pudo actualizar la contraseña',
             toastRelationCreated: 'Relación creada exitosamente',
-
-            
-
-
         }
 
       }
