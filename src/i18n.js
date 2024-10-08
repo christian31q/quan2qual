@@ -168,6 +168,10 @@ i18n
           toastUpdatedPassword: 'Password successfully updated',
           toastUpdatedPasswordError: 'Could not update password',
           toastRelationCreated: 'Relationship created successfully',
+          popupSaving: 'Saving...',
+          popupSavingComplete: 'Saving Complete',
+          loggingOut: 'Logging out...',
+          logOutComplete: 'Session closed',
         }
       },
       es: {
@@ -320,8 +324,11 @@ i18n
             toastUpdatedPassword: 'Contraseña actualizada exitosamente',
             toastUpdatedPasswordError: 'No se pudo actualizar la contraseña',
             toastRelationCreated: 'Relación creada exitosamente',
+            popupSaving: 'Guardando...',
+            popupSavingComplete: 'Guardado completo',
+            loggingOut: 'Cerrando sesión...',
+            logOutComplete: 'Sesión cerrada',
         }
-
       }
     },
     lng: 'en',
