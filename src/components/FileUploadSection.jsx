@@ -230,11 +230,3 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
 }
 
 export default FileUploadSection;
-
-
-
-  /*
-    al editar color y nombre las instancias no cambian su estado, solo los 
-    actores originales, revisar esa parte y forma de borrar el actor una vez
-    está en la zona 
-  */

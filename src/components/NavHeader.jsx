@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { CiSaveDown1 } from "react-icons/ci";
 import { AiOutlineLogout } from "react-icons/ai";
 import { BsPower} from "react-icons/bs";
-import InputHeader from './InputHeader'
 import { useTranslation } from 'react-i18next';
 
 function NavHeader({pageTitleText}){
@@ -32,7 +31,7 @@ function NavHeader({pageTitleText}){
               fontSize='1.2vw'
               _hover={{bg: '#9F9F9F', color:'black'}}
             >
-              Guardar
+              {t('saveButton')}
             </Button>
             <Button 
               rightIcon={<AiOutlineLogout fontSize='1.5vw'/>} 
@@ -45,11 +44,11 @@ function NavHeader({pageTitleText}){
               _hover={{bg: '#9F9F9F', color:'black'}}
               isDisabled
             >
-              Exportar
+              {t('exportButton')}
             </Button>
             <Button 
               rightIcon={<BsPower fontSize='1.6vw'/>} 
-              w='8.5vw' 
+              w='10vw' 
               h='2vw' 
               bg='#272F34' 
               color='white' 

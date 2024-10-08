@@ -13,8 +13,10 @@ import {
   Input,
   Select,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes }) => {
+  const { t } = useTranslation();
   const [editedRelation, setEditedRelation] = useState({
     type_id: '',
     type_label: '',
@@ -76,12 +78,12 @@ const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes })
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Editar Relación</ModalHeader>
+        <ModalHeader>{t('editRelationWord')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {/* Tipo de relación */}
           <FormControl>
-            <FormLabel fontSize="20px">Tipo de Relación</FormLabel>
+            <FormLabel fontSize="20px">{t('editRelationWord')}</FormLabel>
             <Select
               placeholder="Seleccione un tipo de relación"
               value={editedRelation.type_id}
@@ -97,7 +99,7 @@ const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes })
 
           {/* Dirección de la relación */}
           <FormControl mt={4}>
-            <FormLabel fontSize="20px">Dirección de la Relación</FormLabel>
+            <FormLabel fontSize="20px">{t('editDirectionWord')}</FormLabel>
             <Select
               name="direction"
               value={editedRelation.direction}
@@ -110,12 +112,12 @@ const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes })
 
           {/* Clase de la relación */}
           <FormControl mt={4}>
-            <FormLabel fontSize="20px">Clase de la Relación</FormLabel>
+            <FormLabel fontSize="20px">{t('editClassRelatonship')}</FormLabel>
             <Input
               type="text"
               name="class"
               value={editedRelation.class}
-              placeholder="Clase de la relación"
+              placeholder={t('editClassRelatonship')}
               onChange={handleChange}
             />
           </FormControl>
@@ -123,10 +125,10 @@ const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes })
 
         <ModalFooter>
           <Button colorScheme="red" mr={3} onClick={onClose}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit}>
-            Guardar cambios
+            {t('saveButtonChanges')}
           </Button>
         </ModalFooter>
       </ModalContent>

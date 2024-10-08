@@ -60,12 +60,12 @@ function ResetPasswordContainer() {
         }, 'updateOne');
 
         if (result && result.modifiedCount > 0) {
-          showToast('Contraseña actualizada exitosamente.', 'success');
+          showToast(`${t('toastUpdatedPassword')}`, 'success');
           setTimeout(() => {
             navigateTo('/login');
           }, 2500); 
         } else {
-          showToast('No se pudo actualizar la contraseña.', 'error');
+          showToast(`${t('toastUpdatedPasswordError')}`, 'error');
         }
 
       } catch (error) {

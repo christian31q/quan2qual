@@ -3,9 +3,10 @@ import { Text, Icon, IconButton } from '@chakra-ui/react';
 import { LuTableProperties } from "react-icons/lu";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import LiveBoxTypes from '../LiveBoxTypes';
-
+import { useTranslation } from 'react-i18next';
 
 const HeaderTableTypes = () => {
+  const { t } = useTranslation();
   const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
 
   const handleTypesIconClick = () => {
@@ -30,7 +31,7 @@ const HeaderTableTypes = () => {
           pl='1vw'
           pr='1vw'
         >
-          Tipos de relaciones
+          {t('typesWord')}
           <IconButton
             colorScheme='green'
             aria-label='create actor'

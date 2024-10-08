@@ -13,8 +13,10 @@ import {
   Input,
 } from '@chakra-ui/react';
 import SliderWeight from '../SliderWeight';
+import { useTranslation } from 'react-i18next';
 
 const EditTypeModal = ({ isOpen, onClose, type, onEdit }) => {
+  const { t } = useTranslation();
   const [editedType, setEditedType] = useState({ inputValues: {} });
   const [originalValues, setOriginalValues] = useState({});
 
@@ -63,7 +65,7 @@ const EditTypeModal = ({ isOpen, onClose, type, onEdit }) => {
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Editar Tipo de Relación</ModalHeader>
+        <ModalHeader>{t('editTypeModalWord')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {type &&
@@ -94,10 +96,10 @@ const EditTypeModal = ({ isOpen, onClose, type, onEdit }) => {
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="red" mr={3} onClick={onClose}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit}>
-            Guardar cambios
+            {t('saveButtonChanges')}
           </Button>
         </ModalFooter>
       </ModalContent>

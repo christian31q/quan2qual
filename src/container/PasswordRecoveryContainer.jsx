@@ -39,12 +39,12 @@ function PasswordRecoveryContainer() {
         const result = await requestMongo("users", { filter: { email: email } }, "findOne");
         
         if (result.document != null) {
-          showToast('Usuario confirmado.', 'success');
+          showToast(`${t('toastUserConfirmed')}`, 'success');
           setTimeout(() => {
             navigateTo('/resetPassword', { state: {email: email } });
           }, 2500); 
         } else {
-          showToast('El usuario proporcionado no existe.', 'error');
+          showToast(`${t('toastNoFindUser')}`, 'error');
         }
       } catch (error) {
         console.error('Error al encontrar el usuario')

@@ -3,6 +3,7 @@ import { VStack, Icon} from '@chakra-ui/react';
 import NavLeftButtons from '../components/NavLeftButtons';
 import LiveBoxActors from '../components/LiveBoxActors';
 import LiveBoxTypes from '../components/LiveBoxTypes';
+import { useTranslation } from 'react-i18next';
 
 const RelationIcon = (props) => (
   <Icon viewBox='0 0 200 200' {...props}>
@@ -54,6 +55,7 @@ const UploadIcon = (props) => (
 )
 
 function NavLeftTools({ setActiveLiveBox, mediaType }) {
+  const { t } = useTranslation();
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
   const [isLiveBoxTypesOpen, setLiveBoxTypesOpen] = useState(false);
   const [isLiveBoxAttach, setLiveBoxAttach] = useState(false);
@@ -91,13 +93,13 @@ function NavLeftTools({ setActiveLiveBox, mediaType }) {
         <NavLeftButtons
           icon={UploadIcon}
           iconSize='3.5vw'
-          buttonText='Subir'
+          buttonText={t('uploadWord')}
           onClick={handleUploadMoreClick}
         />
       )}
-      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText='Vincular' onClick={handleAttachIconClick}/>
-      <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText='Actores' onClick={handleActorsIconClick} />
-      <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText='Relaciones' onClick={handleTypesIconClick} />
+      <NavLeftButtons icon={RelationIcon} iconSize='3.5vw' buttonText={t('attachWord')} onClick={handleAttachIconClick}/>
+      <NavLeftButtons icon={ActorsIcon} iconSize='3.5vw' buttonText={t('actorsWord')} onClick={handleActorsIconClick} />
+      <NavLeftButtons icon={NewTypeIcon} iconSize='3.5vw' buttonText={t('typesWord')} onClick={handleTypesIconClick} />
     </VStack>
   );
 }

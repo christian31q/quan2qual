@@ -36,9 +36,9 @@ function ProjectCard({ icon, title, creationDate, _id, type, media, onDelete }) 
 
       if (result > 0) {
         onDelete(_id);
-        showToast(type === 'project' ? 'Proyecto eliminado' : 'Sesión eliminada', 'success');
+        showToast(type === 'project' ? `${t('toastDeleteProject')}` : `${t('toastDeleteSession')}`, 'success');
       } else {
-        showToast(type === 'project' ? 'Error al eliminar el proyecto' : 'Error al eliminar la sesión', 'error');
+        showToast(type === 'project' ? `${t('toastDeleteSession')}` : `${t('toastDeleteSessionError')}`, 'error');
       }
     } catch (error) {
       console.error(`Error deleting ${type}:`, error);

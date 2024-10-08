@@ -138,7 +138,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     if (actorsForCurrentImage.length < 2) {
       // Mostrar toast si no hay suficientes actores
       setIsCreatingRelation(false); // Desactivar el modo de relación si no hay suficientes actores
-      showToast('Debe haber al menos dos actores en la zona para crear una relación.', 'error');
+      showToast(`${t('toastWarningCountActors')}`, 'warning');
       return false;
     }
     return true;
@@ -368,22 +368,22 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         <Modal isOpen={isOpen} onClose={onClose} isCentered size={'3xl'}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Cómo crear una relación entre actores</ModalHeader>
+                <ModalHeader>{t('tutorialModalTitle')}</ModalHeader>
                 <ModalBody>
                   <Box marginBottom='16px'>
-                    <Text>Para relacionar los actores:</Text>
-                    <Text>1. Haz clic en el primer actor (source). Una flecha pequeña aparecerá. </Text>
-                    <Text> 2. Luego, haz clic en el segundo actor (target). 
-                           Una flecha se dibujará desde la fuente (source) al destino (target).
+                    <Text>{t('tutorialModalText1')}</Text>
+                    <Text>{t('tutorialModalText2')}</Text>
+                    <Text>
+                      {t('tutorialModalText3')}
                     </Text>
-                    <Text>3. Asigna el tipo de relación que corresponda</Text>
+                    <Text>{t('tutorialModalText4')}</Text>
                   </Box>
                     <video width="100%" height="auto" autoPlay loop>
                       <source src='../../src/assets/Quan2Qual_Tuto.mp4' type='video/mp4'/>
                     </video>
                 </ModalBody>
                 <ModalFooter>
-                    <Button colorScheme="blue" onClick={onClose}>Entendido</Button>
+                    <Button colorScheme="blue" onClick={onClose}>{t('tutorialModalButton')}</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

@@ -75,10 +75,10 @@ function AddSessionTypeContainer() {
         // Redirigir a la ventana correspondiente
         const result = await createSessionInDB(sessionData);
         const sessionId = result.insertedId;;
-        showToast('Sesión creada con éxito', 'success');
+        showToast(`${t('toastSessionCreated')}`, 'success');
         navigate(`/session/${mediaType}?sessionId=${sessionId}`);
       } catch (error) {
-        showToast('Error al crear la sesión', 'error');
+        showToast(`${t('toastSessionCreateError')}`, 'error');
       } finally {
         setIsLoading(false);
       }

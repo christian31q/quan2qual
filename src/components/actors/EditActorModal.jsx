@@ -116,7 +116,7 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
     <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Editar Actor</ModalHeader>
+        <ModalHeader>{t('editActorWord')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
@@ -154,7 +154,7 @@ const EditActorModal = ({ isOpen, onClose, actor, onEdit }) => {
             {t('cancel')}
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit}>
-            Guardar cambios
+            {t('saveButtonChanges')}
           </Button>
         </ModalFooter>
       </ModalContent>

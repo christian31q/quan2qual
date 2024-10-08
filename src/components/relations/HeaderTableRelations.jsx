@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Text, Icon, IconButton } from '@chakra-ui/react';
 import { TbCirclesRelation } from "react-icons/tb";
 import { IoMdAddCircleOutline } from "react-icons/io";
-
+import { useTranslation } from 'react-i18next';
 
 const HeaderTableRelations = ({ activateRelationMode, isCreatingRelation }) => {
+  const { t } = useTranslation();
   const [isRelationModeActive, setIsRelationModeActive] = useState(false);
   
   // Función para alternar el estado del modo de relación
@@ -27,7 +28,7 @@ const HeaderTableRelations = ({ activateRelationMode, isCreatingRelation }) => {
           pl='1vw'
           pr='1vw'
         >
-          Relaciones
+          {t('relationsWord')}
           <IconButton
             colorScheme={isCreatingRelation ? 'red' : 'green'}  // Cambiar el color del botón según el estado global
             aria-label='toggle relation mode'

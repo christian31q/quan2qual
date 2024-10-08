@@ -7,12 +7,14 @@ import LiveBoxTypes from '../LiveBoxTypes';
 import { useSearchParams } from 'react-router-dom';
 import useRelationTypeStore from '../../store/relationTypesStore';
 import useRelationStore from '../../store/relationStore';
+import { useTranslation } from 'react-i18next';
 
 import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, imageIndex }) => {
+  const { t } = useTranslation();
   const { relationTypes, fetchRelationTypes } = useRelationTypeStore();
   const { temporaryRelation, addRelation } = useRelationStore();
   const [searchParams] = useSearchParams();
@@ -58,11 +60,12 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
   
       // Enviar la relación completa a MongoDB
       addRelation(completedRelation);  // Aquí guardar la relación en la DB
-  
+      
+      showToast(`${t('toastRelationCreated')}`, 'success');
       // Cerrar modal
       resetPopUp();
     } else {
-      showToast('Por favor, completa todos los campos.', 'error');
+      showToast(`${t('toastFillFields')}`, 'error');
     }
   };
 
@@ -88,13 +91,13 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
       <Modal isOpen={isOpen} onClose={onClose} isCentered size={'xl'}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Asignar una relación</ModalHeader>
+          <ModalHeader textAlign='center'>{t('relationPopupTitle')}</ModalHeader>
           <ModalBody>
             {/* Selección de tipos de relación */}
-            <Text mt={4}>Tipo de Relación:</Text>
+            <Text mt={4}>{t('editTypeWord')}:</Text>
             {relationTypes.length > 0 ? (
               <Select
-                placeholder="Seleccione el tipo de relación"
+                placeholder={t('selectTypeWord')}
                 value={selectedRelationType ? JSON.stringify(selectedRelationType) : ''}  // Serializar el objeto para el valor seleccionado
                 onChange={(e) => setSelectedRelationType(JSON.parse(e.target.value))}  // Deserializar al cambiar la selección
               >
@@ -108,39 +111,39 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
                 ))}
               </Select>
             ) : (
-              <Text>No hay tipos de relación creados.</Text>
+              <Text>{t('relationPopupNoType')}</Text>
             )}
             {/* Ocultar el botón de "Crear nuevo tipo de relación" si ya hay tipos */}
             {relationTypes.length === 0 && (
               <Button mt={4} colorScheme="green" onClick={handleTypesIconClick}>
-                Crear nuevo tipo de relación
+                {t('relationPopupNewTypeButton')}
               </Button>
             )}
 
             {/* Dropdown para tipo de relación (dirigida o no dirigida) */}
-            <Text mt={4}>Dirección de Relación:</Text>
+            <Text mt={4}>{t('editDirectionWord')}:</Text>
             <Select
               value={relationDirection}
               onChange={(e) => setRelationDirection(e.target.value)}
             >
-              <option value="dirigida">Dirigida</option>
-              <option value="no_dirigida">No dirigida</option>
+              <option value="dirigida">{t('relationPopupDirected')}</option>
+              <option value="no_dirigida">{t('relationPopupNoDirected')}</option>
             </Select>
 
             {/* Campo para clase */}
-            <Text mt={4}>Clase:</Text>
+            <Text mt={4}>{t('editClassRelatonship')}:</Text>
             <Input
-              placeholder="Clase de la relación"
+              placeholder={t('editClassRelatonship')}
               value={relationClass}
               onChange={(e) => setRelationClass(e.target.value)}
             />
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="red" mr={3} onClick={resetPopUp}>
-              Cancelar
+              {t('cancel')}
             </Button>
             <Button colorScheme="blue" onClick={handleAssignRelation}>
-              Asignar
+              {t('relationPopupButtonAssing')}
             </Button>
           </ModalFooter>
         </ModalContent>

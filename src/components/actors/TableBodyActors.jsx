@@ -9,12 +9,14 @@ import { IconPickerItem } from 'react-icons-picker';
 import { useSearchParams } from 'react-router-dom';
 import useActorStore from '../../store/actorStore';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const TableBodyActors = ({ data }) => {
+  const { t } = useTranslation();
   const { actors, fetchActors, deleteActor, updateActor } = useActorStore();
 
   const [searchParams] = useSearchParams();
@@ -54,7 +56,7 @@ const TableBodyActors = ({ data }) => {
       // Llamamos a la función de Zustand para actualizar el actor
       updateActor(actorIdToEdit, updatedData);
 
-      showToast('Actor editado correctamente', 'success');
+      showToast(`${t('toastEditedActor')}`, 'success');
       handleCloseEditModal();
     }
   };
@@ -67,7 +69,7 @@ const TableBodyActors = ({ data }) => {
     if (actorIdToDelete) {
       // Llamamos a la función de Zustand para eliminar el actor
       deleteActor(actorIdToDelete);
-      showToast('Actor eliminado correctamente', 'success');
+      showToast(`${t('toastDeleteActor')}`, 'success');
       setIsOpen(false); // Cerrar modal
     }
   };
@@ -144,7 +146,7 @@ const TableBodyActors = ({ data }) => {
         isOpen={isOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        type={`actor ${actorNameToDelete}`}
+        type={`${t('actorLabelText')}: ${actorNameToDelete}`}
       />
       <ToastContainer />
     </>

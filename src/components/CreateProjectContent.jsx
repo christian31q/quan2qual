@@ -53,13 +53,13 @@ function CreateProjectContent() {
         const result = await createProjectInDB(projectName, userId);
         const projectId = result.insertedId;
 
-        showToast('Proyecto creado con éxito', 'success')
+        showToast(`${t('toastProjectCreated')}`, 'success')
   
         // Navega a la siguiente página
         navigate(`/addSessionType?projectId=${projectId}`);
       } catch (error) {
         setErrorMessage('Error creating project. Please try again.');
-        showToast('Hubo un error al crear el proyecto', 'error');
+        showToast(`${t('toastCreateProjectError')}`, 'error');
       } finally {
         setIsLoading(false);
       }

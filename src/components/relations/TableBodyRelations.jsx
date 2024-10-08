@@ -12,10 +12,12 @@ import useRelationStore from '../../store/relationStore';
 import useRelationTypeStore from '../../store/relationTypesStore';
 import { motion } from 'framer-motion';
 import { createStandaloneToast } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const TableBodyRelations = () => {
+  const { t } = useTranslation();
   const { actorsInstances } = useActorDragStore();
   const { relations, removeRelation, loadRelations, updateRelation } = useRelationStore();  // Añadimos updateRelation para la edición
   const { relationTypes } = useRelationTypeStore();
@@ -62,7 +64,7 @@ const TableBodyRelations = () => {
   const handleConfirmDelete = () => {
     if (relationIdToDelete) {
       removeRelation(relationIdToDelete); // Llamar al store para eliminar la relación
-      showToast('Relación eliminada correctamente', 'success');
+      showToast(`${t('toastDeleteRelationship')}`, 'success');
       setIsOpen(false);
     }
   };
@@ -84,7 +86,7 @@ const TableBodyRelations = () => {
   // Función para editar la relación
   const handleEditRelation = (updatedRelation) => {
     updateRelation(updatedRelation._id, updatedRelation);  // Llama al store para actualizar la relación
-    showToast('Relación editada correctamente', 'success');
+    showToast(`${t('toastEditRelationship')}`, 'success');
     handleCloseEditModal();
   };
 
@@ -170,7 +172,7 @@ const TableBodyRelations = () => {
         isOpen={isOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        type={`relación ${relationLabelToDelete}`}
+        type={`${t('relationshipWord')}: ${relationLabelToDelete}`}
       />
       <EditRelationModal
         isOpen={isEditModalOpen}

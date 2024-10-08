@@ -5,15 +5,18 @@ import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
 import EditTypeModal from './EditTypeModal';
 import DeleteConfirmationModal from '../../container/DeleteConfirmationModal';
-import { createStandaloneToast } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
 import useRelationTypeStore from '../../store/relationTypesStore';
 import { BsSortNumericDown, BsSortNumericUp  } from "react-icons/bs";
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+
+import { createStandaloneToast } from '@chakra-ui/react'
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const TableBodyTypes = () => {
+  const { t } = useTranslation();
   const { relationTypes, fetchRelationTypes, deleteRelationType, updateRelationType } = useRelationTypeStore();
   
   const [searchParams] = useSearchParams();
@@ -62,10 +65,10 @@ const TableBodyTypes = () => {
       const { _id, ...updatedData } = editedType;  // Extraer _id y dejar el resto de los campos
   
       await updateRelationType(_id, updatedData); 
-      showToast('Tipo de relación editado correctamente', 'success');
+      showToast(`${t('toastEditType')}`, 'success');
       setIsEditModalOpen(false);
     } catch (error) {
-      showToast('Error al editar el tipo de relación', 'error');
+      showToast(`${t('toastEditTypeError')}`, 'error');
     }
   };  
 
@@ -83,10 +86,10 @@ const TableBodyTypes = () => {
   const handleConfirmDelete = async () => {
     try {
       await deleteRelationType(typeToDelete._id);  // Eliminar usando el ID del tipo de relación
-      showToast('Tipo de relación eliminado correctamente', 'success');
+      showToast(`${t('toastDeleteType')}`, 'success');
       setIsOpen(false);
     } catch (error) {
-      showToast('Error al eliminar el tipo de relación', 'error');
+      showToast(`${t('toastDeleteTypeError')}`, 'error');
     }
   };
 
@@ -120,7 +123,7 @@ const TableBodyTypes = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Td width="37%" textAlign="center" borderRight="1px" borderTop="1px">
-                  {type.label === 'Relación personalizada' ? type.inputValues.nombre_personalizada : type.label}
+                  {type.label === 'Relación personalizada' || type.label === 'Custom relationship' ? type.inputValues.nombre_personalizada : type.label}
                 </Td>
                 <Td width="29%" textAlign="center" borderRight="1px" borderTop="1px">
                   {type.inputValues.peso_relacion}
@@ -147,8 +150,9 @@ const TableBodyTypes = () => {
         isOpen={isOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        type={`tipo de relación ${typeToDelete?.label}`}
+        type={`${t('editTypeWord')}: ${typeToDelete?.label}`}
       />
+      <ToastContainer />
     </div>
   );
 };

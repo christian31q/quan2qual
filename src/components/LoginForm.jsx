@@ -71,11 +71,11 @@ function LoginForm() {
   
             return navigateTo('/loadingPage');
           } else {
-            showToast('Contraseña incorrecta', 'error');
+            showToast(`${t('toastWrongPassword')}`, 'error');
             setIsAuthenticated(false);
           }
         } else {
-          showToast('El usuario proporcionado no existe.', 'error');
+          showToast(`${t('toastNoFindUser')}`, 'error');
           setIsAuthenticated(false);
         }
       } catch (error) {

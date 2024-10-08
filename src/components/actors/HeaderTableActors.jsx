@@ -3,8 +3,11 @@ import { Text, Icon, IconButton } from '@chakra-ui/react';
 import { RiUser4Line } from 'react-icons/ri';
 import { IoMdAddCircleOutline } from "react-icons/io";
 import LiveBoxActors from '../LiveBoxActors';
+import { useTranslation } from 'react-i18next';
+
 
 const HeaderTableActors = () => {
+  const { t } = useTranslation();
   const [isLiveBoxActorsOpen, setLiveBoxActorsOpen] = useState(false);
 
   const handleActorsIconClick = () => {
@@ -31,7 +34,7 @@ const HeaderTableActors = () => {
           pl='1vw'
           pr='1vw'
         >
-          Actores
+          {t('actorsWord')}
           <IconButton
             colorScheme='green'
             aria-label='create actor'

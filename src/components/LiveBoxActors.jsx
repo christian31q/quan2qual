@@ -18,10 +18,12 @@ import IconPicker from 'react-icons-picker';
 import { createStandaloneToast } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
 import useActorStore from '../store/actorStore';
+import { useTranslation } from 'react-i18next';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 function LiveBoxActors({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const { createActor } = useActorStore();
 
   const [searchParams] = useSearchParams();
@@ -70,12 +72,12 @@ function LiveBoxActors({ isOpen, onClose }) {
 
   const validateAndCreateActor = () => {
     if (!actorName.trim()) {
-      showToast('Por favor, ingresa un label para el actor.', 'error');
+      showToast(`${t('toastEnterLabelActor')}`, 'error');
       return;
     }
 
     if (typeof actorColor.color !== 'number' || isNaN(actorColor.color)) {
-      showToast('Por favor, selecciona un color para el actor.', 'error');
+      showToast(`${t('toastEnterColorActor')}`, 'error');
       return;
     }
 
@@ -91,7 +93,7 @@ function LiveBoxActors({ isOpen, onClose }) {
     // Llamar a la función del store de Zustand para crear el actor
     createActor(newActor);
 
-    showToast('Actor creado correctamente', 'success');
+    showToast(`${t('toastActorCreated')}`, 'success');
     resetFields();
     onClose();
   };
@@ -162,7 +164,7 @@ function LiveBoxActors({ isOpen, onClose }) {
       minWidth="650px"
     >
       <Text fontSize="1.5rem" mb="4" textAlign="center">
-        Crear nuevo actor
+        {t('createNewActorWord')}
       </Text>
       <Divider mb="4" />
       <Flex alignItems="center" mb="4" justifyContent="center">
@@ -179,22 +181,22 @@ function LiveBoxActors({ isOpen, onClose }) {
           <Input
             value={actorName}
             onChange={(e) => setActorName(e.target.value)}
-            placeholder="Label del actor"
+            placeholder={t('actorLabelText')}
             _placeholder={{ color: 'gray.400' }}
           />
         </HStack>
         <Text fontSize="xl" mb="4" textAlign="center">
-          Añadir Atributos
+          {t('addActorAttributes')}
         </Text>
         {attributes.map((attribute, index) => (
           <HStack key={index} spacing="4">
             <Input
-              placeholder="Atributo"
+              placeholder={t('attributeText')}
               value={attribute.key}
               onChange={(e) => handleAttributeChange(index, e.target.value, attribute.value)}
             />
             <Input
-              placeholder="Valor"
+              placeholder={t('valueText')}
               value={attribute.value}
               onChange={(e) => handleAttributeChange(index, attribute.key, e.target.value)}
             />
@@ -226,7 +228,7 @@ function LiveBoxActors({ isOpen, onClose }) {
           width= "10.375rem"
           height= "2.8125rem"
         >
-          Cancelar
+          {t('cancel')}
         </Button>
         <Button
           onClick={validateAndCreateActor}
@@ -234,7 +236,7 @@ function LiveBoxActors({ isOpen, onClose }) {
           width= "10.375rem"
           height= "2.8125rem"
         >
-          Crear
+          {t('create')}
         </Button>
       </Flex>
       <ToastContainer />

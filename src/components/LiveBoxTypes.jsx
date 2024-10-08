@@ -17,10 +17,12 @@ import { createStandaloneToast } from '@chakra-ui/react';
 import SliderWeight from './SliderWeight';
 import { useSearchParams } from 'react-router-dom';
 import useRelationTypeStore from '../store/relationTypesStore';
+import { useTranslation } from 'react-i18next';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
 const LiveBoxTypes = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { createRelationType, loading, error } = useRelationTypeStore();
 
   // Estado para el nombre del tipo de relación
@@ -40,58 +42,58 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
 
   const optionsData = {
     option1: {
-      label: 'Relación de amistad',
+      label: `${t('labelFriendshipRelation')}`,
       fields: [
-        { name: 'nivel_amistad', label: 'Nivel de amistad', type: 'input' },
-        { name: 'frecuencia_amistad', label: 'Frecuencia de interacción', type: 'input' },
-        { name: 'intereses_amistad', label: 'Intereses compartidos', type: 'input' },
-        { name: 'fecha_amistad', label: 'Fecha de inicio de la relación', type: 'date' },
-        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+        { name: 'nivel_amistad', label: `${t('labelFriendshipRelation1')}`, type: 'input' },
+        { name: 'frecuencia_amistad', label: `${t('labelFriendshipRelation2')}`, type: 'input' },
+        { name: 'intereses_amistad', label: `${t('labelFriendshipRelation3')}`, type: 'input' },
+        { name: 'fecha_amistad', label: `${t('labelFriendshipRelation4')}`, type: 'date' },
+        { name: 'peso_relacion', label: `${t('labelRelationshipWeight')}`, type: 'slider' },
       ],
     },
     option2: {
-      label: 'Relación de trabajo en equipo',
+      label: `${t('labelTeamWork')}`,
       fields: [
-        { name: 'proyecto_te', label: 'Proyecto colaborativo', type: 'input' },
-        { name: 'roles_te', label: 'Roles en el proyecto', type: 'input' },
-        { name: 'intereses_te', label: 'Intereses compartidos', type: 'input' },
-        { name: 'contribuciones_te', label: 'Contribuciones individuales', type: 'input' },
-        { name: 'impacto_te', label: 'Impacto en el proyecto', type: 'input' },
-        { name: 'tipo_colaboracion_te', label: 'Tipo de colaboración', type: 'input' },
-        { name: 'fecha_colaboracion_te', label: 'Fecha de colaboración', type: 'date' },
-        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+        { name: 'proyecto_te', label: `${t('labelTeamWork1')}`, type: 'input' },
+        { name: 'roles_te', label: `${t('labelTeamWork2')}`, type: 'input' },
+        { name: 'intereses_te', label: `${t('labelTeamWork3')}`, type: 'input' },
+        { name: 'contribuciones_te', label: `${t('labelTeamWork4')}`, type: 'input' },
+        { name: 'impacto_te', label: `${t('labelTeamWork5')}`, type: 'input' },
+        { name: 'tipo_colaboracion_te', label: `${t('labelTeamWork6')}`, type: 'input' },
+        { name: 'fecha_colaboracion_te', label: `${t('labelTeamWork7')}`, type: 'date' },
+        { name: 'peso_relacion', label: `${t('labelRelationshipWeight')}`, type: 'slider' },
       ],
     },
     option3: {
-      label: 'Relación de comunicación',
+      label: `${t('labelCommunication')}`,
       fields: [
-        { name: 'tipo_comunicacion', label: 'Tipo de comunicación', type: 'input' },
-        { name: 'contenido_comunicacion', label: 'Contenido de la comunicación', type: 'input' },
-        { name: 'frecuencia_comunicacion', label: 'Frecuencia', type: 'input' },
-        { name: 'contribuciones', label: 'Contribuciones individuales', type: 'input' },
-        { name: 'temas_comunicacion', label: 'Temas recurrentes', type: 'input' },
-        { name: 'resulado_comunicacion', label: 'Resuldato de la comunicación', type: 'input' },
-        { name: 'fecha_comunicacion', label: 'Fecha de la comunicación', type: 'date' },
-        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+        { name: 'tipo_comunicacion', label: `${t('labelCommunication1')}`, type: 'input' },
+        { name: 'contenido_comunicacion', label: `${t('labelCommunication2')}`, type: 'input' },
+        { name: 'frecuencia_comunicacion', label: `${t('labelCommunication3')}`, type: 'input' },
+        { name: 'contribuciones', label: `${t('labelCommunication4')}`, type: 'input' },
+        { name: 'temas_comunicacion', label: `${t('labelCommunication5')}`, type: 'input' },
+        { name: 'resulado_comunicacion', label: `${t('labelCommunication6')}`, type: 'input' },
+        { name: 'fecha_comunicacion', label: `${t('labelCommunication7')}`, type: 'date' },
+        { name: 'peso_relacion', label: `${t('labelRelationshipWeight')}`, type: 'slider' },
       ],
     },
     option4: {
-      label: 'Relación de impacto',
+      label: `${t('labelImpact')}`,
       fields: [
-        { name: 'tipo_impacto', label: 'Tipo de impacto', type: 'input' },
-        { name: 'cambios_impacto', label: 'Cambios generados', type: 'input' },
-        { name: 'naturaleza_impacto', label: 'Naturaleza del impacto', type: 'input' },
-        { name: 'actores_impacto', label: 'Actores afectados', type: 'input' },
-        { name: 'fecha_impacto', label: 'Fecha del impacto', type: 'date' },
-        { name: 'peso_relacion', label: 'Peso de la relación', type: 'slider' },
+        { name: 'tipo_impacto', label: `${t('labelImpact1')}`, type: 'input' },
+        { name: 'cambios_impacto', label: `${t('labelImpact2')}`, type: 'input' },
+        { name: 'naturaleza_impacto', label: `${t('labelImpact3')}`, type: 'input' },
+        { name: 'actores_impacto', label: `${t('labelImpact4')}`, type: 'input' },
+        { name: 'fecha_impacto', label: `${t('labelImpact5')}`, type: 'date' },
+        { name: 'peso_relacion', label: `${t('labelRelationshipWeight')}`, type: 'slider' },
       ],
     },
     custom: {
-      label: 'Relación personalizada',
+      label: `${t('labelCustom')}`,
       fields: [
-        { name: 'nombre_personalizada', label: 'Nombre del tipo de relación', type: 'input' },
-        { name: 'descripcion_personalizada', label: 'Descripción', type: 'textarea' },
-        { name: 'peso_relacion', label: 'Peso de la relación personalizada', type: 'slider' },
+        { name: 'nombre_personalizada', label: `${t('labelCustom1')}`, type: 'input' },
+        { name: 'descripcion_personalizada', label: `${t('labelCustom2')}`, type: 'textarea' },
+        { name: 'peso_relacion', label: `${t('labelCustomWeight')}`, type: 'slider' },
       ],
     }
   };
@@ -136,7 +138,7 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
   // Función para crear el tipo de relación
   const handleCreateRelationType = async () => {
     if (!selectedOption) {
-      showToast('Por favor seleccione una opción', 'warning');
+      showToast(`${t('toastSelectOption')}`, 'warning');
       return;
     }
 
@@ -145,7 +147,7 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
     const areFieldsFilled = requiredFields.every(field => inputValues[field]);
 
     if (!areFieldsFilled || customFields.some(field => !field.name || !field.value)) {
-      showToast('Por favor llene todos los campos', 'warning');
+      showToast(`${t('toastFillFields')}`, 'warning');
       return;
     }
 
@@ -161,11 +163,11 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
       // Usar la store para crear el tipo de relación
       await createRelationType(newType);
 
-      showToast('Tipo de relación creado correctamente', 'success');
+      showToast(`${t('toastTypeCreated')}`, 'success');
       onClose(); // Cerrar el modal o el LiveBox después de crear
     } catch (error) {
       console.error('Error al crear el tipo de relación:', error);
-      showToast('Error al crear el tipo de relación', 'error');
+      showToast(`${t('toastTypeError')}`, 'error');
     }
   };
   
@@ -213,14 +215,14 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
     >
       {/* Título del LiveBox */}
       <Text fontSize="1.5rem" mb="4" textAlign="center">
-        Crear nuevo tipo de relación
+        {t('createNewTypeWord')}
       </Text>
       {/* Separador */}
       <Divider mb="4" />
       {/* Dropdown con opciones */}
       <Flex justify="center" mb="4">
         <Select
-          placeholder="Selecciona un tipo de relación"
+          placeholder={t('selectTypeWord')}
           value={selectedOption}
           onChange={handleOptionChange}
           width="300px"
@@ -281,14 +283,14 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
             <VStack spacing="4" align="center">
               {customFields.map((field, index) => (
                 <Box key={index} alignItems='center' display='flex' flexDirection='column' width='100%' gap='24px'>
-                  <Text mb="8px">Campo adicional {index + 1}:</Text>
+                  <Text mb="8px">{t('fieldAditional')} {index + 1}:</Text>
                   <Input
-                    placeholder={`Nombre del campo ${index + 1}`}
+                    placeholder={`${t('fieldName')} ${index + 1}`}
                     value={field.name}
                     onChange={(e) => handleCustomFieldChange(index, e.target.value, field.value)}
                   />
                   <Input
-                    placeholder={`Valor del campo ${index + 1}`}
+                    placeholder={`${t('fieldValue')} ${index + 1}`}
                     value={field.value}
                     onChange={(e) => handleCustomFieldChange(index, field.name, e.target.value)}
                   />
@@ -303,10 +305,10 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
       {/* Botones de acción */}
       <Flex justify="center" justifyContent="space-evenly" mt="4">
         <Button mr="2" onClick={handleCancel} colorScheme='red' width="10.375rem" height="2.8125rem">
-          Cancelar
+          {t('cancel')}
         </Button>
         <Button mr="2" onClick={handleCreateRelationType} colorScheme="green" width="10.375rem" height="2.8125rem">
-          Crear
+          {t('create')}
         </Button>
       </Flex>
       {/* Contenedor para mostrar los toasts */}
