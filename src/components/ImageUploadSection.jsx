@@ -74,38 +74,46 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
   const handleActorConnection = (sourceId, targetId) => {
     // Si se conectan dos actores, abrir el modal
     setIsPopupOpen(true);
-    //console.log('Source Actor ID: ', sourceId);
-    //console.log('Target Actor ID: ', targetId);
   };
 
+  // Click al los actores que se seleccionan
   const handleActorClick = (actorId) => {
     console.log('Actor ref ID: ', actorId);
-    if(isCreatingRelation) {
+  
+    if (isCreatingRelation) {
+      // Verificar si el actor seleccionado es el mismo que ya está seleccionado
+      if (selectedActor === actorId) {
+        // Si es el mismo actor, des-seleccionarlo
+        setSelectedActor(null);
+        return; 
+      }
+  
       if (!selectedActor) {
-        // Seleccionamos el primer actor (source)
+        // Si no hay actor seleccionado aún, seleccionamos el primero (source)
         setSelectedActor(actorId);
       } else {
-        // Si ya hay un actor seleccionado, abrimos el pop-up
+        // Si ya hay un actor seleccionado, creamos la relación
         const newRelation = {
           source: selectedActor,   // Actor de origen
           target: actorId,         // Actor de destino
           session_id: sessionId,   // Agregar el session_id a la relación
         };
-    
+      
         // Almacenar la relación temporalmente en Zustand
         setTemporaryRelation(newRelation);  // Esto se guarda en el estado, pero no se envía a MongoDB aún
-    
+      
         // Llamar a la función para abrir el pop-up y asignar la relación
         handleActorConnection(selectedActor, actorId);
-    
+      
         // Reiniciar el actor seleccionado
         setSelectedActor(null);
       }
     }
   };
 
+  // Asignar outline al actor seleccionado
   const getActorStyle = (actorId) => {
-    if (selectedActor === actorId) {
+    if (selectedActor === actorId && isCreatingRelation) {
       return { outline: '5px solid #5dff5d' }; // El actor seleccionado tiene un borde verde
     }
     return {}; // Sin estilo especial si no está seleccionado
@@ -510,6 +518,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         <Xwrapper>
           {/* Renderizar los actores */}
           {actorsForCurrentImage.map((instance) => {
+            // Verificar si el actor ya tiene relaciones existentes
             const isRelated = relations.some(
               (relation) => relation.source === instance._id || relation.target === instance._id
             );
@@ -520,10 +529,10 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
                 id={`actor-${instance._id}`}
                 position="absolute"
                 className="Motionbox"
-                cursor={isCreatingRelation || isRelated ? "default" : "move"}
+                cursor={isCreatingRelation ? "default" : isRelated ? "default" : "move"}  // Bloquear cursor si está relacionado o creando relación
                 left={`${instance.position.x}%`}
                 top={`${instance.position.y}%`}
-                draggable={!isCreatingRelation && !isRelated}
+                draggable={!isCreatingRelation && !isRelated}  // Permitir arrastrar si no está creando relación y no está relacionado
                 onDragStart={!isCreatingRelation && !isRelated ? (e) => handleDragStart(e, instance._id) : undefined}
                 onDragEnd={!isCreatingRelation && !isRelated ? (e) => handleDragEnd(e, instance._id) : undefined}
                 display="flex"
@@ -560,8 +569,8 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
                       fontSize="60px"
                       bg={instance.actor.color}
                       borderRadius="100%"
-                      onClick={() => !isRelated && handleActorClick(instance._id)}
-                      style={getActorStyle(instance._id)}
+                      onClick={() => handleActorClick(instance._id)}  // Permitir seleccionar para nuevas relaciones
+                      style={getActorStyle(instance._id)}  // Añadir borde verde si está seleccionado
                     >
                       <IconPickerItem value={instance.actor.icon} size={24} />
                     </Icon>
@@ -594,7 +603,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
                       opacity={0}
                       transition="opacity 0.2s ease"
                       onClick={() => handleOpenDeleteModal(instance._id)}
-                      style={{ display: isCreatingRelation || isRelated ? "none" : "flex" }}
+                      style={{ display: isCreatingRelation || isRelated ? "none" : "flex" }}  // Mostrar la "X" solo si no está relacionado
                     >
                       X
                     </Box>
