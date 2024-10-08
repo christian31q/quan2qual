@@ -109,7 +109,7 @@ export const getSessionFromDB = async (sessionId) => {
         _id: { "$oid": sessionId }
     } }, 'findOne');
     return  result.document;
-  };
+};
 
 export const deleteSession = async (sessionId) => {
     try {
@@ -273,7 +273,7 @@ export const updateRelationshipInDB = async (relationshipId, updatedData) => {
     update: { "$set": updatedData }
   }, "updateOne");
   return result;
-}
+};
 
 export const deleteRelationshipFromDB = async (relationshipId) => {
   const result = await requestMongo("relationships", { filter: { _id: { "$oid": relationshipId } } }, "deleteOne");

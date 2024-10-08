@@ -102,7 +102,7 @@ const TableBodyActors = ({ data }) => {
     <>
       <Table size="sm" color="white">
         <Tbody>
-          {actors.map((actor) => (
+        {actors.map((actor, index) => (
             <motion.tr 
               key={actor._id} 
               bg="#173378"
@@ -111,7 +111,7 @@ const TableBodyActors = ({ data }) => {
               animate="visible"
               transition={{ duration: 0.3 }}
             >
-              <Td width='30.1%' textAlign="center" borderRight="1px">
+              <Td width='30%' textAlign="center" borderRight="1px">
                 <Icon
                   bg={actor.color}
                   borderRadius="100%"
@@ -123,9 +123,9 @@ const TableBodyActors = ({ data }) => {
                   />
                 </Icon>
               </Td>
-              <Td width='29%' textAlign="center" borderRight="1px">{actor.name}</Td>
-              <Td width='8.9%' textAlign="center" borderRight="1px">{actor.name}</Td>
-              <Td width='0%' className="hover-element" textAlign="center">
+              <Td width='30%' textAlign="center" borderRight="1px">{actor.name}</Td>
+              <Td width='14.5%' textAlign="center" borderRight="1px">{index + 1}</Td> 
+              <Td width='1%' className="hover-element" textAlign="center">
                 <Icon as={FiMoreVertical} fontSize="1.5vw" />
                 <TbEditCircle className="edit-icon" onClick={() => handleOpenEditModal(actor)} />
                 <TiDeleteOutline className="delete-icon" onClick={() => handleOpenModal(actor)} />

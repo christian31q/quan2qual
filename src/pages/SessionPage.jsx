@@ -172,7 +172,7 @@ function SessionPage({ pageTitle }) {
             colStart={2}
             shadow='xl'
         >
-          <NavHeader pageTitleText={pageTitle}/>
+          <NavHeader pageTitleText={sessionData ? sessionData.name : ''}/>
         </GridItem>
         <GridItem 
             color='white'

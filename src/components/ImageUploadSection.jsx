@@ -58,6 +58,14 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     }
   }, [sessionId, loadRelations]);
 
+  // Detectar cambio en el modo de relación
+  useEffect(() => {
+    if (!isCreatingRelation) {
+      // Si el modo de relación se desactiva, limpiar el actor seleccionado
+      setSelectedActor(null);
+    }
+  }, [isCreatingRelation]);
+
   // Crear la relación
   const handleCreateRelation = (source, target, type, direction, relationClass) => {
     addRelation({
