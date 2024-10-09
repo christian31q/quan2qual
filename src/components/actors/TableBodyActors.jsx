@@ -133,7 +133,7 @@ const TableBodyActors = ({ data }) => {
                 <TiDeleteOutline className="delete-icon" onClick={() => handleOpenModal(actor)} />
               </Td>
             </motion.tr>
-          ))}
+        ))}
         </Tbody>
       </Table>
       <EditActorModal

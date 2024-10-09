@@ -8,6 +8,7 @@ import { CiSaveDown1 } from "react-icons/ci";
 import { AiOutlineLogout } from "react-icons/ai";
 import { BsPower, BsCheckCircle } from "react-icons/bs";
 import { useTranslation } from 'react-i18next';
+import ExportButton from './ExportButton';
 
 function NavHeader({ pageTitleText }) {
   const { t } = useTranslation();
@@ -83,19 +84,7 @@ function NavHeader({ pageTitleText }) {
         >
           {t('saveButton')}
         </Button>
-        <Button
-          rightIcon={<AiOutlineLogout fontSize='1.5vw' />}
-          w='8.5vw'
-          h='2vw'
-          bg='#272F34'
-          color='white'
-          variant='solid'
-          fontSize='1.2vw'
-          _hover={{ bg: '#9F9F9F', color: 'black' }}
-          isDisabled
-        >
-          {t('exportButton')}
-        </Button>
+        <ExportButton />
         <Button
           rightIcon={<BsPower fontSize='1.6vw' />}
           w='10vw'
