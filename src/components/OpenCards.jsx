@@ -67,7 +67,7 @@ function ProjectCard({ icon, title, creationDate, _id, type, media, onDelete }) 
         {title}
       </Text>
       <Text color="#173378" fontSize="0.8rem" fontWeight="400">
-        Fecha de creación: {creationDate}
+        {t('createdAt')}: {creationDate}
       </Text>
       <HStack>
         <Link to={type === 'project' ? `/openSessions?projectId=${_id}` : `/session/${media}?sessionId=${_id}`}>

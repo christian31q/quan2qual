@@ -137,6 +137,7 @@ i18n
           relationPopupDirected: 'Directed',
           relationPopupNoDirected: 'Not directed',
           relationPopupButtonAssing: 'Assing',
+          createdAt: 'Created at',
           toastDeleteProject:'Deleted project',
           toastDeleteProjectError: 'Error deleting project',
           toastDeleteSession:'Session deleted',
@@ -170,6 +171,8 @@ i18n
           toastRelationCreated: 'Relationship created successfully',
           popupSaving: 'Saving...',
           popupSavingComplete: 'Saving Complete',
+          confirmLogOut: 'Confirm logout',
+          areYouSure: 'Are you sure you want to log out?',
           loggingOut: 'Logging out...',
           logOutComplete: 'Session closed',
         }
@@ -293,6 +296,7 @@ i18n
             relationPopupDirected: 'Dirigida',
             relationPopupNoDirected: 'No dirigida',
             relationPopupButtonAssing: 'Asignar',
+            createdAt: 'Creado en',
             toastDeleteProject:'Proyecto eliminado',
             toastDeleteProjectError: 'Error al eliminar el proyecto',
             toastDeleteSession:'Sesión eliminada',
@@ -326,6 +330,8 @@ i18n
             toastRelationCreated: 'Relación creada exitosamente',
             popupSaving: 'Guardando...',
             popupSavingComplete: 'Guardado completo',
+            confirmLogOut: 'Confirmar cerrar sesión',
+            areYouSure: '¿Seguro desea cerrar sesión?',
             loggingOut: 'Cerrando sesión...',
             logOutComplete: 'Sesión cerrada',
         }

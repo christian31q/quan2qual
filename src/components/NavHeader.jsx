@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   HStack, Button, Text, Modal, ModalOverlay, ModalContent,
-  ModalHeader, ModalBody, ModalCloseButton, useDisclosure, Spinner, Icon,
+  ModalHeader, ModalBody, ModalFooter, ModalCloseButton, useDisclosure, Spinner, Icon,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { CiSaveDown1 } from "react-icons/ci";
@@ -16,16 +16,17 @@ function NavHeader({ pageTitleText }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSaving, setIsSaving] = useState(true);  // Para guardar y logout
   const [modalType, setModalType] = useState('save');  // 'save' o 'logout'
+  const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);  // Solo para confirmar logout
 
   // Función para manejar el modal de "Guardar"
   const handleSave = () => {
-    setModalType('save');  // Cambiar el tipo de modal
+    setModalType('save');  // Cambiar el tipo de modal a 'save'
     onOpen();
     setIsSaving(true);
 
     // Simular el guardado
     setTimeout(() => {
-      setIsSaving(false);  // Mostrar la paloma de confirmación
+      setIsSaving(false);  // Mostrar la confirmación (paloma)
     }, 1500); 
 
     setTimeout(() => {
@@ -33,16 +34,15 @@ function NavHeader({ pageTitleText }) {
     }, 3000); 
   };
 
-  // Función para manejar el logout
-  const handleLogout = () => {
-    setModalType('logout');  // Cambiar el tipo de modal
-    onOpen();
-    setIsSaving(true); 
+  // Función para confirmar logout
+  const handleLogoutConfirm = () => {
+    setIsSaving(true);  // Mostrar spinner
+    setIsConfirmingLogout(false);  // Cambiar a spinner
 
     // Simular el proceso de logout
     setTimeout(() => {
       sessionStorage.removeItem('isAuthenticated');  // Limpiar la sesión
-      setIsSaving(false);  // Mostrar la paloma de confirmación
+      setIsSaving(false);  // Mostrar paloma de confirmación
     }, 1500); 
 
     setTimeout(() => {
@@ -51,9 +51,22 @@ function NavHeader({ pageTitleText }) {
     }, 3000); 
   };
 
+  // Función para manejar el logout
+  const handleLogout = () => {
+    setModalType('logout');  // Cambiar el tipo de modal a 'logout'
+    onOpen();
+    setIsSaving(false);  // No mostrar el spinner inmediatamente
+    setIsConfirmingLogout(true);  // Mostrar confirmación antes del spinner
+  };
+
+  // Función para cancelar el logout
+  const handleCancelLogout = () => {
+    onClose(); 
+  };
+
   return (
     <>
-      <HStack direction='row' spacing={{ base: "10px", md: "20px  ", lg: "2.5vmin" }} justifyContent='right' mt='1vh' mr='3vh'>
+      <HStack direction='row' spacing={{ base: "10px", md: "20px", lg: "2.5vmin" }} justifyContent='right' mt='1vh' mr='3vh'>
         <Text fontSize='1.2vw' mr='25vw'>
           {pageTitleText}
         </Text>
@@ -97,23 +110,50 @@ function NavHeader({ pageTitleText }) {
           {t('logOut')}
         </Button>
       </HStack>
+
       {/* Modal de guardado o logout */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent bg="#272F34" color="white" textAlign="center">
           <ModalHeader>
             {modalType === 'save'
-              ? (isSaving ? t('popupSaving') : t('popupSavingComplete')) 
-              : (isSaving ? t('loggingOut') : t('logOutComplete'))  
+              ? (isSaving ? t('popupSaving') : t('popupSavingComplete'))  // Guardar
+              : (isSaving ? t('loggingOut') : t('logOutComplete'))  // Logout
             }
           </ModalHeader>
           <ModalBody>
-            {isSaving ? (
-              <Spinner size="xl" color="green.500" /> 
+            {modalType === 'save' ? (
+              isSaving ? (
+                <Spinner size="xl" color="green.500" />  // Mostrar spinner mientras guarda
+              ) : (
+                <Icon as={BsCheckCircle} w={16} h={16} color="green.400" />  // Mostrar la paloma después de guardar
+              )
             ) : (
-              <Icon as={BsCheckCircle} w={16} h={16} color="green.400" />  
+              isSaving ? (
+                <Spinner size="xl" color="green.500" />  // Spinner durante logout
+              ) : (
+                isConfirmingLogout ? (
+                  <Text>
+                    {t('areYouSure')}  
+                  </Text>
+                ) : (
+                  <Icon as={BsCheckCircle} w={16} h={16} color="green.400" />  // Paloma de confirmación después del logout
+                )
+              )
             )}
           </ModalBody>
+          <ModalFooter>
+            {modalType === 'logout' && isConfirmingLogout && (
+              <>
+                <Button colorScheme='blue' mr={3} onClick={handleCancelLogout}>
+                  {t('cancel')}
+                </Button>
+                <Button colorScheme="red" mr={3} onClick={handleLogoutConfirm}>
+                  {t('logOut')}
+                </Button>
+              </>
+            )}
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
