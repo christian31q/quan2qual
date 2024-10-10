@@ -5,7 +5,9 @@ import { useWavesurfer } from '@wavesurfer/react';
 import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 
 const AudioTimeLine = ({ sessionId }) => {
-    const { audioFile, audioUrl, handleAudioUpload, loadAudioFromStorage, setWavesurfer, togglePlayPause } = useAudioStore();
+    //const { audioFile, audioUrl, handleAudioUpload, loadAudioFromStorage, setWavesurferTimeline, setWavesurfer, togglePlayPause, syncSeek  } = useAudioStore();
+    const { audioUrl, loadAudioFromStorage, setWavesurferTimeline, syncSeek } = useAudioStore();
+
     // Cargar audio desde localStorage al montar
     useEffect(() => {
         loadAudioFromStorage(sessionId);
@@ -13,21 +15,38 @@ const AudioTimeLine = ({ sessionId }) => {
 
     //const { wavesurfer } = useAudioStore();  // Obtener la instancia de Wavesurfer desde Zustand
     const containerRef = useRef(null)
-    const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
+
+    const { wavesurfer } = useWavesurfer({
         container: containerRef,
-        height: 50,
         waveColor: 'rgb(253 198 0)',
         progressColor: 'white',
+        height: 50,
         url: audioUrl,
         plugins: useMemo(() => [
-        Timeline.create({
-            container: '#wave-timeline2',  // Inicializar el plugin del timeline aquí
-        })
+          Timeline.create({
+            container: '#wave-timeline2',
+          }),
         ], [audioUrl]),
         barWidth: 2,
         barHeight: 10,
         barGap: 1,
-    })
+    });
+
+    // Guardar instancia en Zustand
+    useEffect(() => {
+        if (wavesurfer) {
+        setWavesurferTimeline(wavesurfer);
+
+        // Sincronizar usando el evento 'interaction' o 'seeking'
+        wavesurfer.on('interaction', (newTime) => {
+            const duration = wavesurfer.getDuration();
+            const progress = newTime / duration;  // Convertir tiempo a porcentaje
+            syncSeek(progress);  // Sincronizar con la otra onda y pausar el audio
+        });
+        }
+    }, [wavesurfer, setWavesurferTimeline, syncSeek]);
+
+
 
   return (
     <Flex direction="column" width="100%" gap="15px">

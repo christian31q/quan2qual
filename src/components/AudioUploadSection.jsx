@@ -19,10 +19,9 @@ function AudioUploadSection({ sessionId, isCreatingRelation, setIsCreatingRelati
     const { t } = useTranslation();
     const { actors, fetchActors } = useActorStore();
 
-    const { audioFile, audioUrl, handleAudioUpload, loadAudioFromStorage, setWavesurfer, togglePlayPause } = useAudioStore();
+    const { audioFile, audioUrl, handleAudioUpload, loadAudioFromStorage, setWavesurferPrimary, togglePlayPause, syncSeek, syncCurrentTime } = useAudioStore();
     
     const waveContainerRef = useRef(null);  // Mover las referencias al componente
-    const timelineContainerRef = useRef(null);
     
     // Cargar audio desde localStorage al montar
     useEffect(() => {
@@ -31,33 +30,41 @@ function AudioUploadSection({ sessionId, isCreatingRelation, setIsCreatingRelati
 
     // Usar useWavesurfer directamente en el componente
     const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
-        container: waveContainerRef,  // Pasar la referencia correctamente
+        container: waveContainerRef,
         waveColor: 'rgb(253 198 0)',
         progressColor: 'white',
         height: 100,
-        url: audioUrl,  // Cargar el audio desde la URL
+        url: audioUrl,
         plugins: useMemo(() => [
-        Timeline.create({
-            container: '#wave-timeline',  // Inicializar el plugin del timeline aquí
-        })
+          Timeline.create({
+            container: '#wave-timeline',
+          }),
         ], [audioUrl]),
         barWidth: 2,
         barHeight: 5,
         barGap: 1,
     });
 
-    // Guardar la instancia de Wavesurfer en Zustand cuando esté disponible
-    useEffect(() => {
-        if (wavesurfer) {
-        setWavesurfer(wavesurfer);  // Guardar la instancia en la store
-        }
-    }, [wavesurfer, setWavesurfer]);
-
     const formatTime = (seconds) => {
         return [Math.floor(seconds / 60), Math.floor(seconds % 60)]
             .map((v) => `0${v}`.slice(-2))
             .join(':');
     };
+
+    // Guardar instancia en Zustand
+    useEffect(() => {
+        if (wavesurfer) {
+        setWavesurferPrimary(wavesurfer);
+
+        // Sincronizar usando el evento 'interaction' o 'seeking'
+        wavesurfer.on('interaction', (newTime) => {
+            const duration = wavesurfer.getDuration();
+            const progress = newTime / duration;  // Convertir tiempo a porcentaje
+            syncSeek(progress);  // Sincronizar con la otra onda y pausar el audio
+        });
+        }
+    }, [wavesurfer, setWavesurferPrimary, syncSeek]);
+
 
     // Cargar actores al montar el componente
     useEffect(() => {
@@ -75,7 +82,6 @@ function AudioUploadSection({ sessionId, isCreatingRelation, setIsCreatingRelati
                         {/* Timeline */}
                         {/* <div ref={timelineContainerRef} style={{ height: '30px' }}></div> */}
                         <div id="wave-timeline" style={{ height: '30px' }}></div>
-
                         <p style={{textAlign: 'end'}}>Current time: {formatTime(currentTime)}</p>
                         <IconButton
                             icon={isPlaying ? <MdPauseCircleOutline /> : <MdPlayCircleOutline />}

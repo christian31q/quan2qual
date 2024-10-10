@@ -16,8 +16,18 @@ const useAudioStore = create(
   devtools((set, get) => ({
     audioFile: null,
     audioUrl: null,
-    wavesurfer: null, // Añadimos wavesurfer a la store
+    wavesurferPrimary: null,  // Instancia de la onda principal
+    wavesurferTimeline: null,  // Instancia de la segunda onda (timeline)
     isPlaying: false,
+
+    // Guardar la instancia de Wavesurfer
+    setWavesurferPrimary: (wavesurferInstance) => {
+        set({ wavesurferPrimary: wavesurferInstance });
+    },
+  
+    setWavesurferTimeline: (wavesurferInstance) => {
+        set({ wavesurferTimeline: wavesurferInstance });
+    },
 
     // Cargar el audio desde localStorage usando sessionId
     loadAudioFromStorage: (sessionId) => {
@@ -44,18 +54,29 @@ const useAudioStore = create(
       }
     },
 
-    // Guardar la instancia de Wavesurfer
-    setWavesurfer: (wavesurferInstance) => {
-      set({ wavesurfer: wavesurferInstance });
+    // Sincronizar la reproducción y pausa en ambas ondas
+    togglePlayPause: () => {
+        const { wavesurferPrimary, wavesurferTimeline, isPlaying } = get();
+        if (wavesurferPrimary && wavesurferTimeline) {
+        // Reproducir o pausar ambas instancias
+        wavesurferPrimary.playPause();
+        wavesurferTimeline.playPause();
+        set({ isPlaying: !isPlaying });
+        }
     },
 
-    // Reproducir/pausar audio
-    togglePlayPause: () => {
-      const { wavesurfer, isPlaying } = get();
-      if (wavesurfer) {
-        wavesurfer.playPause();
-        set({ isPlaying: !isPlaying });
-      }
+    // Sincronizar el seek entre ambas instancias de Wavesurfer y pausar el audio
+    syncSeek: (progress) => {
+        const { wavesurferPrimary, wavesurferTimeline, togglePlayPause } = get();
+
+        // Asegurarse de que ambas instancias se actualicen
+        if (wavesurferPrimary && wavesurferTimeline) {
+        wavesurferPrimary.seekTo(progress);  // Aplicar el seek en la primera onda
+        wavesurferTimeline.seekTo(progress); // Aplicar el seek en la segunda onda
+
+        // Actualizar el estado de reproducción
+        set({ isPlaying: false });
+        }
     },
   }))
 );
