@@ -1,12 +1,16 @@
 import React from 'react';
 import { Grid } from '@chakra-ui/react';
 import ActorCard from './ActorCard';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 const GridBodyActors = ({ actors, handleDragStart }) => {
+  const { mediaType: urlMediaType } = useParams();
+
+  const isAudio = urlMediaType === 'audio';
 
   return (
     <Grid
-      templateColumns="repeat(3, 1fr)"
+      templateColumns={isAudio ? "repeat(8, 1fr)" : "repeat(3, 1fr)"}
       gap={4}
       overflowY="auto"
       maxHeight="52.2vh"

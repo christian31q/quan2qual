@@ -7,6 +7,7 @@ import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
 import FileUploadSection from '../components/FileUploadSection'
 import ImageUploadSection from '../components/ImageUploadSection';
+import AudioUploadSection from '../components/AudioUploadSection';
 import VideoControls from '../components/VideoControls';
 //import AudioWaveform from '../components/AudioWaveform'; // Nuevo componente para manejar onda de audio
 
@@ -23,8 +24,9 @@ import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations
 import TableBodyRelations from '../components/relations/TableBodyRelations';
 
 import CardTimeLine from '../components/CardTimeLine';
-import Timeline from '../components/TimeLine';
+import Timelineprov from '../components/TimeLine';
 import ImageTimeline from '../components/ImageTimeLine';
+import AudioTimeLine from '../components/AudioTimeLine';
 import '../styles/HandleStyles.css'
 
 import { getSessionFromDB } from '../utils/mongoUtils';
@@ -157,6 +159,7 @@ function SessionPage({ pageTitle }) {
           gridTemplateRows={'6.2% 59.1% 6% 28.7%'}
           gridTemplateColumns={'5.99% 70.57% 23.44%'}
           h='100%'
+          w='100%'
           gap='0'
           color='blackAlpha.700'
           fontWeight='bold'
@@ -194,6 +197,7 @@ function SessionPage({ pageTitle }) {
             area={'main'} 
             colStart={2}
             shadow='xl'
+            style={{ display: isAudio ? "flex" : "block", alignItems: "center", justifyContent:"center"}}
         >
           {mediaType === 'image' && (
             <ImageUploadSection 
@@ -218,13 +222,11 @@ function SessionPage({ pageTitle }) {
             />            
           )}
           {mediaType === 'audio' && (
-            <FileUploadSection 
-            mediaType={mediaType}
-            mediaRef={mediaRef}
-            currentTime={currentTime}
-            setCurrentTime={setCurrentTime}
-            setDuration={setDuration}
-            />  
+            <AudioUploadSection 
+              sessionId={sessionId}
+              isCreatingRelation={isCreatingRelation}
+              setIsCreatingRelation={setIsCreatingRelation}
+            /> 
           )}
         </GridItem>
         <GridItem 
@@ -317,11 +319,13 @@ function SessionPage({ pageTitle }) {
               )}
               {mediaType === 'video' && (
                 /*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
-                <Timeline />
+                <Timelineprov />
               )}
               {mediaType === 'audio' && (
-                /*<AudioTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
-                <Timeline />
+                <AudioTimeLine
+                  sessionId={sessionId}
+                
+                />
               )}
             </HStack>
         </GridItem>

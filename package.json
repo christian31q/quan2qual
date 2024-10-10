@@ -22,6 +22,7 @@
     "@json2csv/plainjs": "^7.0.6",
     "@radial-color-picker/react-color-picker": "^4.0.1",
     "@react-icons/all-files": "^4.1.0",
+    "@wavesurfer/react": "^1.0.7",
     "bcryptjs": "^2.4.3",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
@@ -43,6 +44,7 @@
     "react-router-dom": "^6.16.0",
     "react-xarrows": "^2.0.2",
     "uuidv4": "^6.2.13",
+    "wavesurfer.js": "^7.8.6",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {

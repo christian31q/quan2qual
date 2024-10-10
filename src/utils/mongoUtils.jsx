@@ -264,7 +264,6 @@ export const createRelationshipInDB = async (relationshipData) => {
 
 export const getRelationshipsFromDB = async (sessionId) => {
   const result = await requestMongo("relationships", { filter: { session_id: sessionId } }, "find");
-  console.log(result);
   return result;
 };
 

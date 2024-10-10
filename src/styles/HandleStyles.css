@@ -122,6 +122,15 @@ img {
   align-items: center;
   justify-content: center;
 }
+
+/* Estilos para el contenedor de la onda para AudioUploadSection*/
+.audio-container{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 /* Para navegadores que no admiten la personalización de la barra de desplazamiento */
 /*scrollbar-width: thin;
 scrollbar-color: #4CAF50 #f1f1f1;
