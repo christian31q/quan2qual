@@ -166,15 +166,15 @@ const TableBodyRelations = () => {
               </motion.tr>
             );
         })}
-        {relations.length == 0 && (
+        </Tbody>
+      </Table>
+      {relations.length == 0 && (
           <Box>
             <Text color="#173378" textAlign="center" width="100%" padding="2">
               {t('tableRelationshipsText')}            
             </Text>
         </Box>
-        )}
-        </Tbody>
-      </Table>
+      )}
       <DeleteConfirmationModal
         isOpen={isOpen}
         onClose={handleCloseModal}

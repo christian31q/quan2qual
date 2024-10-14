@@ -135,15 +135,15 @@ const TableBodyTypes = () => {
                 </Td>
               </motion.tr>
             ))}
-            {relationTypes.length == 0 && (
-              <Box>
-                <Text color="#173378" textAlign="center" width="100%" padding="2">
-                  {t('tableTypesText')}
-                </Text>
-            </Box>
-            )}
         </Tbody>
       </Table>
+      {relationTypes.length == 0 && (
+        <Box>
+          <Text color="#173378" textAlign="center" width="100%" padding="2">
+            {t('tableTypesText')}
+          </Text>
+        </Box>
+      )}
       {/* Modal para editar un tipo de relación */}
       <EditTypeModal
         isOpen={isEditModalOpen}

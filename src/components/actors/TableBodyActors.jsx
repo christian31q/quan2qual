@@ -134,15 +134,15 @@ const TableBodyActors = ({ data }) => {
               </Td>
             </motion.tr>
         ))}
-        {actors.length == 0 && (
+        </Tbody>
+      </Table>
+      {actors.length == 0 && (
           <Box>
             <Text color="#173378" textAlign="center" width="100%" padding="2">
               {t('tableActorsText')}
             </Text>
           </Box>
-        )}
-        </Tbody>
-      </Table>
+      )}
       <EditActorModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
