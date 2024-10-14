@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tbody, Tr, Td, Icon, Text } from '@chakra-ui/react';
+import { Box, Table, Tbody, Tr, Td, Icon, Text } from '@chakra-ui/react';
 import { FiMoreVertical } from 'react-icons/fi';
 import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
@@ -166,6 +166,13 @@ const TableBodyRelations = () => {
               </motion.tr>
             );
         })}
+        {relations.length == 0 && (
+          <Box>
+            <Text color="#173378" textAlign="center" width="100%" padding="2">
+              {t('tableRelationshipsText')}            
+            </Text>
+        </Box>
+        )}
         </Tbody>
       </Table>
       <DeleteConfirmationModal

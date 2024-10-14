@@ -62,7 +62,7 @@ function IconButtons({ selectedIcon, onIconSelect }) {
         </Text>
         </VStack>
       </Button>
-      <Button
+      {/* <Button
         variant="outline"
         h="130px"
         borderColor={isIconSelected(3) ? 'white' : 'transparent'}
@@ -78,7 +78,7 @@ function IconButtons({ selectedIcon, onIconSelect }) {
           {t('audioText')}
         </Text>
         </VStack>
-      </Button>
+      </Button> */}
     </HStack>
   );
 }

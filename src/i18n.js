@@ -175,6 +175,14 @@ i18n
           areYouSure: 'Are you sure you want to log out?',
           loggingOut: 'Logging out...',
           logOutComplete: 'Session closed',
+          gridActorsText: 'The created actors will appear here as tabs to drag',
+          tableActorsText: 'The created actors will appear here in a table',
+          tableRelationshipsText: 'The relationships created will appear here in a table',
+          tableTypesText: 'The types of relationships created will appear here in a table',
+          selectAudioFile: 'Select audio file',
+          selectVideoFile: 'Select video file',
+          selectImageFile: 'Select images',
+          mediaNosSupported: 'Your browser does not support the video element.',
         }
       },
       es: {
@@ -334,6 +342,14 @@ i18n
             areYouSure: '¿Seguro desea cerrar sesión?',
             loggingOut: 'Cerrando sesión...',
             logOutComplete: 'Sesión cerrada',
+            gridActorsText: 'Los actores creados aparecerán aquí como pestañas para arrastrar',
+            tableActorsText: 'Los actores creados aparecerán aquí en una tabla',
+            tableRelationshipsText: 'Las relaciones creadas aparecerán aquí en una tabla',
+            tableTypesText: 'Los tipos de relaciones creadas aparecerán aquí en una tabla',
+            selectAudioFile: 'Seleccionar el archivo de audio',
+            selectVideoFile: 'Seleccionar el archivo de video',
+            selectImageFile: 'Seleccionar la imágenes',
+            mediaNosSupported: 'Tu navegador no soporta el elemento de video.',
         }
       }
     },

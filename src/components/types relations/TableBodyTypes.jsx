@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Tbody, Tr, Td, Icon, background } from '@chakra-ui/react';
+import { Box, Button, Table, Text, Tbody, Tr, Td, Icon, background } from '@chakra-ui/react';
 import { FiMoreVertical } from 'react-icons/fi';
 import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
@@ -135,6 +135,13 @@ const TableBodyTypes = () => {
                 </Td>
               </motion.tr>
             ))}
+            {relationTypes.length == 0 && (
+              <Box>
+                <Text color="#173378" textAlign="center" width="100%" padding="2">
+                  {t('tableTypesText')}
+                </Text>
+            </Box>
+            )}
         </Tbody>
       </Table>
       {/* Modal para editar un tipo de relación */}

@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import NavLeftTools from '../container/NavLeftToolsContainer';
 import InputHeader from '../components/InputHeader'
 import NavHeader from '../components/NavHeader'
-import FileUploadSection from '../components/FileUploadSection'
+import VideoUploadSection from '../components/VideoUploadSection'
 import ImageUploadSection from '../components/ImageUploadSection';
 import AudioUploadSection from '../components/AudioUploadSection';
 import VideoControls from '../components/VideoControls';
@@ -213,14 +213,18 @@ function SessionPage({ pageTitle }) {
             />
           )}
           {mediaType === 'video' && (
-            <FileUploadSection 
+            <VideoUploadSection 
               mediaType={mediaType}
               mediaRef={mediaRef}
               currentTime={currentTime}
               setCurrentTime={setCurrentTime}
               setDuration={setDuration}
+              sessionId={sessionId}
+              isCreatingRelation={isCreatingRelation} 
+              setIsCreatingRelation={setIsCreatingRelation}
             />            
           )}
+          {/* Queda pendiente terminar la funcionalidad de audio, por ahora fuera del proyecto*/}
           {mediaType === 'audio' && (
             <AudioUploadSection 
               sessionId={sessionId}
@@ -321,10 +325,10 @@ function SessionPage({ pageTitle }) {
                 /*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
                 <Timelineprov />
               )}
+              {/* Queda pendiente terminar la funcionalidad de audio, por ahora fuera del proyecto*/}
               {mediaType === 'audio' && (
                 <AudioTimeLine
                   sessionId={sessionId}
-                
                 />
               )}
             </HStack>

@@ -408,7 +408,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
           <img
             ref={mediaRef}
             src={selectedFiles[0].base64}
-            alt="Primera imagen"
+            alt="Thumbnail 1"
             width="100%"
             height="100%"
             style={{ objectFit: 'contain' }}
@@ -416,7 +416,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         ) : (
           // Mostrar el input grande cuando no haya imágenes
           <label className='file-upload-label'>
-            <span>Seleccionar las imágenes</span>
+            <span>{t('selectImageFile')}</span>
             <Input
               type='file'
               id='file-upload-input-large'
@@ -492,7 +492,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
         ml='2vh'
         display='flex'
         justifyContent='center'
-        alignItems='flex-start'
+        alignItems={actors == 0 ? 'center' : 'flex-start'}
       >
         <GridBodyActors
           actors={actors}

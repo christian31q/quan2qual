@@ -1,14 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Input, HStack, Icon, Text } from '@chakra-ui/react';
+import { Box, Button, Input, HStack, Icon, Text, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import GridBodyActors from './actors/GridBodyActors';
 import { IconPickerItem } from 'react-icons-picker';
 import { v4 as uuidv4 } from 'uuid';
+import useActorStore from '../store/actorStore';
+import useActorDragStore from '../store/actorDragStore';
+import useRelationStore from '../store/relationStore';
+import { getActorInstancesFromDB } from '../utils/mongoUtils';
+import { motion } from 'framer-motion';
+import Xarrow, { useXarrow, Xwrapper } from 'react-xarrows';
+import RelationPopup from './relations/RelationPopup';
 
-function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, setDuration }) {
+import { createStandaloneToast } from '@chakra-ui/react';
+
+const { ToastContainer, toast } = createStandaloneToast();
+
+function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, setDuration, sessionId, isCreatingRelation, setIsCreatingRelation }) {
+  const { t } = useTranslation();
+  const { actors, fetchActors } = useActorStore();
+  const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
   const [selectedFile, setSelectedFile] = useState(null);
   const [droppedActors, setDroppedActors] = useState([]); 
   const containerRef = useRef(); 
-  const [actors, setActors] = useState([]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [tutorialShown, setTutorialShown] = useState(false);
+  //const [actors, setActors] = useState([]);
   const [dragOffset, setDragOffset] = useState({ x: 10, y: 10 });
 
   const handleFileChange = (e) => {
@@ -38,12 +57,27 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
     }
   }, [mediaRef, setCurrentTime, setDuration, mediaType]);
 
+  // Cargar actores al montar el componente
   useEffect(() => {
-    const storedActors = JSON.parse(localStorage.getItem('actors'));
-    if (storedActors) {
-      setActors(storedActors);
+    fetchActors(sessionId); // Llama a la función de Zustand para obtener actores de MongoDB
+  }, [fetchActors]);
+
+  // Activar el modo de creación de relaciones y mostrar tutorial solo si es la primera vez
+  useEffect(() => {
+    if (isCreatingRelation) {
+      //const hasEnoughActors = checkActorsForRelation();
+
+      if (!tutorialShown) {
+        setIsTutorialOpen(true);
+      }
     }
-  }, []);
+  }, [isCreatingRelation, tutorialShown]);
+
+  // Cerrar el modal del tutorial y desactivar el trigger
+  const handleCloseTutorial = () => {
+    setIsTutorialOpen(false);
+    setTutorialShown(true);
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -91,6 +125,45 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
     e.dataTransfer.setData('actorId', actorId.toString()); 
   };
 
+  const showToast = (message, type) => {
+    toast({
+      title: `${type}`,
+      description: message,
+      status: `${type}`,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  // Componentes extras
+
+  const TutorialModal = ({ isOpen, onClose }) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size={'3xl'}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>{t('tutorialModalTitle')}</ModalHeader>
+                <ModalBody>
+                  <Box marginBottom='16px'>
+                    <Text>{t('tutorialModalText1')}</Text>
+                    <Text>{t('tutorialModalText2')}</Text>
+                    <Text>
+                      {t('tutorialModalText3')}
+                    </Text>
+                    <Text>{t('tutorialModalText4')}</Text>
+                  </Box>
+                    <video width="100%" height="auto" autoPlay loop>
+                      <source src='../../src/assets/Quan2Qual_Tuto.mp4' type='video/mp4'/>
+                    </video>
+                </ModalBody>
+                <ModalFooter>
+                    <Button colorScheme="blue" onClick={onClose}>{t('tutorialModalButton')}</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+  };
+
   const renderMediaViewer = () => {
     if (mediaType === 'video') {
       return selectedFile ? (
@@ -102,11 +175,11 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
           onLoadedData={() => mediaRef.current.pause()}
         >
           <source src={URL.createObjectURL(selectedFile)} type='video/mp4' />
-          Tu navegador no soporta el elemento de video.
+            {t('mediaNosSupported')}
         </video>
       ) : (
         <label className='file-upload-label'>
-          <span>Seleccionar archivo de video</span>
+          <span>{t('selectVideoFile')}</span>
           <Input
             type='file'
             accept='video/*'
@@ -115,28 +188,8 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
           />
         </label>
       );
-    } else if (mediaType === 'image') {
-      return selectedFile ? (
-        <img
-          ref={mediaRef}
-          src={URL.createObjectURL(selectedFile)}
-          alt='Imagen seleccionada'
-          width='100%'
-          height='100%'
-        />
-      ) : (
-        <label className='file-upload-label'>
-          <span>Seleccionar las imágenes</span>
-          <Input
-            type='file'
-            accept='image/*'
-            onChange={handleFileChange}
-            className='file-upload-input'
-          />
-        </label>
-      );
     } else {
-      return <Text>Media type no soportado aún.</Text>;
+      return <Text>{t('mediaNosSupported')}</Text>;
     }
   };
 
@@ -154,7 +207,7 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
         ml='2vh'
         display='flex'
         justifyContent='center'
-        alignItems='flex-start'
+        alignItems={actors == 0 ? 'center' : 'flex-start'}
       >
         <GridBodyActors
           actors={actors}
@@ -170,6 +223,9 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
         borderWidth='3px'
         borderRadius='lg'
         borderColor='#173378'
+        boxSizing="border-box"
+        outline={isCreatingRelation ? '5px solid #5dff5d' : 'none'}
+        outlineOffset={isCreatingRelation ? '0px' : '0px'}
         bg='#173378'
         align='center'
         mt='2vh'
@@ -180,6 +236,7 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
         position='relative'
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
+        transition="outline 0.3s ease-in-out, outline-offset 0.3s ease-in-out"
       >
         {renderMediaViewer()}
 
@@ -225,8 +282,11 @@ function FileUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, s
           </Box>
         ))}
       </Box>
+      {/* Modal de tutorial */}
+      <TutorialModal isOpen={isTutorialOpen} onClose={handleCloseTutorial} />
+      <ToastContainer/>
     </HStack>
   );
 }
 
-export default FileUploadSection;
+export default VideoUploadSection;

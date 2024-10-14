@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tbody, Tr, Td, Icon } from '@chakra-ui/react';
+import { Box, Table, Tbody, Tr, Td, Text, Icon } from '@chakra-ui/react';
 import { FiMoreVertical } from 'react-icons/fi';
 import { TbEditCircle } from "react-icons/tb";
 import { TiDeleteOutline } from "react-icons/ti";
@@ -134,6 +134,13 @@ const TableBodyActors = ({ data }) => {
               </Td>
             </motion.tr>
         ))}
+        {actors.length == 0 && (
+          <Box>
+            <Text color="#173378" textAlign="center" width="100%" padding="2">
+              {t('tableActorsText')}
+            </Text>
+          </Box>
+        )}
         </Tbody>
       </Table>
       <EditActorModal

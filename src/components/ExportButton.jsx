@@ -100,18 +100,18 @@ const ExportButton = () => {
       // Formatear las relaciones para el CSV de aristas
       const data = relations.map((relation, index) => {
         return {
-          'ID Source': instanceToActorMap[relation.source],  // Mapear el source ID con el ID generado
-          'ID Target': instanceToActorMap[relation.target],  // Mapear el target ID con el ID generado
-          'Tipo': relation.direction,                       // Tipo de relación (dirección)
-          'Clase': relation.class,                          // Clase de la relación
-          'ID Relación': index + 1,                         // Index de la relación
+          'Source': instanceToActorMap[relation.source],  // Mapear el source ID con el ID generado
+          'Target': instanceToActorMap[relation.target],  // Mapear el target ID con el ID generado
+          'Type': relation.direction,                       // Tipo de relación (dirección)
+          'Class': relation.class,                          // Clase de la relación
+          'Id': index + 1,                         // Index de la relación
           'Weight': relation.weight,                        // Peso de la relación
           'Label': relation.type_label                      // Etiqueta del tipo de relación
         };
       });
 
       // Definir los campos del CSV
-      const fields = ['ID Source', 'ID Target', 'Tipo', 'Clase', 'ID Relación', 'Weight', 'Label'];
+      const fields = ['Source', 'Target', 'Type', 'Class', 'Id', 'Weight', 'Label'];
 
       // Crear el CSV usando json2csv
       const json2csvParser = new Parser({ fields });

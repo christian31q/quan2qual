@@ -135,7 +135,7 @@ function AudioUploadSection({ sessionId, isCreatingRelation, setIsCreatingRelati
                 ) : (
                     // Input para subir el archivo cuando no haya audio cargado
                     <label className='file-upload-label'>
-                        <span>Seleccionar el audio</span>
+                        <span>{t('selectAudioFile')}</span>
                         <Input
                             type='file'
                             id='file-upload-input-large'
