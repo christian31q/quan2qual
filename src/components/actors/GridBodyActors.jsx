@@ -10,7 +10,7 @@ const GridBodyActors = ({ actors, handleDragStart }) => {
   const isAudio = urlMediaType === 'audio';
 
   return (
-    <Box>
+    <Box width='100%'>
       <Grid
         templateColumns={isAudio ? "repeat(8, 1fr)" : "repeat(3, 1fr)"}
         gap={4}

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Box, Button, Input, HStack, Icon, Text, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import GridBodyActors from './actors/GridBodyActors';
@@ -11,18 +11,26 @@ import { getActorInstancesFromDB } from '../utils/mongoUtils';
 import { motion } from 'framer-motion';
 import Xarrow, { useXarrow, Xwrapper } from 'react-xarrows';
 import RelationPopup from './relations/RelationPopup';
+import { useWavesurfer } from '@wavesurfer/react';
+import WaveSurfer from 'wavesurfer.js';
+import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js';
+import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 
 import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
-function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, setDuration, sessionId, isCreatingRelation, setIsCreatingRelation }) {
+function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setDuration, sessionId, isCreatingRelation, setIsCreatingRelation }) {
   const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   const [droppedActors, setDroppedActors] = useState([]); 
-  const containerRef = useRef(); 
+
+  //const mediaRef = useRef(null); // Referencia del video
+  //const waveRef = useRef(null);
+  const [wavesurfer, setWavesurfer] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -30,32 +38,58 @@ function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, 
   //const [actors, setActors] = useState([]);
   const [dragOffset, setDragOffset] = useState({ x: 10, y: 10 });
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (videoUrl) {
+        // Liberar la URL previa para evitar fugas de memoria
+        URL.revokeObjectURL(videoUrl);
+      }
+      // Crear una nueva URL solo cuando se selecciona un nuevo archivo
+      const newUrl = URL.createObjectURL(file);
+      setVideoUrl(newUrl);  // Guardar la nueva URL
+      setSelectedFile(file); // Guardar el archivo seleccionado
+    }
   };
 
+  // Crear y destruir la instancia de WaveSurfer
   useEffect(() => {
-    if (mediaType === 'video' || mediaType === 'image') {
-      if (mediaRef.current) {
-        const handleTimeUpdate = () => {
-          setCurrentTime(mediaRef.current.currentTime);
-        };
+    if (mediaType === 'video' && mediaRef.current && selectedFile && waveRef.current) {
+      if (!wavesurfer) {
+        // Crear WaveSurfer una vez
+        const waveInstance = WaveSurfer.create({
+          container: waveRef.current,
+          waveColor: 'rgb(253 198 0)',
+          progressColor: 'white',
+          height: 50,
+          barWidth: 2,
+          barHeight: 3,
+          barGap: 1,
+          responsive: true,
+          backend: 'MediaElement',  // Necesario para sincronizar con video
+          media: mediaRef.current,  // Vincular el video a la onda
+        });
 
-        const handleLoadedMetadata = () => {
-          setDuration(mediaRef.current.duration);
-        };
+        waveInstance.on('ready', () => {
+          setDuration(waveInstance.getDuration());
+        });
 
-        mediaRef.current.addEventListener('timeupdate', handleTimeUpdate);
-        mediaRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+        waveInstance.on('audioprocess', () => {
+          setCurrentTime(waveInstance.getCurrentTime());
+        });
 
-        return () => {
-          mediaRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-          mediaRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        };
+        setWavesurfer(waveInstance);  // Guardar la instancia
       }
+
+      return () => {
+        // Destruir la instancia de WaveSurfer cuando el componente se desmonta o cambia el archivo de video
+        if (wavesurfer) {
+          wavesurfer.destroy();
+          setWavesurfer(null);
+        }
+      };
     }
-  }, [mediaRef, setCurrentTime, setDuration, mediaType]);
+  }, [mediaType, selectedFile, waveRef, mediaRef, wavesurfer]);
 
   // Cargar actores al montar el componente
   useEffect(() => {
@@ -78,51 +112,90 @@ function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, 
     setIsTutorialOpen(false);
     setTutorialShown(true);
   };
-
-  const handleDrop = (e) => {
+  // Maneja el arrastre y caída de actores
+  const handleDrop = async (e) => {
     e.preventDefault();
     
     const actorId = e.dataTransfer.getData('actorId');
+    const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));
+    const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));
+  
     if (!actorId) return;
+  
+    const containerRect = mediaRef.current.getBoundingClientRect();
+    const dropX = e.clientX - containerRect.left - offsetX;
+    const dropY = e.clientY - containerRect.top - offsetY;
+  
+    const posX = Math.max(0, Math.min(dropX, containerRect.width));
+    const posY = Math.max(0, Math.min(dropY, containerRect.height));
+  
+    console.log('Posición ajustada (posX, posY):', { posX, posY });
+  
+    // Convertir a porcentaje relativo al contenedor
+    const percentX = (posX / containerRect.width) * 100;
+    const percentY = (posY / containerRect.height) * 100;
+    
+    const originalActor = actors.find((a) => a._id === actorId);
+    if (!originalActor) return;
+  
+    const newActorInstance = {
+      actorId,
+      actor: originalActor,
+      position: { x: percentX, y: percentY },  // Guardar la posición en porcentaje
+      imageIndex: 1,
+      sessionId,
+    };
+  
+    // Añadir la nueva instancia al store de Zustand y la base de datos
+    await addActor(newActorInstance);
+  };   
 
+  // Maneja el inicio del arrastre de actores
+  const handleDragStart = (e, instanceId) => {
+    console.log(instanceId);
+    // Asegurarnos de que actorId exista
+    if (!instanceId) {
+      console.error('El actor no tiene un ID válido');
+      return;
+    }
+
+    // Obtener la posición relativa del cursor dentro del actor
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;  // Posición relativa del cursor dentro del actor (X)
+    const offsetY = e.clientY - rect.top;   // Posición relativa del cursor dentro del actor (Y)
+
+    // Guardar el offset en dataTransfer
+    e.dataTransfer.setData('actorId', instanceId);  // Aquí usamos el instanceId que es el _id de MongoDB
+    e.dataTransfer.setData('offsetX', offsetX);  // Guardar el offset en X
+    e.dataTransfer.setData('offsetY', offsetY);  // Guardar el offset en Y
+  };
+
+  // Actualizar la posición del actor cuando se mueve (handleDragEnd)
+  const handleDragEnd = async (e, instanceId) => {
+    console.log(instanceId);
+    // Asegurarnos de que actorId exista
+    if (!instanceId) {
+        console.error('El actor no tiene un ID válido');
+        return;
+    }
+  
     const containerRect = containerRef.current.getBoundingClientRect();
     const dropX = e.clientX - containerRect.left;
     const dropY = e.clientY - containerRect.top;
-
+  
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
-
+  
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
-
-    const existingActor = droppedActors.find((a) => a.id === actorId);
-
-    if (existingActor) {
-      setDroppedActors((prev) =>
-        prev.map((actorInstance) => {
-          if (actorInstance.id === actorId) {
-            return { ...actorInstance, position: { x: percentX, y: percentY } };
-          }
-          return actorInstance;
-        })
-      );
-    } else {
-      const originalActor = actors.find((a) => a.id === parseInt(actorId, 10));
-      if (!originalActor) return;
-
-      const newActorInstance = {
-        id: uuidv4(),
-        actor: originalActor,
-        position: { x: percentX, y: percentY },
-      };
-
-      setDroppedActors((prev) => [...prev, newActorInstance]);
+  
+    // Actualizar la posición del actor en Zustand y la base de datos
+    try {
+      await updateActorPosition(instanceId, { x: percentX, y: percentY });  // Actualiza Zustand y la base de datos
+      console.log(`Posición actualizada en DB para el actor ${instanceId}: { x: ${percentX}, y: ${percentY} }`);
+    } catch (error) {
+      console.error('Error al actualizar la posición en la base de datos:', error);
     }
-  };   
-
-  const handleDragStart = (e, actorId, isExistingActor) => {
-    setDragOffset({ x: e.clientX, y: e.clientY });
-    e.dataTransfer.setData('actorId', actorId.toString()); 
   };
 
   const showToast = (message, type) => {
@@ -167,16 +240,17 @@ function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, 
   const renderMediaViewer = () => {
     if (mediaType === 'video') {
       return selectedFile ? (
-        <video
-          ref={mediaRef}
-          width='100%'
-          height='100%'
-          controls={false}
-          onLoadedData={() => mediaRef.current.pause()}
-        >
-          <source src={URL.createObjectURL(selectedFile)} type='video/mp4' />
-            {t('mediaNosSupported')}
-        </video>
+        <>
+          {/* Video cargado */}
+          <video
+            ref={mediaRef}  // Aquí el video se referencia para WaveSurfer
+            src={videoUrl}
+            width="100%"
+            height="100%"
+            id="video-container"
+            style={{ marginBottom: '10px' }}
+          />
+        </>
       ) : (
         <label className='file-upload-label'>
           <span>{t('selectVideoFile')}</span>
@@ -211,11 +285,11 @@ function VideoUploadSection({ mediaType, mediaRef, currentTime, setCurrentTime, 
       >
         <GridBodyActors
           actors={actors}
-          handleDragStart={(e, actorId) => handleDragStart(e, actorId, false)}
+          handleDragStart={(e, actorId) => handleDragStart(e, actorId)}
         />
       </Box>
       <Box
-        ref={containerRef}
+        ref={mediaRef}
         w='60vw'
         //h='auto'
         maxHeight='55vh'

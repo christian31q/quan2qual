@@ -24,7 +24,7 @@ import HeaderLabelsRelations from '../components/relations/HeaderLabelsRelations
 import TableBodyRelations from '../components/relations/TableBodyRelations';
 
 import CardTimeLine from '../components/CardTimeLine';
-import Timelineprov from '../components/TimeLine';
+import VideoTineline from '../components/VideoTimeLine';
 import ImageTimeline from '../components/ImageTimeLine';
 import AudioTimeLine from '../components/AudioTimeLine';
 import '../styles/HandleStyles.css'
@@ -54,6 +54,7 @@ function SessionPage({ pageTitle }) {
 
   // Estado para el Video
   const mediaRef = useRef(null);
+  const waveRef = useRef(null);   // Para el contenedor de WaveSurfer
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -101,13 +102,6 @@ function SessionPage({ pageTitle }) {
 
   const mediaType = sessionData ? sessionData.media_type : null;
   //console.log('Media Type: ', mediaType);
-
-  const handleSeek = (time) => {
-    if (mediaRef.current) {
-      mediaRef.current.currentTime = time;
-    }
-    setCurrentTime(time);
-  };
 
   // Lógica para determinar si es audio, imagen o video
   const isAudio = mediaType === 'audio';
@@ -216,6 +210,7 @@ function SessionPage({ pageTitle }) {
             <VideoUploadSection 
               mediaType={mediaType}
               mediaRef={mediaRef}
+              waveRef={waveRef}
               currentTime={currentTime}
               setCurrentTime={setCurrentTime}
               setDuration={setDuration}
@@ -290,13 +285,14 @@ function SessionPage({ pageTitle }) {
             rowEnd={3}
             shadow='xl'
             display='flex'
+            justifyContent='center'
         >
           {/*Reproductor*/}
           {mediaType === 'audio' ? (
             /* <AudioWaveform /> */ // Muestra onda de audio
             null
           ) : mediaType === 'video' ? (
-            <VideoControls videoRef={mediaRef} /> // Reproductor de video
+            <VideoControls ref={mediaRef} /> // Reproductor de video
           ) : null /* No muestra nada si es imagen */}
         </GridItem>
         <GridItem 
@@ -322,8 +318,10 @@ function SessionPage({ pageTitle }) {
                 />
               )}
               {mediaType === 'video' && (
-                /*<VideoTimeline duration={duration} currentTime={currentTime} onSeek={handleSeek} />*/
-                <Timelineprov />
+                <VideoTineline 
+                  waveRef={waveRef}
+                
+                />
               )}
               {/* Queda pendiente terminar la funcionalidad de audio, por ahora fuera del proyecto*/}
               {mediaType === 'audio' && (
