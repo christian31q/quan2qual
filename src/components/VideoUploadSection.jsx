@@ -50,6 +50,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
 
   // Estados para los actores a relacionar
   const [selectedActor, setSelectedActor] = useState(null); // El actor source
+  const [relationTimeStart, setRelationTimeStart] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -98,37 +99,59 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
     });
   };
 
-  // Click al los actores que se seleccionan
+  // Click en los actores para seleccionar y crear relaciones
   const handleActorClick = (actorId) => {
     console.log('Actor ref ID: ', actorId);
-  
+
     if (isCreatingRelation) {
+      // Buscar el actor seleccionado en la lista de actores
+      const selectedActorInstance = actorsInstances[actorId];  // Actor fuente o destino
+
+      if (!selectedActorInstance) {
+        console.error(`Actor con ID ${actorId} no encontrado`);
+        return;
+      }
+
+      const actorTime = selectedActorInstance.currentTime;  // Obtener el currentTime del actor
+
       // Verificar si el actor seleccionado es el mismo que ya está seleccionado
       if (selectedActor === actorId) {
         // Si es el mismo actor, des-seleccionarlo
         setSelectedActor(null);
         return; 
       }
-  
+
       if (!selectedActor) {
-        // Si no hay actor seleccionado aún, seleccionamos el primero (source)
+        // Si no hay actor seleccionado aún, seleccionamos el primero (source) y capturamos su `currentTime`
         setSelectedActor(actorId);
+        setRelationTimeStart(actorTime);  // Guardar `currentTime` del primer actor
+        console.log(`Actor fuente seleccionado: ${actorId} en el tiempo ${actorTime}`);
       } else {
-        // Si ya hay un actor seleccionado, creamos la relación
+        // Si ya hay un actor seleccionado, comparamos los `currentTime` de ambos actores
+        const firstActorTime = relationTimeStart;  // Tiempo del primer actor seleccionado
+        const secondActorTime = actorTime;  // Tiempo del segundo actor seleccionado
+
+        // Definir `timeStart` como el menor de los dos tiempos y `timeEnd` como el mayor
+        const timeStart = Math.min(firstActorTime, secondActorTime);
+        const timeEnd = Math.max(firstActorTime, secondActorTime);
+
         const newRelation = {
-          source: selectedActor,   // Actor de origen
-          target: actorId,         // Actor de destino
-          session_id: sessionId,   // Agregar el session_id a la relación
+          source: selectedActor,  // Actor de origen (actor fuente)
+          target: actorId,        // Actor de destino
+          session_id: sessionId,  // Agregar el session_id a la relación
+          timeStart: timeStart - 0.5,   // El menor de los tiempos es `timeStart`
+          timeEnd: timeEnd + 0.5,       // El mayor de los tiempos es `timeEnd`
         };
-      
+        
         // Almacenar la relación temporalmente en Zustand
         setTemporaryRelation(newRelation);  // Esto se guarda en el estado, pero no se envía a MongoDB aún
-      
+
         // Llamar a la función para abrir el pop-up y asignar la relación
         handleActorConnection(selectedActor, actorId);
-      
+
         // Reiniciar el actor seleccionado
         setSelectedActor(null);
+        setRelationTimeStart(null);  // Reiniciar el `timeStart`
       }
     }
   };
@@ -540,8 +563,8 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
     return (
       <>
         {relations.map((relation) => {
-          // Mostrar la flecha si el currentTime está dentro de un margen de ±1 segundo
-          if (Math.abs(relation.currentTime - currentTime) <= 1) {
+          // Mostrar la flecha si el currentTime está dentro del rango de tiempo de la relación
+          if (relation.timeStart <= currentTime && currentTime <= relation.timeEnd) {
             return (
               <Xarrow
                 key={relation._id}
@@ -573,6 +596,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
       </>
     );
   };
+  
   
 
   return (
