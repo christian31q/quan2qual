@@ -108,6 +108,12 @@ function SessionPage({ pageTitle }) {
   const isAudio = mediaType === 'audio';
   const isImage = mediaType === 'image';
   const isVideo = mediaType === 'video';
+
+  useEffect(() => {
+    if (mediaRef.current) {
+      setDuration(mediaRef.current.duration);
+    }
+  }, [mediaRef]);
   
   const isMediaTypeMismatch = mediaType && urlMediaType && mediaType !== urlMediaType;
   return (
@@ -323,6 +329,7 @@ function SessionPage({ pageTitle }) {
                 <VideoTineline 
                   waveRef={waveRef}
                   timelineRef={timelineRef}
+                  videoDuration={duration}
                 />
               )}
               {/* Queda pendiente terminar la funcionalidad de audio, por ahora fuera del proyecto*/}

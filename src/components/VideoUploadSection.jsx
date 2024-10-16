@@ -31,6 +31,8 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
   const { relations, setTemporaryRelation, loadRelations, addRelation } = useRelationStore();
   
+  console.log(relations);
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
 
@@ -191,7 +193,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
           regionsPlugin.addRegion({
             start: actor.currentTime - 0.5,  // Añadir un margen antes del tiempo del actor
             end: actor.currentTime + 0.5,    // Duración de 1 segundo
-            content: actor.actor.name,
+            //content: actor.actor.name,
             color: actor.actor.color,  // Puedes personalizar el color según el actor
             drag: false,
             resize: false,
@@ -398,7 +400,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDura
       regionsPlugin.addRegion({
         start: currentTime - 0.5,  // Tiempo actual del video
         end: currentTime + 0.5,    // Duración de 1 segundo
-        content: `${originalActor.name}`,
+        //content: `${originalActor.name}`,
         color: `${originalActor.color}`,
         drag: false,
         resize: false,
