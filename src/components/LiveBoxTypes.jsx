@@ -154,6 +154,7 @@ const LiveBoxTypes = ({ isOpen, onClose }) => {
     // Crear el objeto de tipo de relación a guardar en la base de datos
     const newType = {
       session_id: sessionId,  // Asegurarse de asociarlo con la sesión
+      selectedOption,
       label: optionsData[selectedOption].label,
       inputValues,
       customFields,

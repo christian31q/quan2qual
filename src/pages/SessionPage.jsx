@@ -55,6 +55,7 @@ function SessionPage({ pageTitle }) {
   // Estado para el Video
   const mediaRef = useRef(null);
   const waveRef = useRef(null);   // Para el contenedor de WaveSurfer
+  const timelineRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -211,6 +212,7 @@ function SessionPage({ pageTitle }) {
               mediaType={mediaType}
               mediaRef={mediaRef}
               waveRef={waveRef}
+              timelineRef={timelineRef}
               currentTime={currentTime}
               setCurrentTime={setCurrentTime}
               setDuration={setDuration}
@@ -320,12 +322,13 @@ function SessionPage({ pageTitle }) {
               {mediaType === 'video' && (
                 <VideoTineline 
                   waveRef={waveRef}
-                
+                  timelineRef={timelineRef}
                 />
               )}
               {/* Queda pendiente terminar la funcionalidad de audio, por ahora fuera del proyecto*/}
               {mediaType === 'audio' && (
                 <AudioTimeLine
+                  mediaRef={mediaRef}
                   sessionId={sessionId}
                 />
               )}

@@ -338,6 +338,7 @@ function ImageUploadSection({ mediaRef, setSelectedImages, currentImage,  sessio
     });
   }, [actors, actorsInstances, updateActorAttributes]);
   
+  // Modal para eliminar una instancia
   const handleOpenDeleteModal = (actorId) => {
     onOpen();
     setActorToDelete(actorId); // Guardar la instancia seleccionada para eliminar

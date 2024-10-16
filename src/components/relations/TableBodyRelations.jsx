@@ -96,6 +96,8 @@ const TableBodyRelations = () => {
     visible: { opacity: 1, scale: 1 },
   };
 
+  console.log(relations);
+
   return (
     <>
       <Table size="sm" color="white">

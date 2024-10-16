@@ -91,7 +91,7 @@ const EditRelationModal = ({ isOpen, onClose, relation, onEdit, relationTypes })
             >
               {relationTypes.map((type) => (
                 <option key={type._id} value={type._id}>
-                  {type.label} | weight: {type.inputValues.peso_relacion}
+                  {type.label === 'Relación personalizada' || type.label === 'Custom relationship' ? type.inputValues.nombre_personalizada : type.label} | weight: {type.inputValues.peso_relacion}
                 </option>
               ))}
             </Select>

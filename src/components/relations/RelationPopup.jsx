@@ -13,7 +13,7 @@ import { createStandaloneToast } from '@chakra-ui/react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
-const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, imageIndex }) => {
+const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, imageIndex, currentTime }) => {
   const { t } = useTranslation();
   const { relationTypes, fetchRelationTypes } = useRelationTypeStore();
   const { temporaryRelation, addRelation } = useRelationStore();
@@ -56,6 +56,7 @@ const RelationPopup = ({ isOpen, onClose, existingRelations, onCreateRelation, i
         direction: relationDirection,
         class: relationClass,
         imageIndex,
+        currentTime,
       };
   
       // Enviar la relación completa a MongoDB

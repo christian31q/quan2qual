@@ -15,28 +15,41 @@ import { useWavesurfer } from '@wavesurfer/react';
 import WaveSurfer from 'wavesurfer.js';
 import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
+import { FaRegUserCircle } from "react-icons/fa";
+
 
 import { createStandaloneToast } from '@chakra-ui/react';
+import { act } from 'react';
 
 const { ToastContainer, toast } = createStandaloneToast();
 
-function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setDuration, sessionId, isCreatingRelation, setIsCreatingRelation }) {
+const MotionBox = motion(Box);
+
+function VideoUploadSection({ mediaType, mediaRef, waveRef, timelineRef, setDuration, sessionId, isCreatingRelation, setIsCreatingRelation }) {
   const { t } = useTranslation();
   const { actors, fetchActors } = useActorStore();
   const { actorsInstances, addActor, updateActorPosition, updateActorAttributes, removeActor } = useActorDragStore();
+  const { relations, setTemporaryRelation, loadRelations, addRelation } = useRelationStore();
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
-  const [droppedActors, setDroppedActors] = useState([]); 
 
-  //const mediaRef = useRef(null); // Referencia del video
-  //const waveRef = useRef(null);
   const [wavesurfer, setWavesurfer] = useState(null);
-
+  const [currentTime, setCurrentTime] = useState(0);  // Estado para el tiempo actual del video
+  const [actorToDelete, setActorToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [tutorialShown, setTutorialShown] = useState(false);
-  //const [actors, setActors] = useState([]);
-  const [dragOffset, setDragOffset] = useState({ x: 10, y: 10 });
+
+  // Estados al crear una relación entre actores
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para el popup
+  const [existingRelations, setExistingRelations] = useState([]); // Relaciones existentes
+
+  const regionsPlugin = useMemo(() => RegionsPlugin.create({ dragSelection: false }), []);
+
+  // Estados para los actores a relacionar
+  const [selectedActor, setSelectedActor] = useState(null); // El actor source
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -52,9 +65,205 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
     }
   };
 
+  // Cargar las relaciones cuando el componente se monta
+  useEffect(() => {
+    if (sessionId) {
+      loadRelations(sessionId);
+    }
+  }, [sessionId, loadRelations]);
+
+  // Detectar cambio en el modo de relación
+  useEffect(() => {
+    if (!isCreatingRelation) {
+      // Si el modo de relación se desactiva, limpiar el actor seleccionado
+      setSelectedActor(null);
+    }
+  }, [isCreatingRelation]);
+
+  // Este método se ejecuta al conectar dos actores
+  const handleActorConnection = (sourceId, targetId) => {
+    // Si se conectan dos actores, abrir el modal
+    setIsPopupOpen(true);
+  };
+
+  // Crear la relación
+  const handleCreateRelation = (source, target, type, direction, relationClass) => {
+    addRelation({
+      source,
+      target,
+      type,
+      direction,
+      class: relationClass,
+      session_id: sessionId,
+    });
+  };
+
+  // Click al los actores que se seleccionan
+  const handleActorClick = (actorId) => {
+    console.log('Actor ref ID: ', actorId);
+  
+    if (isCreatingRelation) {
+      // Verificar si el actor seleccionado es el mismo que ya está seleccionado
+      if (selectedActor === actorId) {
+        // Si es el mismo actor, des-seleccionarlo
+        setSelectedActor(null);
+        return; 
+      }
+  
+      if (!selectedActor) {
+        // Si no hay actor seleccionado aún, seleccionamos el primero (source)
+        setSelectedActor(actorId);
+      } else {
+        // Si ya hay un actor seleccionado, creamos la relación
+        const newRelation = {
+          source: selectedActor,   // Actor de origen
+          target: actorId,         // Actor de destino
+          session_id: sessionId,   // Agregar el session_id a la relación
+        };
+      
+        // Almacenar la relación temporalmente en Zustand
+        setTemporaryRelation(newRelation);  // Esto se guarda en el estado, pero no se envía a MongoDB aún
+      
+        // Llamar a la función para abrir el pop-up y asignar la relación
+        handleActorConnection(selectedActor, actorId);
+      
+        // Reiniciar el actor seleccionado
+        setSelectedActor(null);
+      }
+    }
+  };
+
+  // Asignar outline al actor seleccionado
+  const getActorStyle = (actorId) => {
+    if (selectedActor === actorId && isCreatingRelation) {
+      return { outline: '5px solid #5dff5d' }; // El actor seleccionado tiene un borde verde
+    }
+    return {}; // Sin estilo especial si no está seleccionado
+  };
+  
+  // Obtener los actores que están en la ventana de tiempo actual del video (±1 segundo)
+  const actorsForCurrentTime = Object.values(actorsInstances).filter(
+    (actor) =>
+      actor.currentTime >= currentTime - 0.5 &&
+      actor.currentTime <= currentTime + 0.5 &&
+      actor.sessionId === sessionId
+  );
+
+  console.log('Actors current time: ', actorsForCurrentTime);
+ 
+  // Obtener todos los actores que corresponden a la sesión
+  const actorsForSession = Object.values(actorsInstances).filter(
+    (actor) => actor.sessionId === sessionId
+  );
+
+  // Crear regiones para los actores apenas se carga el video o el wavesurfer
+  useEffect(() => {
+    if (wavesurfer && actorsForSession.length > 0) {
+      // Limpiar todas las regiones existentes (opcional)
+      regionsPlugin.clearRegions();
+
+      // Crear una región para cada actor en función de su currentTime
+      if (regionsPlugin){
+        actorsForSession.forEach((actor) => {
+          regionsPlugin.addRegion({
+            start: actor.currentTime - 0.5,  // Añadir un margen antes del tiempo del actor
+            end: actor.currentTime + 0.5,    // Duración de 1 segundo
+            content: actor.actor.name,
+            color: actor.actor.color,  // Puedes personalizar el color según el actor
+            drag: false,
+            resize: false,
+          });
+          console.log(`Región creada para actor: ${actor.actor.name} en ${actor.currentTime}s`);
+        });
+      } else {
+        console.error("El plugin de regiones no está disponible.");
+      }
+    }
+  }, [wavesurfer, actorsForSession]);
+
+  // Escuchar el evento 'timeupdate' del video para actualizar el currentTime
+  useEffect(() => {
+    if (mediaRef.current) {
+      const videoElement = mediaRef.current;
+
+      const updateTime = () => {
+        setCurrentTime(videoElement.currentTime);  // Actualizar el estado con el tiempo actual
+      };
+
+      // Añadir el eventListener para 'timeupdate' del video
+      videoElement.addEventListener('timeupdate', updateTime);
+
+      return () => {
+        // Limpiar el listener cuando el componente se desmonta
+        videoElement.removeEventListener('timeupdate', updateTime);
+      };
+    }
+  }, [mediaRef]);
+
+  // Escuchar el evento 'seeking' de WaveSurfer para actualizar el currentTime cuando se interactúa con la onda
+  useEffect(() => {
+    if (wavesurfer) {
+      // Añadir el eventListener para 'seeking' en WaveSurfer
+      wavesurfer.on('seeking', (currentTime) => {
+        setCurrentTime(currentTime);
+        console.log('Seeking', currentTime + 's')
+      })
+
+      return () => {
+        // Limpiar el listener cuando el componente se desmonta
+        wavesurfer.un('seeking', (currentTime) => {
+          setCurrentTime(currentTime);
+          console.log('Seeking', currentTime + 's')
+        })
+      };
+    }
+  }, [wavesurfer, mediaRef]);
+
+  const checkActorsForRelation = () => {
+    if (actorsForCurrentTime.length < 2) {
+      // Mostrar toast si no hay suficientes actores
+      setIsCreatingRelation(false); // Desactivar el modo de relación si no hay suficientes actores
+      showToast(`${t('toastWarningCountActors')}`, 'warning');
+      return false;
+    }
+    return true;
+  };
+  // Lógica para cargar los actores según el currentTime del video
+  useEffect(() => {
+    const fetchActorsForCurrentTime = async () => {
+      try {
+        // Llamar a la base de datos para obtener los actores que coincidan con `currentTime` y `sessionId`
+        const fetchedActors = await getActorInstancesFromDB(sessionId, currentTime);
+
+        // Actualizar los actores en Zustand
+        updateActorsInZustand(fetchedActors);
+      } catch (error) {
+        console.error('Error al obtener actores de la base de datos:', error);
+      }
+    };
+
+    // Ejecutamos la función si el currentTime es válido
+    if (currentTime !== null) {
+      fetchActorsForCurrentTime();
+    }
+  }, [currentTime, sessionId]);
+
+  // Función para actualizar Zustand con los actores obtenidos de la base de datos
+  const updateActorsInZustand = (fetchedActors) => {
+    const { setActorsInstances } = useActorDragStore.getState();  // Obtener la acción de Zustand
+  
+    const actorsMap = {};  // Convertir actores a un objeto
+    fetchedActors.forEach(actor => {
+      actorsMap[actor._id] = actor;
+    });
+  
+    // Actualizar Zustand con los actores de la base de datos
+    setActorsInstances(actorsMap);
+  };
+
   // Crear y destruir la instancia de WaveSurfer
   useEffect(() => {
-    if (mediaType === 'video' && mediaRef.current && selectedFile && waveRef.current) {
+    if (mediaType === 'video' && mediaRef.current && selectedFile && waveRef.current && timelineRef.current) {
       if (!wavesurfer) {
         // Crear WaveSurfer una vez
         const waveInstance = WaveSurfer.create({
@@ -68,6 +277,12 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
           responsive: true,
           backend: 'MediaElement',  // Necesario para sincronizar con video
           media: mediaRef.current,  // Vincular el video a la onda
+          plugins: [
+            regionsPlugin,  // Usar el plugin de regiones memoizado
+            Timeline.create({
+              container: timelineRef.current,  // Contenedor para el timeline
+            }),
+          ],
         });
 
         waveInstance.on('ready', () => {
@@ -89,7 +304,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
         }
       };
     }
-  }, [mediaType, selectedFile, waveRef, mediaRef, wavesurfer]);
+  }, [mediaType, selectedFile, waveRef, timelineRef, mediaRef, wavesurfer, regionsPlugin]);
 
   // Cargar actores al montar el componente
   useEffect(() => {
@@ -99,9 +314,9 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
   // Activar el modo de creación de relaciones y mostrar tutorial solo si es la primera vez
   useEffect(() => {
     if (isCreatingRelation) {
-      //const hasEnoughActors = checkActorsForRelation();
+      const hasEnoughActors = checkActorsForRelation();
 
-      if (!tutorialShown) {
+      if (!tutorialShown && hasEnoughActors) {
         setIsTutorialOpen(true);
       }
     }
@@ -112,6 +327,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
     setIsTutorialOpen(false);
     setTutorialShown(true);
   };
+
   // Maneja el arrastre y caída de actores
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -119,36 +335,55 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
     const actorId = e.dataTransfer.getData('actorId');
     const offsetX = parseFloat(e.dataTransfer.getData('offsetX'));
     const offsetY = parseFloat(e.dataTransfer.getData('offsetY'));
-  
-    if (!actorId) return;
-  
+
+    if (!actorId || !mediaRef.current || !wavesurfer) return;
+
     const containerRect = mediaRef.current.getBoundingClientRect();
     const dropX = e.clientX - containerRect.left - offsetX;
     const dropY = e.clientY - containerRect.top - offsetY;
-  
+
     const posX = Math.max(0, Math.min(dropX, containerRect.width));
     const posY = Math.max(0, Math.min(dropY, containerRect.height));
-  
+
     console.log('Posición ajustada (posX, posY):', { posX, posY });
-  
+
     // Convertir a porcentaje relativo al contenedor
     const percentX = (posX / containerRect.width) * 100;
     const percentY = (posY / containerRect.height) * 100;
     
     const originalActor = actors.find((a) => a._id === actorId);
     if (!originalActor) return;
-  
+
+    // Obtener el tiempo actual del video
+    const currentTime = mediaRef.current.currentTime;
+
+    console.log(currentTime);
+    
     const newActorInstance = {
       actorId,
       actor: originalActor,
       position: { x: percentX, y: percentY },  // Guardar la posición en porcentaje
-      imageIndex: 1,
+      currentTime: currentTime,
       sessionId,
     };
-  
+
     // Añadir la nueva instancia al store de Zustand y la base de datos
     await addActor(newActorInstance);
-  };   
+
+    // Crear una región de 1 segundo en el tiempo actual utilizando el plugin de regiones
+    if (regionsPlugin) {
+      regionsPlugin.addRegion({
+        start: currentTime - 0.5,  // Tiempo actual del video
+        end: currentTime + 0.5,    // Duración de 1 segundo
+        content: `${originalActor.name}`,
+        color: `${originalActor.color}`,
+        drag: false,
+        resize: false,
+      });
+    } else {
+      console.error("El plugin de regiones no está disponible.");
+    }    
+  };
 
   // Maneja el inicio del arrastre de actores
   const handleDragStart = (e, instanceId) => {
@@ -179,7 +414,7 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
         return;
     }
   
-    const containerRect = containerRef.current.getBoundingClientRect();
+    const containerRect = mediaRef.current.getBoundingClientRect();
     const dropX = e.clientX - containerRect.left;
     const dropY = e.clientY - containerRect.top;
   
@@ -196,6 +431,39 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
     } catch (error) {
       console.error('Error al actualizar la posición en la base de datos:', error);
     }
+  };
+
+  // Escuchar cambios en los actores originales y actualizar las instancias
+  useEffect(() => {
+    Object.keys(actorsInstances).forEach((actorId) => {
+      const instance = actorsInstances[actorId];
+      const originalActor = actors.find((oActor) => oActor._id === instance.actor._id);
+
+      if (originalActor) {
+        // Evitar actualizar si las propiedades clave no han cambiado
+        const { name: instanceName, color: instanceColor } = instance.actor;
+        const { name: originalName, color: originalColor } = originalActor;
+
+        // Solo actualiza si las propiedades clave son diferentes
+        if (instanceName !== originalName || instanceColor !== originalColor) {
+          updateActorAttributes(actorId, originalActor);  // Actualiza las propiedades usando Zustand
+        }
+      }
+    });
+  }, [actors, actorsInstances, updateActorAttributes]);
+
+  // Modal para eliminar una instancia
+  const handleOpenDeleteModal = (actorId) => {
+    onOpen();
+    setActorToDelete(actorId); // Guardar la instancia seleccionada para eliminar
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirmar la eliminación de una instancia
+  const handleConfirmDelete = () => {
+    // Eliminar el actor de Zustand
+    removeActor(actorToDelete);
+    setIsDeleteModalOpen(false);
   };
 
   const showToast = (message, type) => {
@@ -266,6 +534,46 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
       return <Text>{t('mediaNosSupported')}</Text>;
     }
   };
+  
+  // Componente para renderizar las flechas
+  const RelationsArrows = ({ relations, currentTime }) => {
+    return (
+      <>
+        {relations.map((relation) => {
+          // Mostrar la flecha si el currentTime está dentro de un margen de ±1 segundo
+          if (Math.abs(relation.currentTime - currentTime) <= 1) {
+            return (
+              <Xarrow
+                key={relation._id}
+                start={`actor-${relation.source}`} // ID de inicio debe coincidir con el actor
+                end={`actor-${relation.target}`}   // ID de destino debe coincidir con el actor
+                color="#5dff5d"
+                strokeWidth={3}
+                path="smooth"
+                headSize={6}
+                labels={{
+                  middle: (
+                    <div
+                      style={{
+                        background: "black",
+                        color: "white",
+                        fontSize: "0.8em",
+                        fontStyle: "normal",
+                      }}
+                    >
+                      {relation.type_label}
+                    </div>
+                  ),
+                }}
+              />
+            );
+          }
+          return null;
+        })}
+      </>
+    );
+  };
+  
 
   return (
     <HStack spacing={4}>
@@ -313,52 +621,141 @@ function VideoUploadSection({ mediaType, mediaRef, waveRef, setCurrentTime, setD
         transition="outline 0.3s ease-in-out, outline-offset 0.3s ease-in-out"
       >
         {renderMediaViewer()}
+        <Xwrapper>
+          {actorsForCurrentTime.map((instance) => {
+            // Verificar si el actor ya tiene relaciones existentes
+            const isRelated = relations.some(
+              (relation) => relation.source === instance._id || relation.target === instance._id
+            );
 
-        {droppedActors.map((dropped) => (
-          <Box
-            key={dropped.id}
-            position='absolute'
-            left={`${dropped.position.x}%`}
-            top={`${dropped.position.y}%`}
-            draggable
-            onDragStart={(e) => handleDragStart(e, dropped.id, true)}
-            display='flex'
-            flexDirection='column'
-            justifyContent='center'
-            alignItems='center'
-            borderRadius='lg'
-            padding='12px'
-            backgroundColor='transparent'
-          >
-            {dropped.actor && (
-              <>
-                <Icon
-                  width='50px'
-                  height='50px'
-                  fontSize='60px'
-                  bg={dropped.actor.color}
-                  borderRadius='100%'
-                >
-                  <IconPickerItem value={dropped.actor.icon} size={24} />
-                </Icon>
-                <Box
-                  bg='black'
-                  color='white'
-                  borderRadius='4px'
-                  fontSize='14px'
-                  fontWeight='600'
-                  width='max-content'
-                >
-                  {dropped.actor.name}
-                </Box>
-              </>
-            )}
-          </Box>
-        ))}
+            return (
+              <MotionBox
+                key={instance._id}
+                id={`actor-${instance._id}`}
+                position="absolute"
+                className="Motionbox"
+                cursor={isCreatingRelation ? "default" : isRelated ? "default" : "move"}  // Bloquear cursor si está relacionado o creando relación
+                left={`${instance.position.x}%`}
+                top={`${instance.position.y}%`}
+                draggable={!isCreatingRelation && !isRelated}  // Permitir arrastrar si no está creando relación y no está relacionado
+                onDragStart={!isCreatingRelation && !isRelated ? (e) => handleDragStart(e, instance._id) : undefined}
+                onDragEnd={!isCreatingRelation && !isRelated ? (e) => handleDragEnd(e, instance._id) : undefined}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                borderRadius="lg"
+                padding="12px"
+                backgroundColor="transparent"
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                whileHover={!isCreatingRelation && !isRelated ? { scale: 1.1 } : { cursor: "default" }}
+                dragElastic={0.2}
+                onMouseEnter={(e) => {
+                  if (!isCreatingRelation && !isRelated) {
+                    e.currentTarget.querySelector(".delete-btn").style.opacity = 1;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isCreatingRelation && !isRelated) {
+                    e.currentTarget.querySelector(".delete-btn").style.opacity = 0;
+                  }
+                }}
+              >
+                {instance.actor && (
+                  <>
+                    <Icon
+                      className="Instance"
+                      width="50px"
+                      height="50px"
+                      fontSize="60px"
+                      bg={instance.actor.color}
+                      borderRadius="100%"
+                      onClick={() => handleActorClick(instance._id)}  // Permitir seleccionar para nuevas relaciones
+                      style={getActorStyle(instance._id)}  // Añadir borde verde si está seleccionado
+                    >
+                      <IconPickerItem value={instance.actor.icon} size={24} />
+                    </Icon>
+                    <Box
+                      bg="black"
+                      color="white"
+                      borderRadius="4px"
+                      fontSize="14px"
+                      fontWeight="600"
+                      width="max-content"
+                    >
+                      {instance.actor.name}
+                    </Box>
+                    {/* Botón "X" para eliminar la instancia */}
+                    <Box
+                      className="delete-btn"
+                      position="absolute"
+                      top="0px"
+                      right="0px"
+                      width="20px"
+                      height="20px"
+                      bg="red"
+                      borderRadius="50%"
+                      color="white"
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      fontSize="14px"
+                      cursor="pointer"
+                      opacity={0}
+                      transition="opacity 0.2s ease"
+                      onClick={() => handleOpenDeleteModal(instance._id)}
+                      style={{ display: isCreatingRelation || isRelated ? "none" : "flex" }}  // Mostrar la "X" solo si no está relacionado
+                    >
+                      X
+                    </Box>
+                  </>
+                )}
+
+                {/* Renderizar las flechas fuera del bucle de actores */}
+                <RelationsArrows relations={relations} currentTime={currentTime} />
+              </MotionBox>
+            );
+          })}
+        </Xwrapper>
       </Box>
+      {/* Modal de confirmación */}
+      {isDeleteModalOpen && (
+        <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('deleteConfirmationTitle')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {t('deleteConfirmationMessage')}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              {t('cancel')}
+            </Button>
+            <Button 
+              colorScheme="red" 
+              onClick={handleConfirmDelete} 
+            >
+              {t('deleteButton')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+        </Modal>
+      )}
       {/* Modal de tutorial */}
       <TutorialModal isOpen={isTutorialOpen} onClose={handleCloseTutorial} />
       <ToastContainer/>
+      <RelationPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        existingRelations={existingRelations}  // Relación existente en el proyecto
+        onCreateRelation={handleCreateRelation} // Lógica para crear la relación
+        currentTime={currentTime}
+      />
     </HStack>
   );
 }
