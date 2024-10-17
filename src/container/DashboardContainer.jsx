@@ -9,11 +9,12 @@ import { useTranslation, Trans } from 'react-i18next';
 
 function DashboardContainer() {
   const {t} = useTranslation();
+  const userName = sessionStorage.getItem('userName');
  
   return (
     <Center>
       <Box p="6" bg="gray.300" borderRadius="md" boxShadow="lg" w="46.875rem" h="34.8125em" textAlign="center">
-        <WelcomeMessage username={t('username')} />
+        <WelcomeMessage username={userName} />
         <VStack spacing="5.75rem">
           <ActionButtonIcon
             text={t('newProject')}

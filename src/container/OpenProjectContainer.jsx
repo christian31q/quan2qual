@@ -12,7 +12,8 @@ function OpenProjectContainer() {
     useEffect(() => {
       const fetchProjects = async () => {
         try {
-          const result = await fetchProjectsFromDB(); // Esta función debe hacer la solicitud a MongoDB
+          const userId = sessionStorage.getItem('userId');
+          const result = await fetchProjectsFromDB(userId); // Esta función debe hacer la solicitud a MongoDB
           console.log('Result Project: ', result);
           setProjects(result); 
         } catch (error) {

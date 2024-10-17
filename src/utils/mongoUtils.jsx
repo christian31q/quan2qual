@@ -14,8 +14,10 @@ export const createProjectInDB = async (projectName, userId) => {
     return result;
 };
 
-export const fetchProjectsFromDB = async () => {
-    const result = await requestMongo('projects', {}, 'find');
+export const fetchProjectsFromDB = async (userId) => {
+  const result = await requestMongo('projects', {
+    filter: { user_id: userId }
+  }, 'find');
     return result.documents;
 };
 

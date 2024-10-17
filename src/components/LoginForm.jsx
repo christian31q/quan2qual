@@ -62,6 +62,7 @@ function LoginForm() {
             // Guardar el estado de autenticación y el ID del usuario en sessionStorage
             sessionStorage.setItem('isAuthenticated', 'true');
             sessionStorage.setItem('userId', user._id);
+            sessionStorage.setItem('userName', user.username);
   
             login();
             setTimeout(() => {
