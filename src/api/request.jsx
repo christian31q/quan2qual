@@ -1,60 +1,63 @@
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const MONGO_DEBUG = import.meta.env.VITE_MONGO_DEBUG === "true";
+
+function mongoLog(stage, details = {}) {
+  if (!MONGO_DEBUG) return;
+  console.log(`[mongo] ${stage}`, details);
+}
+
+function summarizeMongoResult(result) {
+  return {
+    hasDocument: Boolean(result?.document),
+    documentsCount: Array.isArray(result?.documents) ? result.documents.length : undefined,
+    insertedId: result?.insertedId,
+    matchedCount: result?.matchedCount,
+    modifiedCount: result?.modifiedCount,
+    deletedCount: result?.deletedCount
+  };
+}
+
 export default async function requestMongo(collection, body, action) {
-    const token = await requestTokenMongo();
+  const startedAt = Date.now();
+  const requestId = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Bearer ${token}`);
-    let raw = "";
+  const payload = {
+    collection,
+    ...(body && typeof body === "object" ? body : {})
+  };
 
-    if(body != ""){
-        raw = JSON.stringify({
-          "collection": `${collection}`,
-          "database": "quan2qual",
-          "dataSource": "Quan2Qual",
-          ...body
-        });
-        //console.log('Raw: ', raw);
-    } else{
-        raw = JSON.stringify({
-            "collection": `${collection}`,
-            "database": "quan2qual",
-            "dataSource": "Quan2Qual",
-        });
-    }
-    
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
+  const endpoint = `${API_BASE_URL}/api/mongo/${action}`;
 
-    const result = await fetch(`https://us-east-1.aws.data.mongodb-api.com/app/data-sojtsfv/endpoint/data/v1/action/${action}`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => result)
-      .catch((error) => console.error(error));
-    return result;  
-};
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
 
-async function requestTokenMongo(){
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+  const result = await response.json().catch(() => ({}));
 
-    const raw = JSON.stringify({
-    "username": "est.sebastian.lamp@unimilitar.edu.co",
-    "password": "Sebasmongo2400/-"
+  mongoLog("data-response", {
+    requestId,
+    action,
+    collection,
+    status: response.status,
+    durationMs: Date.now() - startedAt,
+    summary: summarizeMongoResult(result)
+  });
+
+  if (!response.ok) {
+    mongoLog("data-error", {
+      requestId,
+      action,
+      collection,
+      status: response.status,
+      error: result?.error || response.statusText
     });
 
-    const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
-    };
-    
-    const token = await fetch("https://us-east-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-sojtsfv/auth/providers/local-userpass/login", requestOptions)
-    .then((response) => response.json())
-    .then((result) => result)
-    .catch((error) => console.error(error));
-    return token.access_token; 
+    throw new Error(`Mongo request failed (${response.status}): ${result?.error || response.statusText}`);
+  }
+
+  return result;
 }

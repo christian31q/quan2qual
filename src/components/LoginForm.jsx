@@ -23,6 +23,12 @@ import { createStandaloneToast } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
 
 const { ToastContainer, toast } = createStandaloneToast();
+const MONGO_DEBUG = import.meta.env.VITE_MONGO_DEBUG === 'true';
+
+function loginDebug(stage, details = {}) {
+  if (!MONGO_DEBUG) return;
+  console.log(`[login] ${stage}`, details);
+}
 
 function LoginForm() {
   const { t } = useTranslation();
@@ -50,14 +56,28 @@ function LoginForm() {
   
     if (email && password) {
       setIsLoading(true);
+      const startedAt = Date.now();
+
+      loginDebug('submit', {
+        email,
+        hasPassword: Boolean(password)
+      });
   
       try {
         const result = await requestMongo("users", { filter: { email: email } }, "findOne");
+        loginDebug('mongo-users-findOne', {
+          durationMs: Date.now() - startedAt,
+          userFound: Boolean(result?.document)
+        });
   
         if (result.document != null) {
           const user = result.document;
   
           const passwordMatch = await bcrypt.compare(password, user.password);
+          loginDebug('password-compare', {
+            userId: user?._id,
+            passwordMatch
+          });
           if (passwordMatch) {
             // Guardar el estado de autenticación y el ID del usuario en sessionStorage
             sessionStorage.setItem('isAuthenticated', 'true');
@@ -69,17 +89,34 @@ function LoginForm() {
               setIsAuthenticated(true);
               navigateTo('/dashboardNewLoadProject');
             }, 3000); 
+
+            loginDebug('login-success', {
+              userId: user?._id,
+              username: user?.username
+            });
   
             return navigateTo('/loadingPage');
           } else {
+            loginDebug('login-failed', {
+              reason: 'wrong-password',
+              email
+            });
             showToast(`${t('toastWrongPassword')}`, 'error');
             setIsAuthenticated(false);
           }
         } else {
+          loginDebug('login-failed', {
+            reason: 'user-not-found',
+            email
+          });
           showToast(`${t('toastNoFindUser')}`, 'error');
           setIsAuthenticated(false);
         }
       } catch (error) {
+        loginDebug('login-error', {
+          email,
+          message: error?.message
+        });
         console.error('Error al iniciar sesión:', error);
         alert('Hubo un error en la autenticación');
       } finally {
