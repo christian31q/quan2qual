@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Center, Text, Spinner, keyframes, Container, shouldForwardProp, chakra } from '@chakra-ui/react';
-import loginImage from '../assets/Fondo.png';
+import loginImage from '../assets/logoUMNG.png';
 import { motion, isValidMotionProp } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 

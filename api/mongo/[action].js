@@ -14,6 +14,7 @@ const SUPPORTED_ACTIONS = new Set([
 ]);
 
 let cachedClient;
+let cachedClientPromise;
 
 function log(stage, details = {}) {
   if (!MONGO_DEBUG) return;
@@ -21,15 +22,40 @@ function log(stage, details = {}) {
 }
 
 async function getClient() {
-  if (cachedClient) return cachedClient;
-
   if (!MONGO_URI) {
     throw new Error("Missing Mongo URI env var. Set MONGO_URI or MONGODB_URI in Vercel Project Settings -> Environment Variables.");
   }
 
-  cachedClient = new MongoClient(MONGO_URI);
-  await cachedClient.connect();
-  return cachedClient;
+  if (cachedClient) {
+    try {
+      await cachedClient.db(MONGO_DB).command({ ping: 1 });
+      return cachedClient;
+    } catch {
+      cachedClient = undefined;
+      cachedClientPromise = undefined;
+    }
+  }
+
+  if (!cachedClientPromise) {
+    const client = new MongoClient(MONGO_URI);
+    cachedClientPromise = client
+      .connect()
+      .then(() => {
+        cachedClient = client;
+        return client;
+      })
+      .catch(async (error) => {
+        cachedClientPromise = undefined;
+        try {
+          await client.close();
+        } catch {
+          // Ignore cleanup errors.
+        }
+        throw error;
+      });
+  }
+
+  return cachedClientPromise;
 }
 
 function convertExtendedJson(value) {
