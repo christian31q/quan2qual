@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 const MONGO_DB = process.env.MONGO_DB || "quan2qual";
 
 let cachedClient;
@@ -9,7 +9,7 @@ async function getClient() {
   if (cachedClient) return cachedClient;
 
   if (!MONGO_URI) {
-    throw new Error("Missing MONGO_URI environment variable");
+    throw new Error("Missing Mongo URI env var. Set MONGO_URI or MONGODB_URI in Vercel Project Settings -> Environment Variables.");
   }
 
   cachedClient = new MongoClient(MONGO_URI);
