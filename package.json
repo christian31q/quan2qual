@@ -43,7 +43,7 @@
     "react-draggable": "^4.4.6",
     "react-i18next": "^13.3.0",
     "react-icons": "^4.11.0",
-    "react-icons-picker": "^1.0.9",
+    "react-icons-picker": "^1.1.0",
     "react-router-dom": "^6.16.0",
     "react-xarrows": "^2.0.2",
     "uuidv4": "^6.2.13",
